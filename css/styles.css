@@ -230,17 +230,33 @@ a:hover {
 /* Hero Section */
 .hero {
     padding: var(--spacing-xl) 0;
-    background: linear-gradient(135deg, rgba(26,26,26,0.85), rgba(15,15,15,0.9)),
-                url('../assets/images/j7-logo.png');
-    background-size: cover, 60%;
+    background: 
+        radial-gradient(circle at center, rgba(26,26,26,0.7) 0%, rgba(15,15,15,0.85) 100%),
+        url('../assets/images/j7-logo.png');
+    background-size: contain, 55%;
     background-position: center, center;
     background-repeat: no-repeat, no-repeat;
+    background-attachment: scroll;
     text-align: center;
     position: relative;
     min-height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('../assets/images/j7-logo.png') center center no-repeat;
+    background-size: 60%;
+    opacity: 0.12;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .hero-container {
