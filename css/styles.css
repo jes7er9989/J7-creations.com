@@ -256,7 +256,7 @@ body::before {
 }
 
 [data-theme="light"] body::before {
-    opacity: 0.05;
+    opacity: 0.12;
 }
 
 .hero-container {
