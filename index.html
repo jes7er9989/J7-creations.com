@@ -292,6 +292,20 @@
         <div class="container">
             <h2 class="section-title">Ready to Get Started?</h2>
             <p class="contact-intro">Tell me about your project. I'll respond within 24 hours.</p>
+            
+            <!-- Service Request Checklist -->
+            <div style="background: rgba(45, 138, 110, 0.15); border: 2px solid #2d8a6e; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4>
+                <ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
+                    <li>✅ **Project photos** (if applicable) - helps me understand the scope</li>
+                    <li>✅ **Budget range** - so I can suggest appropriate solutions</li>
+                    <li>✅ **Timeline** - when do you need this completed?</li>
+                    <li>✅ **Location** - is it within my 100-mile service area?</li>
+                    <li>✅ **Rush service needed?** - 48-hour turnaround available for +50%</li>
+                </ul>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>
+            </div>
+            
             <form id="contact-form" class="contact-form" action="https://formspree.io/f/xzdypkbz" method="POST">
                 <div id="form-success" style="display: none; padding: 1.5rem; background: rgba(45, 138, 110, 0.2); border: 2px solid #2d8a6e; border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
                     <h3 style="color: #2d8a6e; margin-bottom: 0.5rem;">✓ Message Sent!</h3>
@@ -321,13 +335,38 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="timeline">Timeline</label>
+                    <select id="timeline" name="timeline" required>
+                        <option value="">Select timeline...</option>
+                        <option value="flexible">Flexible (1-2 weeks)</option>
+                        <option value="soon">Soon (within 1 week)</option>
+                        <option value="rush">RUSH (48 hours) - +50% fee</option>
+                        <option value="urgent">URGENT (24 hours) - +100% fee</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="budget">Budget Range (optional)</label>
+                    <select id="budget" name="budget">
+                        <option value="">Select budget...</option>
+                        <option value="under-100">Under $100</option>
+                        <option value="100-300">$100 - $300</option>
+                        <option value="300-500">$300 - $500</option>
+                        <option value="500-1000">$500 - $1,000</option>
+                        <option value="1000-plus">$1,000+</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="message">Project Details</label>
                     <textarea id="message" name="message" rows="5" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
             </form>
-            <div class="contact-direct">
-                <p><strong>Or email directly:</strong> <a href="mailto:contact@j7creations.com">contact@j7creations.com</a></p>
+            
+            <!-- Payment Info -->
+            <div class="contact-direct" style="margin-top: 2rem;">
+                <p><strong>Payment Methods:</strong> Cash, Check, Venmo, Cash App, or Invoice (Net 7 for projects over $500)</p>
+                <p style="margin-top: 0.5rem;"><strong>Deposit Required:</strong> 50% upfront for projects over $300 (materials + commitment)</p>
+                <p style="margin-top: 0.5rem;"><strong>Or email directly:</strong> <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a></p>
                 <p class="contact-area"><em>Serving West Tennessee | 100-mile radius from Milan/Atwood</em></p>
             </div>
         </div>
@@ -337,8 +376,12 @@
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 J7 Technical Solutions & Prototyping | Milan/Atwood, TN</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Site last updated: April 2026</p>
         </div>
     </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
     <script src="js/app.js"></script>
 </body>
