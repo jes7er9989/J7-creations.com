@@ -1,6 +1,6 @@
 /* J7 Creations - Main Stylesheet */
 
-/* CSS Variables - Logo Color Palette */
+/* CSS Variables - Dark Theme (Default) */
 :root {
     --color-bg-dark: #1a1a1a;
     --color-bg-darker: #0f0f0f;
@@ -11,11 +11,27 @@
     --color-gradient-end: #c43d4e;
     --color-accent: #6b4c9a;
     --color-border: #333333;
+    --color-card-bg: #1f1f1f;
+    --color-input-bg: #2a2a2a;
+    --shadow-color: rgba(0, 0, 0, 0.3);
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 2rem;
     --spacing-lg: 4rem;
     --spacing-xl: 6rem;
+}
+
+/* Light Theme */
+[data-theme="light"] {
+    --color-bg-dark: #f5f5f5;
+    --color-bg-darker: #ffffff;
+    --color-text-white: #1a1a1a;
+    --color-text-gray: #555555;
+    --color-accent: #6b4c9a;
+    --color-border: #e0e0e0;
+    --color-card-bg: #ffffff;
+    --color-input-bg: #f0f0f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Reset & Base */
@@ -121,7 +137,39 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
+
+/* Theme Toggle */
+.theme-toggle {
+    background: none;
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    border-color: var(--color-accent);
+    background: var(--color-input-bg);
+}
+
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--color-text-white);
+}
+
+.theme-toggle .sun-icon { display: none; }
+.theme-toggle .moon-icon { display: block; }
+[data-theme="light"] .theme-toggle .sun-icon { display: block; }
+[data-theme="light"] .theme-toggle .moon-icon { display: none; }
 
 .nav-logo img {
     height: 40px;
@@ -479,23 +527,150 @@ a:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 2rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.25rem; }
     
+    /* Mobile Navigation */
     .nav-menu {
-        display: none;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: var(--color-bg-darker);
+        flex-direction: column;
+        padding: var(--spacing-md);
+        border-bottom: 1px solid var(--color-border);
+        box-shadow: 0 4px 6px var(--shadow-color);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    
+    .nav-menu.active {
+        display: flex;
+        max-height: 400px;
+    }
+    
+    .nav-menu li {
+        margin: var(--spacing-xs) 0;
     }
     
     .nav-toggle {
         display: block;
+        z-index: 1001;
+    }
+    
+    /* Hero Section Mobile */
+    .hero {
+        padding: var(--spacing-lg) 0;
+        min-height: auto;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+        margin-bottom: var(--spacing-sm);
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        margin-bottom: var(--spacing-md);
     }
     
     .hero-cta {
         flex-direction: column;
         gap: var(--spacing-sm);
+        align-items: center;
     }
     
-    .hero-title {
-        font-size: 2.5rem;
+    .hero-cta .btn {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+    }
+    
+    /* Services Grid */
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .service-card {
+        padding: var(--spacing-md);
+    }
+    
+    /* Capabilities Table */
+    .capabilities-table {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .capability-column {
+        padding: var(--spacing-md);
+    }
+    
+    /* Advantage Grid */
+    .advantage-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .advantage-item {
+        padding: var(--spacing-md);
+    }
+    
+    /* Portfolio Tabs */
+    .portfolio-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--spacing-xs);
+    }
+    
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .portfolio-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    /* Why Grid */
+    .why-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    /* Contact Form */
+    .contact-form {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Section Padding */
+    .services,
+    .capabilities,
+    .advantage,
+    .portfolio,
+    .why-j7,
+    .contact {
+        padding: var(--spacing-lg) 0;
+    }
+    
+    /* Container */
+    .container {
+        padding: 0 var(--spacing-sm);
     }
 }
