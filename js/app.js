@@ -38,11 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Smooth scroll for anchor links
+    // Smooth scroll for anchor links (only internal page anchors)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // Skip if it's just "#" or empty
+            if (!href || href === '#') return;
+            
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const target = document.querySelector(href);
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',
