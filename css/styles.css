@@ -142,8 +142,8 @@ a:hover {
 
 /* Theme Toggle */
 .theme-toggle {
-    background: var(--color-input-bg);
-    border: 2px solid var(--color-accent);
+    background: var(--color-accent);
+    border: none;
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -151,26 +151,25 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: var(--spacing-sm);
+    margin-left: var(--spacing-sm);
     transition: all 0.3s ease;
     flex-shrink: 0;
+    font-size: 20px;
+    line-height: 1;
 }
 
 .theme-toggle:hover {
-    background: var(--color-accent);
     transform: scale(1.1);
+    filter: brightness(1.2);
 }
 
-.theme-toggle svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--color-text-white);
+.theme-toggle::before {
+    content: '🌙';
 }
 
-.theme-toggle .sun-icon { display: none; }
-.theme-toggle .moon-icon { display: block; }
-[data-theme="light"] .theme-toggle .sun-icon { display: block; }
-[data-theme="light"] .theme-toggle .moon-icon { display: none; }
+[data-theme="light"] .theme-toggle::before {
+    content: '☀️';
+}
 
 .nav-logo img {
     height: 40px;
