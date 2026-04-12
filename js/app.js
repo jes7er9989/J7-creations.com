@@ -1,7 +1,8 @@
 // J7 Creations - Main Application JavaScript
 
-// Theme Toggle
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // ========== Theme Toggle ==========
     const themeToggle = document.querySelector('.theme-toggle');
     const html = document.documentElement;
     
@@ -18,21 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Portfolio Tab Functionality
-document.addEventListener('DOMContentLoaded', () => {
+    // ========== Portfolio Tabs ==========
     const tabBtns = document.querySelectorAll('.tab-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
     
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons
             tabBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
             btn.classList.add('active');
             
             const category = btn.dataset.tab;
             
-            // Filter portfolio items
             portfolioItems.forEach(item => {
                 if (category === 'all' || item.dataset.category === category) {
                     item.style.display = 'block';
@@ -43,10 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
-// Contact Form - Formspree handles submission
-// No JavaScript needed - Formspree processes the form directly
-    
-    // Mobile Navigation Toggle
+    // ========== Mobile Navigation ==========
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
     
@@ -63,11 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Smooth scroll for anchor links (only internal page anchors)
+    // ========== Smooth Scroll for Anchor Links ==========
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
-            // Skip if it's just "#" or empty
             if (!href || href === '#') return;
             
             e.preventDefault();
@@ -80,9 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    
 });
 
-// Service Worker Registration for PWA
+// ========== Service Worker Registration for PWA ==========
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
