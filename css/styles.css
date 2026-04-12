@@ -5,15 +5,15 @@
     --color-bg-dark: #1a1a1a;
     --color-bg-darker: #0f0f0f;
     --color-text-white: #ffffff;
-    --color-text-gray: #b0b0b0;
-    --color-gradient-start: #6b4c9a;
-    --color-gradient-mid: #2d8a6e;
-    --color-gradient-end: #c43d4e;
-    --color-accent: #6b4c9a;
-    --color-border: #333333;
-    --color-card-bg: #1f1f1f;
-    --color-input-bg: #2a2a2a;
-    --shadow-color: rgba(0, 0, 0, 0.3);
+    --color-text-gray: #c0c0c0;
+    --color-gradient-start: #7b5cb8;
+    --color-gradient-mid: #3db896;
+    --color-gradient-end: #e85d6f;
+    --color-accent: #7b5cb8;
+    --color-border: #444444;
+    --color-card-bg: #252525;
+    --color-input-bg: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.4);
     --spacing-xs: 0.5rem;
     --spacing-sm: 1rem;
     --spacing-md: 2rem;
@@ -250,13 +250,13 @@ body::before {
     height: 90vh;
     background: url('/assets/images/j7-logo.png') center center no-repeat;
     background-size: contain;
-    opacity: 0.15;
+    opacity: 0.25;
     z-index: -1;
     pointer-events: none;
 }
 
 [data-theme="light"] body::before {
-    opacity: 0.12;
+    opacity: 0.20;
 }
 
 .hero-container {
@@ -313,16 +313,16 @@ body::before {
 }
 
 .service-card {
-    background: rgba(26, 26, 26, 0.5);
+    background: rgba(26, 26, 26, 0.6);
     backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     transition: transform 0.3s ease;
 }
 
 [data-theme="light"] .service-card {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -357,15 +357,15 @@ body::before {
 }
 
 .capability-column {
-    background: rgba(26, 26, 26, 0.5);
+    background: rgba(26, 26, 26, 0.6);
     backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 [data-theme="light"] .capability-column {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
