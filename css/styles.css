@@ -142,13 +142,13 @@ a:hover {
 
 /* Theme Toggle */
 .theme-toggle {
-    background: var(--color-accent);
-    border: none;
+    background: linear-gradient(135deg, #6b4c9a, #c43d4e) !important;
+    border: 2px solid #ffffff !important;
     border-radius: 50%;
     width: 40px;
     height: 40px;
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     margin-left: var(--spacing-sm);
@@ -156,19 +156,22 @@ a:hover {
     flex-shrink: 0;
     font-size: 20px;
     line-height: 1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .theme-toggle:hover {
     transform: scale(1.1);
-    filter: brightness(1.2);
+    box-shadow: 0 4px 12px rgba(107, 76, 154, 0.5);
 }
 
 .theme-toggle::before {
     content: '🌙';
+    display: block;
 }
 
 [data-theme="light"] .theme-toggle::before {
     content: '☀️';
+    display: block;
 }
 
 .nav-logo img {
