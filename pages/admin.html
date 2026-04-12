@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J7 Admin | Submissions</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <img src="../assets/images/j7-logo.png" alt="J7 Creations" class="logo-img">
+            </a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Back to Site</a>
+                <button id="logout-btn" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="admin-container">
+        <div class="admin-header">
+            <h1>Contact Form Submissions</h1>
+            <button id="refresh-btn" class="btn btn-primary">Refresh</button>
+        </div>
+
+        <div id="login-section" class="admin-login">
+            <h2>Admin Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+
+        <div id="submissions-section" class="admin-submissions" style="display: none;">
+            <div id="submissions-list"></div>
+        </div>
+    </main>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>
