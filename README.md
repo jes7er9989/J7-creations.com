@@ -104,4 +104,4 @@ Cloudflare Pages will auto-deploy in ~30 seconds.
 
 **Built for:** J7 Technical Solutions & Prototyping  
 **Location:** Atwood, TN  
-**Service Area:** 75-mile radius
+**Service Area:** 100-mile radius
