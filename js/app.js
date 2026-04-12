@@ -2,18 +2,20 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // ========== Theme Toggle (no memory - resets on page load) ==========
+    // ========== Theme Toggle (remembers preference) ==========
     const themeToggle = document.querySelector('.theme-toggle');
     const html = document.documentElement;
     
-    // Default to dark mode on every page load
-    html.setAttribute('data-theme', 'dark');
+    // Load saved theme or default to dark
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    html.setAttribute('data-theme', savedTheme);
     
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme); // Save preference
         });
     }
     
