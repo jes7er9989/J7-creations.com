@@ -175,8 +175,16 @@
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Part Weight (grams)</label>
-                        <input type="number" id="part-weight" placeholder="e.g., 150" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Part Weight</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" id="part-weight" placeholder="e.g., 0.33" step="0.01" style="flex: 1; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <select id="weight-unit" onchange="convertWeight()" style="padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                                <option value="lbs">lbs</option>
+                                <option value="kg">kg</option>
+                                <option value="g">grams</option>
+                            </select>
+                        </div>
+                        <p id="weight-in-grams" style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;"></p>
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Material</label>
@@ -393,14 +401,40 @@
 
     <script src="../js/app.js"></script>
     <script>
-        function calculatePrice() {
+        function convertWeight() {
             const weight = parseFloat(document.getElementById('part-weight').value);
+            const unit = document.getElementById('weight-unit').value;
+            let grams = 0;
+            
+            if (!weight || weight <= 0) {
+                document.getElementById('weight-in-grams').textContent = '';
+                return;
+            }
+            
+            switch(unit) {
+                case 'lbs': grams = weight * 453.592; break;
+                case 'kg': grams = weight * 1000; break;
+                case 'g': grams = weight; break;
+            }
+            
+            document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
+        }
+        
+        function calculatePrice() {
+            let weight = parseFloat(document.getElementById('part-weight').value);
+            const unit = document.getElementById('weight-unit').value;
             const filamentPricePerKg = parseFloat(document.getElementById('material-type').value);
             const serviceFeePerGram = parseFloat(document.getElementById('quality-level').value);
             
             if (!weight || weight <= 0) {
-                alert('Please enter a valid weight in grams');
+                alert('Please enter a valid weight');
                 return;
+            }
+            
+            // Convert to grams
+            switch(unit) {
+                case 'lbs': weight = weight * 453.592; break;
+                case 'kg': weight = weight * 1000; break;
             }
             
             // Calculate filament cost (price per kg / 1000 = price per gram)
