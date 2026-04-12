@@ -230,12 +230,7 @@ a:hover {
 /* Hero Section */
 .hero {
     padding: var(--spacing-xl) 0;
-    background: 
-        linear-gradient(135deg, rgba(26,26,26,0.5), rgba(15,15,15,0.6)),
-        url('../assets/images/j7-logo.png');
-    background-size: cover, 95%;
-    background-position: center, center;
-    background-repeat: no-repeat, no-repeat;
+    background: transparent;
     text-align: center;
     position: relative;
     min-height: 600px;
@@ -244,12 +239,33 @@ a:hover {
     justify-content: center;
 }
 
+/* Fixed Logo Background - stays centered while scrolling */
+body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    height: 90vh;
+    background: url('../assets/images/j7-logo.png') center center no-repeat;
+    background-size: contain;
+    opacity: 0.15;
+    z-index: -1;
+    pointer-events: none;
+}
+
 .hero-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 0 var(--spacing-md);
     position: relative;
     z-index: 1;
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hero-title {
@@ -276,12 +292,14 @@ a:hover {
 /* Services Section */
 .services {
     padding: var(--spacing-xl) 0;
-    background: var(--color-bg-dark);
+    background: transparent;
 }
 
 .section-title {
     text-align: center;
     margin-bottom: var(--spacing-lg);
+    position: relative;
+    z-index: 1;
 }
 
 .services-grid {
@@ -291,10 +309,11 @@ a:hover {
 }
 
 .service-card {
-    background: var(--color-bg-darker);
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.3s ease;
 }
 
@@ -328,10 +347,11 @@ a:hover {
 }
 
 .capability-column {
-    background: var(--color-bg-dark);
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .capability-column h3 {
@@ -382,7 +402,7 @@ a:hover {
 /* Portfolio Section */
 .portfolio {
     padding: var(--spacing-xl) 0;
-    background: var(--color-bg-darker);
+    background: transparent;
 }
 
 .portfolio-tabs {
@@ -465,7 +485,7 @@ a:hover {
 /* Contact Section */
 .contact {
     padding: var(--spacing-xl) 0;
-    background: var(--color-bg-darker);
+    background: transparent;
 }
 
 .contact-intro {
@@ -524,8 +544,8 @@ a:hover {
 /* Footer */
 .footer {
     padding: var(--spacing-md) 0;
-    background: var(--color-bg-darker);
-    border-top: 1px solid var(--color-border);
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
 }
 
