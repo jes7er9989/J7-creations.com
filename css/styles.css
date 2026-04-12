@@ -239,7 +239,7 @@ a:hover {
     justify-content: center;
 }
 
-/* Fixed Logo Background - stays centered while scrolling */
+/* Fixed Logo Background - stays centered while scrolling on ALL pages */
 body::before {
     content: '';
     position: fixed;
@@ -248,7 +248,7 @@ body::before {
     transform: translate(-50%, -50%);
     width: 90vw;
     height: 90vh;
-    background: url('../assets/images/j7-logo.png') center center no-repeat;
+    background: url('/assets/images/j7-logo.png') center center no-repeat;
     background-size: contain;
     opacity: 0.15;
     z-index: -1;
