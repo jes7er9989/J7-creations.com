@@ -193,6 +193,8 @@
                             <option value="0">0-25 miles (No fee)</option>
                             <option value="15">25-50 miles (+$15)</option>
                             <option value="30">50-75 miles (+$30)</option>
+                            <option value="50">75-100 miles (+$50)</option>
+                            <option value="custom">Beyond 100 miles (Quote required)</option>
                         </select>
                     </div>
                 </div>
@@ -265,8 +267,9 @@
                         <li>0-25 miles (local): <strong>No fee</strong></li>
                         <li>25-50 miles (regional): <strong>$15</strong></li>
                         <li>50-75 miles (extended): <strong>$30</strong></li>
+                        <li>75-100 miles (far): <strong>$50</strong></li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Waived for projects over $300 | Beyond 75 miles: Quote on request</em></p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Waived for projects over $300 | Beyond 100 miles: Quote on request (may require overnight arrangements)</em></p>
                 </div>
                 
                 <div class="advantage-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
@@ -348,11 +351,11 @@
             const type = document.getElementById('install-type').value;
             const qty = parseFloat(document.getElementById('install-qty').value) || 0;
             const unit = document.getElementById('install-unit').value;
-            const travel = parseInt(document.getElementById('install-distance').value) || 0;
+            const travel = document.getElementById('install-distance').value;
             
             let hourlyRate = 0;
             let hoursNeeded = 0;
-            let breakdown = '';
+            let travelFee = 0;
             
             // Set hourly rate based on service type
             switch(type) {
@@ -371,11 +374,18 @@
                 hoursNeeded = Math.max(qty * 0.5, 2); // 30 min per item, 2-hour minimum
             }
             
+            // Calculate travel fee
+            if (travel === 'custom') {
+                alert('For distances beyond 100 miles, please contact me directly for a custom quote. Travel arrangements may be required.');
+                return;
+            }
+            travelFee = parseInt(travel) || 0;
+            
             const laborCost = hourlyRate * hoursNeeded;
-            const total = laborCost + travel;
+            const total = laborCost + travelFee;
             
             document.getElementById('install-labor').textContent = '$' + laborCost.toFixed(2);
-            document.getElementById('install-travel').textContent = '$' + travel.toFixed(2);
+            document.getElementById('install-travel').textContent = '$' + travelFee.toFixed(2);
             document.getElementById('install-total').textContent = '$' + total.toFixed(2);
             document.getElementById('install-result').style.display = 'block';
         }
