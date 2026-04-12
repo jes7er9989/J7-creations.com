@@ -1,6 +1,6 @@
 // J7 Creations - Service Worker for PWA Offline Support
 
-const CACHE_NAME = 'j7-creations-v1';
+const CACHE_NAME = 'j7-creations-v2';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -24,7 +24,7 @@ self.addEventListener('install', event => {
     self.skipWaiting();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - serve from cache, fallback to network, cache new responses
 self.addEventListener('fetch', event => {
     event.respondWith(
         caches.match(event.request)
@@ -33,7 +33,19 @@ self.addEventListener('fetch', event => {
                 if (response) {
                     return response;
                 }
-                return fetch(event.request);
+                return fetch(event.request).then(response => {
+                    // Don't cache non-successful responses
+                    if (!response || response.status !== 200 || response.type !== 'basic') {
+                        return response;
+                    }
+                    // Clone the response
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseToCache);
+                        });
+                    return response;
+                });
             })
     );
 });
