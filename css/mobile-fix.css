@@ -1,0 +1,142 @@
+/* J7 Creations - Mobile Fixes */
+/* Add this AFTER styles.css in HTML files */
+
+@media (max-width: 768px) {
+    /* Sticky navbar on top */
+    .navbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: rgba(15, 15, 15, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    [data-theme="light"] .navbar {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Better hamburger menu */
+    .nav-toggle {
+        background: rgba(15, 15, 15, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        z-index: 1001 !important;
+    }
+    
+    [data-theme="light"] .nav-toggle {
+        background: rgba(255, 255, 255, 0.8) !important;
+        border: 1px solid rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* Mobile menu dropdown */
+    .nav-menu {
+        background: rgba(15, 15, 15, 0.98) !important;
+        backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+        z-index: 999 !important;
+    }
+    
+    [data-theme="light"] .nav-menu {
+        background: rgba(255, 255, 255, 0.98) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Better hero spacing */
+    .hero {
+        padding: 3rem 0 2rem !important;
+    }
+    
+    .hero-container {
+        padding: 2rem 1rem !important;
+        margin: 0 0.5rem !important;
+    }
+    
+    .hero-title {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    .hero-cta .btn {
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    /* Cards more transparent on mobile */
+    .service-card,
+    .capability-column,
+    .capability-card,
+    .why-item,
+    .advantage-item {
+        background: rgba(26, 26, 26, 0.65) !important;
+        backdrop-filter: blur(12px) !important;
+        padding: 1.5rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    [data-theme="light"] .service-card,
+    [data-theme="light"] .capability-column,
+    [data-theme="light"] .capability-card,
+    [data-theme="light"] .why-item,
+    [data-theme="light"] .advantage-item {
+        background: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    /* Better logo visibility on mobile */
+    body::before {
+        opacity: 0.35 !important;
+    }
+    
+    /* Section spacing */
+    .services,
+    .capabilities,
+    .portfolio,
+    .about,
+    .why-j7,
+    .advantage,
+    .contact {
+        padding: 2rem 0 !important;
+    }
+    
+    .container {
+        padding: 0 1rem !important;
+    }
+    
+    /* Grid layouts */
+    .services-grid,
+    .capabilities-table,
+    .advantage-grid,
+    .why-grid,
+    .portfolio-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    /* Portfolio tabs */
+    .portfolio-tabs {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+    
+    .tab-btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Contact form */
+    .contact-form {
+        padding: 0 0.5rem !important;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+}
