@@ -154,6 +154,49 @@
         <div class="container">
             <h2 class="section-title">Pricing</h2>
             
+            <!-- IT Services Calculator -->
+            <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
+                <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">🧮 Quick Service Estimator</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Get an instant estimate for IT services. Select your service type and details:</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Service Type</label>
+                        <select id="it-service" onchange="updateITOptions()" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="remote">Remote Support ($25/hr)</option>
+                            <option value="install">Installation ($25-50/hr)</option>
+                            <option value="network-design">Network Design ($200-800)</option>
+                            <option value="home-assistant">Home Assistant ($300-1,500)</option>
+                            <option value="audit">Network Audit ($150 flat)</option>
+                        </select>
+                    </div>
+                    <div id="hours-div" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimated Hours</label>
+                        <input type="number" id="it-hours" placeholder="e.g., 2" min="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                    </div>
+                    <div id="complexity-div" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Complexity</label>
+                        <select id="it-complexity" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="simple">Simple (basic setup)</option>
+                            <option value="medium">Medium (some configuration)</option>
+                            <option value="complex">Complex (multi-room/custom)</option>
+                        </select>
+                    </div>
+                    <div id="devices-div" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Number of Devices</label>
+                        <input type="number" id="it-devices" placeholder="e.g., 10" min="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                    </div>
+                </div>
+                <button onclick="calculateITPrice()" class="btn btn-primary" style="margin-bottom: 1.5rem;">Calculate Estimate</button>
+                
+                <div id="it-result" style="padding: 1.5rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.2), rgba(45, 138, 110, 0.2)); border-radius: 8px; border: 1px solid var(--color-accent); display: none;">
+                    <h4 style="color: var(--color-accent); margin-bottom: 1rem;">Estimated Cost:</h4>
+                    <p id="it-total" style="font-size: 2rem; font-weight: 700; color: var(--color-accent);">$0.00</p>
+                    <p id="it-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem;"></p>
+                    <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions and specific requirements.</em></p>
+                </div>
+            </div>
+            
             <div style="padding: 2rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.15), rgba(45, 138, 110, 0.15)); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
                 <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">⚠️ Important: Equipment Priced Separately</h3>
                 <p style="font-size: 1.1rem; margin-bottom: 1rem;"><strong>All prices below are for LABOR/SERVICES only.</strong></p>
@@ -261,5 +304,53 @@
     </footer>
 
     <script src="../js/app.js"></script>
+    <script>
+        function updateITOptions() {
+            const service = document.getElementById('it-service').value;
+            document.getElementById('hours-div').style.display = (service === 'remote' || service === 'install') ? 'block' : 'none';
+            document.getElementById('complexity-div').style.display = (service === 'install' || service === 'network-design') ? 'block' : 'none';
+            document.getElementById('devices-div').style.display = (service === 'home-assistant') ? 'block' : 'none';
+        }
+        
+        function calculateITPrice() {
+            const service = document.getElementById('it-service').value;
+            const hours = parseFloat(document.getElementById('it-hours').value) || 0;
+            const complexity = document.getElementById('it-complexity').value;
+            const devices = parseInt(document.getElementById('it-devices').value) || 0;
+            
+            let total = 0;
+            let breakdown = '';
+            
+            switch(service) {
+                case 'remote':
+                    total = 25 * Math.max(hours, 0.5); // 30-min minimum
+                    breakdown = `Remote Support: ${hours} hour(s) @ $25/hr (30-min minimum)`;
+                    break;
+                case 'install':
+                    let rate = complexity === 'simple' ? 25 : (complexity === 'medium' ? 35 : 50);
+                    total = rate * Math.max(hours, 2); // 2-hour minimum
+                    breakdown = `Installation: ${hours} hour(s) @ $${rate}/hr (${complexity} complexity, 2-hour minimum)`;
+                    break;
+                case 'network-design':
+                    let designRate = complexity === 'simple' ? 200 : (complexity === 'medium' ? 500 : 800);
+                    total = designRate;
+                    breakdown = `Network Design: ${complexity} complexity project`;
+                    break;
+                case 'home-assistant':
+                    let haRate = devices <= 5 ? 300 : (devices <= 10 ? 600 : (devices <= 20 ? 1000 : 1500));
+                    total = haRate;
+                    breakdown = `Home Assistant: ${devices} device(s) integrated`;
+                    break;
+                case 'audit':
+                    total = 150;
+                    breakdown = 'Network Audit: Flat rate';
+                    break;
+            }
+            
+            document.getElementById('it-total').textContent = '$' + total.toFixed(2);
+            document.getElementById('it-breakdown').textContent = breakdown;
+            document.getElementById('it-result').style.display = 'block';
+        }
+    </script>
 </body>
 </html>

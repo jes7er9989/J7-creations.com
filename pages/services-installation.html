@@ -160,6 +160,64 @@
         <div class="container">
             <h2 class="section-title">Pricing</h2>
             
+            <!-- Installation Calculator -->
+            <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
+                <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">🧮 Quick Installation Estimator</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Get an instant estimate for installation services:</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Service Type</label>
+                        <select id="install-type" onchange="updateInstallOptions()" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="mounting">Simple Mounting ($25/hr)</option>
+                            <option value="network">Network Equipment ($35/hr)</option>
+                            <option value="complex">Complex Install ($50/hr)</option>
+                            <option value="smart-home">Smart Home ($35/hr)</option>
+                            <option value="camera">Security Cameras ($35/hr)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quantity / Count</label>
+                        <input type="number" id="install-qty" placeholder="e.g., 4 APs or 2 hours" min="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Unit Type</label>
+                        <select id="install-unit" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="hours">Hours of labor</option>
+                            <option value="items">Individual items (APs, cameras, etc.)</option>
+                        </select>
+                    </div>
+                    <div id="travel-div">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Distance from Atwood, TN</label>
+                        <select id="install-distance" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="0">0-25 miles (No fee)</option>
+                            <option value="15">25-50 miles (+$15)</option>
+                            <option value="30">50-75 miles (+$30)</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="calculateInstallPrice()" class="btn btn-primary" style="margin-bottom: 1.5rem;">Calculate Estimate</button>
+                
+                <div id="install-result" style="padding: 1.5rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.2), rgba(45, 138, 110, 0.2)); border-radius: 8px; border: 1px solid var(--color-accent); display: none;">
+                    <h4 style="color: var(--color-accent); margin-bottom: 1rem;">Estimated Cost Breakdown:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div>
+                            <p style="color: var(--color-text-gray); font-size: 0.9rem;">Labor:</p>
+                            <p id="install-labor" style="font-size: 1.25rem; font-weight: 700;">$0.00</p>
+                        </div>
+                        <div>
+                            <p style="color: var(--color-text-gray); font-size: 0.9rem;">Travel Fee:</p>
+                            <p id="install-travel" style="font-size: 1.25rem; font-weight: 700;">$0.00</p>
+                        </div>
+                        <div>
+                            <p style="color: var(--color-accent); font-size: 0.9rem;">Total Estimate:</p>
+                            <p id="install-total" style="font-size: 1.5rem; font-weight: 700; color: var(--color-accent);">$0.00</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions. 2-hour minimum applies to most jobs.</em></p>
+                </div>
+            </div>
+            
             <div style="padding: 2rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.15), rgba(45, 138, 110, 0.15)); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
                 <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">⚠️ Important: Equipment Priced Separately</h3>
                 <p style="font-size: 1.1rem; margin-bottom: 1rem;"><strong>All prices below are for LABOR/INSTALLATION only.</strong></p>
@@ -281,5 +339,46 @@
     </footer>
 
     <script src="../js/app.js"></script>
+    <script>
+        function updateInstallOptions() {
+            // Could add dynamic options here if needed
+        }
+        
+        function calculateInstallPrice() {
+            const type = document.getElementById('install-type').value;
+            const qty = parseFloat(document.getElementById('install-qty').value) || 0;
+            const unit = document.getElementById('install-unit').value;
+            const travel = parseInt(document.getElementById('install-distance').value) || 0;
+            
+            let hourlyRate = 0;
+            let hoursNeeded = 0;
+            let breakdown = '';
+            
+            // Set hourly rate based on service type
+            switch(type) {
+                case 'mounting': hourlyRate = 25; break;
+                case 'network': hourlyRate = 35; break;
+                case 'complex': hourlyRate = 50; break;
+                case 'smart-home': hourlyRate = 35; break;
+                case 'camera': hourlyRate = 35; break;
+            }
+            
+            // Calculate hours needed
+            if (unit === 'hours') {
+                hoursNeeded = Math.max(qty, 2); // 2-hour minimum
+            } else {
+                // Estimate time per item
+                hoursNeeded = Math.max(qty * 0.5, 2); // 30 min per item, 2-hour minimum
+            }
+            
+            const laborCost = hourlyRate * hoursNeeded;
+            const total = laborCost + travel;
+            
+            document.getElementById('install-labor').textContent = '$' + laborCost.toFixed(2);
+            document.getElementById('install-travel').textContent = '$' + travel.toFixed(2);
+            document.getElementById('install-total').textContent = '$' + total.toFixed(2);
+            document.getElementById('install-result').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
