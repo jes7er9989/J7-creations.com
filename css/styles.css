@@ -179,25 +179,17 @@ a:hover {
 /* Hero Section */
 .hero {
     padding: var(--spacing-xl) 0;
-    background: linear-gradient(135deg, var(--color-bg-darker), var(--color-bg-dark));
+    background: linear-gradient(135deg, rgba(26,26,26,0.85), rgba(15,15,15,0.9)),
+                url('../assets/images/j7-logo.png');
+    background-size: cover, 60%;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
     text-align: center;
     position: relative;
-    overflow: hidden;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60%;
-    height: auto;
-    background: url('../assets/images/j7-logo.png') center center no-repeat;
-    background-size: contain;
-    opacity: 0.15;
-    z-index: 0;
-    pointer-events: none;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .hero-container {
