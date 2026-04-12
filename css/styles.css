@@ -337,7 +337,7 @@ body::before {
 /* Capabilities Section */
 .capabilities {
     padding: var(--spacing-xl) 0;
-    background: var(--color-bg-darker);
+    background: transparent;
 }
 
 .capabilities-table {
@@ -371,7 +371,7 @@ body::before {
 /* Advantage Section */
 .advantage {
     padding: var(--spacing-xl) 0;
-    background: var(--color-bg-dark);
+    background: transparent;
 }
 
 .advantage-intro {
@@ -388,7 +388,8 @@ body::before {
 }
 
 .advantage-item {
-    background: var(--color-bg-darker);
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
     border-left: 4px solid var(--color-accent);
@@ -461,7 +462,7 @@ body::before {
 /* Why J7 Section */
 .why-j7 {
     padding: var(--spacing-xl) 0;
-    background: var(--color-bg-dark);
+    background: transparent;
 }
 
 .why-grid {
@@ -471,10 +472,11 @@ body::before {
 }
 
 .why-item {
-    background: var(--color-bg-darker);
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .why-item h3 {
@@ -513,8 +515,9 @@ body::before {
 .form-group textarea {
     width: 100%;
     padding: 0.75rem;
-    background: var(--color-bg-dark);
-    border: 1px solid var(--color-border);
+    background: rgba(26, 26, 26, 0.7);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     color: var(--color-text-white);
     font-family: inherit;
@@ -531,9 +534,10 @@ body::before {
 .contact-direct {
     text-align: center;
     padding: var(--spacing-md);
-    background: var(--color-bg-dark);
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(10px);
     border-radius: 8px;
-    border: 1px solid var(--color-border);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .contact-area {
