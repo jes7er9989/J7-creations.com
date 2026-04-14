@@ -107,7 +107,7 @@
             </div>
             
             <!-- Coming Soon for Empty Categories -->
-            <div style="margin-top: 3rem; display: grid; gap: 2rem;">
+            <div style="margin-top: 3rem; display: grid; gap: 2rem;" id="coming-soon-section">
                 <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); text-align: center;">
                     <h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">🚧 Network Projects Coming Soon</h4>
                     <p style="color: var(--color-text-gray); font-size: 0.95rem;">Photos from recent WiFi deployments, VLAN installations, and rack mounts coming soon!</p>
@@ -118,6 +118,24 @@
                     <p style="color: var(--color-text-gray); font-size: 0.95rem;">On-site installation photos from recent deployments coming soon!</p>
                 </div>
             </div>
+            
+            <script>
+                // Force show Coming Soon sections if their categories are empty
+                document.addEventListener('DOMContentLoaded', function() {
+                    const networkItems = document.querySelectorAll('.portfolio-item[data-category="networks"]');
+                    const installItems = document.querySelectorAll('.portfolio-item[data-category="installation"]');
+                    const comingSoonSection = document.getElementById('coming-soon-section');
+                    
+                    // Show network coming soon if no network items
+                    if (networkItems.length === 0 && comingSoonSection) {
+                        comingSoonSection.children[0].style.display = 'block';
+                    }
+                    // Show installation coming soon if no installation items  
+                    if (installItems.length === 0 && comingSoonSection) {
+                        comingSoonSection.children[1].style.display = 'block';
+                    }
+                });
+            </script>
         </div>
     </section>
 
