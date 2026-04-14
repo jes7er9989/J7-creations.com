@@ -62,47 +62,57 @@
             </div>
             
             <!-- Portfolio Grid -->
-            <div class="portfolio-grid">
+            <div class="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
                 <!-- Fabrication Projects -->
-                <div class="portfolio-item" data-category="fabrication" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <video controls style="width: 100%; height: auto; display: block; background: #000;">
+                <div class="portfolio-item" data-category="fabrication" style="display: flex; flex-direction: column; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                    <video controls style="width: 100%; height: 220px; object-fit: cover; display: block; background: #000; flex-shrink: 0;">
                         <source src="../assets/videos/dewalt-battery-holder-print.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white);">DeWalt 20V Battery Holder</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.9rem;">Wall-mounted holder for DeWalt 20V batteries and chargers. Printed in ASA for durability and heat resistance.</p>
+                    <div style="padding: 1rem; flex-grow: 1;">
+                        <h4 style="color: var(--color-text-white); margin-bottom: 0.5rem; font-size: 1.1rem;">DeWalt 20V Battery Holder</h4>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Wall-mounted holder for DeWalt 20V batteries and chargers. Printed in ASA for durability and heat resistance.</p>
+                    </div>
                 </div>
                 
                 <!-- Signage Projects -->
-                <div class="portfolio-item" data-category="signage" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <img src="../assets/images/portfolio/navy-veteran-leather-patch.jpg" alt="Navy Veteran Laser Etched Leather Patch" class="portfolio-img" style="width: 100%; height: auto; display: block;">
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white);">Navy Veteran Leather Patch</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.9rem;">Laser-etched leather patch with military insignia. Permanent marking on leather for hats, bags, and accessories.</p>
+                <div class="portfolio-item" data-category="signage" style="display: flex; flex-direction: column; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                    <img src="../assets/images/portfolio/navy-veteran-leather-patch.jpg" alt="Navy Veteran Laser Etched Leather Patch" style="width: 100%; height: 220px; object-fit: cover; display: block; flex-shrink: 0;">
+                    <div style="padding: 1rem; flex-grow: 1;">
+                        <h4 style="color: var(--color-text-white); margin-bottom: 0.5rem; font-size: 1.1rem;">Navy Veteran Leather Patch</h4>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Laser-etched leather patch with military insignia. Permanent marking on leather for hats, bags, and accessories.</p>
+                    </div>
                 </div>
                 
-                <div class="portfolio-item" data-category="signage" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <video controls style="width: 100%; height: auto; display: block; background: #000;">
+                <div class="portfolio-item" data-category="signage" style="display: flex; flex-direction: column; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                    <video controls style="width: 100%; height: 220px; object-fit: cover; display: block; background: #000; flex-shrink: 0;">
                         <source src="../assets/videos/liquor-bottle-display-case.mp4" type="video/mp4">
                         Your browser does not support the video tag.
                     </video>
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white);">Light-Up Liquor Bottle Display</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.9rem;">Custom display case with integrated LED lighting. Designed, fabricated, and wired for retail or home bar use.</p>
+                    <div style="padding: 1rem; flex-grow: 1;">
+                        <h4 style="color: var(--color-text-white); margin-bottom: 0.5rem; font-size: 1.1rem;">Light-Up Liquor Bottle Display</h4>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Custom display case with integrated LED lighting. Designed, fabricated, and wired for retail or home bar use.</p>
+                    </div>
                 </div>
                 
-                <div class="portfolio-item" data-category="signage" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <img src="../assets/images/portfolio/zombie-chicken-3d-sign.jpg" alt="Zombie Chicken 3D Layered Sign" class="portfolio-img" style="width: 100%; height: auto; display: block;">
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white);">Zombie Chicken 3D Sign</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.9rem;">Multi-color layered 3D sign with raised lettering. Custom design, printed in multiple filaments, assembled and mounted.</p>
+                <div class="portfolio-item" data-category="signage" style="display: flex; flex-direction: column; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                    <img src="../assets/images/portfolio/zombie-chicken-3d-sign.jpg" alt="Zombie Chicken 3D Layered Sign" style="width: 100%; height: 220px; object-fit: cover; display: block; flex-shrink: 0;">
+                    <div style="padding: 1rem; flex-grow: 1;">
+                        <h4 style="color: var(--color-text-white); margin-bottom: 0.5rem; font-size: 1.1rem;">Zombie Chicken 3D Sign</h4>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Multi-color layered 3D sign with raised lettering. Custom design, printed in multiple filaments, assembled and mounted.</p>
+                    </div>
                 </div>
                 
                 <!-- Fabrication Projects -->
-                <div class="portfolio-item" data-category="fabrication" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
-                        <img src="../assets/images/portfolio/waterproof-box-view1.jpg" alt="Custom Waterproof Enclosure View 1" class="portfolio-img" style="width: 100%; height: auto; display: block;">
-                        <img src="../assets/images/portfolio/waterproof-box-view2.jpg" alt="Custom Waterproof Enclosure View 2" class="portfolio-img" style="width: 100%; height: auto; display: block;">
+                <div class="portfolio-item" data-category="fabrication" style="display: flex; flex-direction: column; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; height: 220px; flex-shrink: 0;">
+                        <img src="../assets/images/portfolio/waterproof-box-view1.jpg" alt="Custom Waterproof Enclosure View 1" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                        <img src="../assets/images/portfolio/waterproof-box-view2.jpg" alt="Custom Waterproof Enclosure View 2" style="width: 100%; height: 100%; object-fit: cover; display: block;">
                     </div>
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white);">Custom Waterproof Enclosure</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.9rem;">Weatherproof box for outdoor electronics. Custom-designed with gasket channel, mounting points, and cable entry ports.</p>
+                    <div style="padding: 1rem; flex-grow: 1;">
+                        <h4 style="color: var(--color-text-white); margin-bottom: 0.5rem; font-size: 1.1rem;">Custom Waterproof Enclosure</h4>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Weatherproof box for outdoor electronics. Custom-designed with gasket channel, mounting points, and cable entry ports.</p>
+                    </div>
                 </div>
             </div>
             
