@@ -61,6 +61,17 @@
         </div>
     </nav>
 
+    <!-- Remote Tech Support Banner -->
+    <section style="background: linear-gradient(135deg, rgba(123, 92, 184, 0.2), rgba(45, 138, 110, 0.2)); border-bottom: 2px solid var(--color-accent); padding: 1.5rem 0;">
+        <div class="container" style="text-align: center;">
+            <h2 style="color: var(--color-accent); margin-bottom: 0.5rem; font-size: 1.5rem;">💻 Need Tech Help?</h2>
+            <p style="color: var(--color-text-gray); font-size: 1rem; margin-bottom: 0.75rem;">WiFi acting up? Computer running slow? Device won't connect? I can help remotely — no travel fee, most issues fixed in under an hour.</p>
+            <p style="font-size: 1.1rem; color: var(--color-text-white); margin-bottom: 1rem;"><strong>Only $25/hour</strong> (30-minute minimum) • Phone or screenshare support</p>
+            <a href="#contact" onclick="selectRemoteSupport()" class="btn btn-primary" style="margin: 0 0.5rem;">Get Remote Help →</a>
+            <a href="pages/services-it.html#remote-support" class="btn btn-secondary" style="margin: 0 0.5rem;">Learn More</a>
+        </div>
+    </section>
+
     <!-- Hero Section -->
     <header class="hero">
         <div class="hero-container">
@@ -72,17 +83,6 @@
             </div>
         </div>
     </header>
-    
-    <!-- Quick Tech Support Banner -->
-    <section style="background: linear-gradient(135deg, rgba(123, 92, 184, 0.2), rgba(45, 138, 110, 0.2)); border-top: 2px solid var(--color-accent); border-bottom: 2px solid var(--color-accent); padding: 2rem 0;">
-        <div class="container" style="text-align: center;">
-            <h2 style="color: var(--color-accent); margin-bottom: 0.5rem; font-size: 1.75rem;">💻 Need Tech Help Right Now?</h2>
-            <p style="color: var(--color-text-gray); font-size: 1.1rem; margin-bottom: 1rem;">WiFi acting up? Computer running slow? Device won't connect? I can help remotely — no travel fee, most issues fixed in under an hour.</p>
-            <p style="font-size: 1.25rem; color: var(--color-text-white); margin-bottom: 1.5rem;"><strong>Only $25/hour</strong> (30-minute minimum) • Phone or screenshare support</p>
-            <a href="#contact" class="btn btn-primary" style="margin: 0 0.5rem;">Get Remote Help →</a>
-            <a href="pages/services-it.html#remote-support" class="btn btn-secondary" style="margin: 0 0.5rem;">Learn More</a>
-        </div>
-    </section>
 
     <!-- Services Overview -->
     <section id="services" class="services">
@@ -571,6 +571,15 @@
                 carousel.scrollLeft -= scrollAmount;
             } else {
                 carousel.scrollLeft += scrollAmount;
+            }
+        }
+        
+        // Pre-select remote support when clicking banner button
+        function selectRemoteSupport() {
+            const serviceSelect = document.getElementById('service');
+            if (serviceSelect) {
+                serviceSelect.value = 'remote-support';
+                updateServiceForm();
             }
         }
         
