@@ -247,47 +247,70 @@
         <div class="container">
             <h2 class="section-title">Featured Work</h2>
             
-            <div class="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                <!-- DeWalt Battery Holder -->
-                <div class="portfolio-item" data-category="fabrication" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <video controls style="width: 100%; height: 250px; object-fit: cover; display: block; background: #000;">
-                        <source src="assets/videos/dewalt-battery-holder-print.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">DeWalt 20V Battery Holder</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Wall-mounted holder for DeWalt batteries. Printed in ASA.</p>
+            <!-- Horizontal Carousel -->
+            <div style="position: relative; margin-top: 2rem;">
+                <!-- Left Arrow -->
+                <button onclick="scrollPortfolio('left')" style="position: absolute; left: -50px; top: 50%; transform: translateY(-50%); background: var(--color-accent); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">&#8249;</button>
+                
+                <!-- Scrollable Container -->
+                <div id="portfolio-carousel" style="display: flex; gap: 2rem; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; -ms-overflow-style: none; padding: 1rem 0;">
+                    <div style="display: flex; gap: 2rem;">
+                        <!-- DeWalt Battery Holder -->
+                        <div class="portfolio-item" data-category="fabrication" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                            <video controls style="width: 100%; height: 280px; object-fit: cover; display: block; background: #000;">
+                                <source src="assets/videos/dewalt-battery-holder-print.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">DeWalt 20V Battery Holder</h4>
+                            <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Wall-mounted holder for DeWalt batteries. Printed in ASA.</p>
+                        </div>
+                        
+                        <!-- Navy Leather Patch -->
+                        <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                            <img src="assets/images/portfolio/navy-veteran-leather-patch.jpg" alt="Navy Veteran Leather Patch" style="width: 100%; height: 280px; object-fit: cover; display: block;">
+                            <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Navy Veteran Leather Patch</h4>
+                            <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Laser-etched leather patch with military insignia.</p>
+                        </div>
+                        
+                        <!-- Liquor Display -->
+                        <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                            <video controls style="width: 100%; height: 280px; object-fit: cover; display: block; background: #000;">
+                                <source src="assets/videos/liquor-bottle-display-case.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Light-Up Liquor Display</h4>
+                            <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Custom display with integrated LED lighting.</p>
+                        </div>
+                        
+                        <!-- Zombie Chicken Sign -->
+                        <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                            <img src="assets/images/portfolio/zombie-chicken-3d-sign.jpg" alt="Zombie Chicken 3D Sign" style="width: 100%; height: 280px; object-fit: cover; display: block;">
+                            <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Zombie Chicken 3D Sign</h4>
+                            <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Multi-color layered 3D printed sign.</p>
+                        </div>
+                        
+                        <!-- Waterproof Box -->
+                        <div class="portfolio-item" data-category="fabrication" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                            <img src="assets/images/portfolio/waterproof-box-view1.jpg" alt="Custom Waterproof Enclosure" style="width: 100%; height: 280px; object-fit: cover; display: block;">
+                            <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Waterproof Enclosure</h4>
+                            <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Weatherproof box for outdoor electronics.</p>
+                        </div>
+                        
+                        <!-- Network Installation -->
+                        <div class="portfolio-item" data-category="networks" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; height: 280px;">
+                                <img src="assets/images/portfolio/eb273588-0bf2-4bec-801c-bffa64847214.png" alt="Network Installation" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                <img src="assets/images/portfolio/8e7a25c9-9d47-4cba-b21b-3caa87d0ab7d.png" alt="Network Installation" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                <img src="assets/images/portfolio/c4e4aa05-48ca-444c-b68c-275b1866ca43.png" alt="Network Installation" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                            </div>
+                            <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Network Infrastructure</h4>
+                            <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Enterprise network deployment and installation.</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Navy Leather Patch -->
-                <div class="portfolio-item" data-category="signage" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <img src="assets/images/portfolio/navy-veteran-leather-patch.jpg" alt="Navy Veteran Leather Patch" style="width: 100%; height: 250px; object-fit: cover; display: block;">
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Navy Veteran Leather Patch</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Laser-etched leather patch with military insignia.</p>
-                </div>
-                
-                <!-- Liquor Display -->
-                <div class="portfolio-item" data-category="signage" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <video controls style="width: 100%; height: 250px; object-fit: cover; display: block; background: #000;">
-                        <source src="assets/videos/liquor-bottle-display-case.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Light-Up Liquor Display</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Custom display with integrated LED lighting.</p>
-                </div>
-                
-                <!-- Zombie Chicken Sign -->
-                <div class="portfolio-item" data-category="signage" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <img src="assets/images/portfolio/zombie-chicken-3d-sign.jpg" alt="Zombie Chicken 3D Sign" style="width: 100%; height: 250px; object-fit: cover; display: block;">
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Zombie Chicken 3D Sign</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Multi-color layered 3D printed sign.</p>
-                </div>
-                
-                <!-- Waterproof Box -->
-                <div class="portfolio-item" data-category="fabrication" style="padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
-                    <img src="assets/images/portfolio/waterproof-box-view1.jpg" alt="Custom Waterproof Enclosure" style="width: 100%; height: 250px; object-fit: cover; display: block;">
-                    <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Waterproof Enclosure</h4>
-                    <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Weatherproof box for outdoor electronics.</p>
-                </div>
+                <!-- Right Arrow -->
+                <button onclick="scrollPortfolio('right')" style="position: absolute; right: -50px; top: 50%; transform: translateY(-50%); background: var(--color-accent); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">&#8250;</button>
             </div>
             
             <div class="portfolio-cta" style="text-align: center; margin-top: 2rem;">
@@ -295,6 +318,19 @@
             </div>
         </div>
     </section>
+    
+    <!-- Portfolio Carousel Script -->
+    <script>
+        function scrollPortfolio(direction) {
+            const carousel = document.getElementById('portfolio-carousel');
+            const scrollAmount = 370; // card width + gap
+            if (direction === 'left') {
+                carousel.scrollLeft -= scrollAmount;
+            } else {
+                carousel.scrollLeft += scrollAmount;
+            }
+        }
+    </script>
 
     <!-- Why J7 Section -->
         <div class="container">
