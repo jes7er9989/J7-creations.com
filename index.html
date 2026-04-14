@@ -322,6 +322,70 @@
                 carousel.scrollLeft += scrollAmount;
             }
         }
+        
+        // Dynamic service form updater
+        function updateServiceForm() {
+            const service = document.getElementById('service').value;
+            const serviceInfo = document.getElementById('service-info');
+            const messageLabel = document.getElementById('message-label');
+            const messageField = document.getElementById('message');
+            const checklist = document.getElementById('checklist-default');
+            
+            const serviceData = {
+                'remote-support': {
+                    title: '💻 Remote Tech Support',
+                    info: '<p><strong>Perfect for:</strong> WiFi issues, slow computers, device setup, software help, network troubleshooting.</p><p><strong>How it works:</strong> Phone or screenshare session. I'll help you fix it remotely - no travel needed!</p><p><strong>Cost:</strong> $25/hour (30-minute minimum). Most issues resolved in 30-60 minutes.</p><p><strong>Payment:</strong> Check, Venmo, or Cash App (due immediately after session).</p>',
+                    placeholder: 'Describe your issue: What device/program is giving you trouble? When did it start? What have you already tried?',
+                    label: 'Describe Your Tech Issue',
+                    checklist: '<ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Device info** - What computer/phone/tablet is having issues?</li><li>✅ **Problem description** - What's happening? Any error messages?</li><li>✅ **When it started** - Did this start suddenly or gradually?</li><li>✅ **What you've tried** - Any troubleshooting steps already?</li><li>✅ **Your availability** - When can you do a phone/screenshare session?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                },
+                '3d-printing': {
+                    title: '🖨️ 3D Printing & Fabrication',
+                    info: '<p><strong>Perfect for:</strong> Custom parts, replacement components, prototypes, cosplay props, decorative items.</p><p><strong>Materials:</strong> PLA, PETG, ASA, Nylon, TPU, PC, Carbon/Glass fiber blends.</p><p><strong>Pricing:</strong> Filament cost + service fee (varies by material and print time).</p>',
+                    placeholder: 'Describe what you need printed: Dimensions? Material preference? Color? Any photos or CAD files?',
+                    label: 'Describe Your Print Project',
+                    checklist: '<ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Photos or CAD files** - Show me what you need (or describe dimensions)</li><li>✅ **Material preference** - Strength, flexibility, heat resistance, outdoor use?</li><li>✅ **Color preference** - What color filament?</li><li>✅ **Quantity** - How many copies do you need?</li><li>✅ **Timeline** - When do you need it by?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                },
+                'network-infrastructure': {
+                    title: '🌐 Network Infrastructure',
+                    info: '<p><strong>Perfect for:</strong> Whole-home WiFi, network security, smart home setup, VLAN segmentation, Home Assistant.</p><p><strong>Services:</strong> Network design, equipment selection, configuration, optimization.</p><p><strong>Pricing:</strong> Design quotes $200-800 | Installation $25-50/hr or project-based.</p>',
+                    placeholder: 'Tell me about your network needs: Property size? Number of devices? Current issues? Goals (better WiFi, security, smart home)?',
+                    label: 'Describe Your Network Needs',
+                    checklist: '<ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Property details** - House size, number of floors, construction type?</li><li>✅ **Current setup** - What router/ISP do you have now?</li><li>✅ **Problems** - Dead zones, slow speeds, too many devices?</li><li>✅ **Goals** - Better coverage, security, smart home integration?</li><li>✅ **Budget range** - Equipment + labor (equipment quoted separately at retail cost).</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                },
+                'installation': {
+                    title: '🔧 Field Installation',
+                    info: '<p><strong>Perfect for:</strong> Mounting equipment, cable runs, rack setup, camera installation, smart home devices.</p><p><strong>Service area:</strong> 100-mile radius from Milan/Atwood, TN.</p><p><strong>Pricing:</strong> $25-50/hr depending on complexity | Travel fees: 0-25mi FREE, 25-50mi $15, 50-75mi $30, 75-100mi $50.</p>',
+                    placeholder: 'What needs to be installed? Where is it located? Do you have the equipment already or do you need help sourcing it?',
+                    label: 'Describe Your Installation Project',
+                    checklist: '<ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Equipment details</li>
+                </ul>'
+                }
+            };
+            
+            // Hide service info if no selection
+            if (!service || service === 'other') {
+                serviceInfo.style.display = 'none';
+                checklist.innerHTML = document.getElementById('checklist-default').innerHTML;
+                messageLabel.textContent = 'Project Details';
+                messageField.placeholder = 'Tell me about your project...';
+                return;
+            }
+            
+            // Show service-specific info
+            const data = serviceData[service];
+            if (data) {
+                serviceInfo.innerHTML = `<h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">${data.title}</h4>${data.info}`;
+                serviceInfo.style.display = 'block';
+                messageLabel.textContent = data.label;
+                messageField.placeholder = data.placeholder;
+                
+                // Update checklist
+                if (data.checklist) {
+                    checklist.innerHTML = data.checklist;
+                }
+            }
+        }
     </script>
 
     <!-- Why J7 Section -->
@@ -385,16 +449,18 @@
             <p class="contact-intro">Tell me about your project. I'll respond within 24 hours.</p>
             
             <!-- Service Request Checklist -->
-            <div style="background: rgba(45, 138, 110, 0.15); border: 2px solid #2d8a6e; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+            <div id="service-checklist" style="background: rgba(45, 138, 110, 0.15); border: 2px solid #2d8a6e; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
                 <h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4>
-                <ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
-                    <li>✅ **Project photos** (if applicable) - helps me understand the scope</li>
-                    <li>✅ **Budget range** - so I can suggest appropriate solutions</li>
-                    <li>✅ **Timeline** - when do you need this completed?</li>
-                    <li>✅ **Location** - is it within my 100-mile service area?</li>
-                    <li>✅ **Rush service needed?** - 48-hour turnaround available for +50%</li>
-                </ul>
-                <p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>
+                <div id="checklist-default">
+                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
+                        <li>✅ **Project photos** (if applicable) - helps me understand the scope</li>
+                        <li>✅ **Budget range** - so I can suggest appropriate solutions</li>
+                        <li>✅ **Timeline** - when do you need this completed?</li>
+                        <li>✅ **Location** - is it within my 100-mile service area?</li>
+                        <li>✅ **Rush service needed?** - 48-hour turnaround available for +50%</li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>
+                </div>
             </div>
             
             <form id="contact-form" class="contact-form" action="https://formspree.io/f/xzdypkbz" method="POST">
@@ -416,15 +482,19 @@
                 </div>
                 <div class="form-group">
                     <label for="service">Service Needed</label>
-                    <select id="service" name="service" required>
+                    <select id="service" name="service" required onchange="updateServiceForm()">
                         <option value="">Select a service...</option>
-                        <option value="3d-printing">3D Printing</option>
-                        <option value="network-infrastructure">Network Infrastructure</option>
-                        <option value="fabrication">Fabrication</option>
-                        <option value="installation">Installation</option>
-                        <option value="other">Other</option>
+                        <option value="remote-support">💻 Remote Tech Support - $25/hr</option>
+                        <option value="3d-printing">🖨️ 3D Printing & Fabrication</option>
+                        <option value="network-infrastructure">🌐 Network Infrastructure</option>
+                        <option value="installation">🔧 Field Installation</option>
+                        <option value="other">📝 Other / Not Sure</option>
                     </select>
                 </div>
+                
+                <!-- Dynamic Service Info -->
+                <div id="service-info" style="display: none; padding: 1rem; background: rgba(123, 92, 184, 0.15); border: 1px solid #7b5cb8; border-radius: 8px; margin-bottom: 1rem;"></div>
+                
                 <div class="form-group">
                     <label for="timeline">Timeline</label>
                     <select id="timeline" name="timeline" required>
@@ -447,8 +517,8 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="message">Project Details</label>
-                    <textarea id="message" name="message" rows="5" required></textarea>
+                    <label for="message" id="message-label">Project Details</label>
+                    <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project..."></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
             </form>
@@ -475,5 +545,79 @@
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
     <script src="js/app.js"></script>
+    
+    <!-- Portfolio Carousel Script -->
+    <script>
+        function scrollPortfolio(direction) {
+            const carousel = document.getElementById('portfolio-carousel');
+            const scrollAmount = 370; // card width + gap
+            if (direction === 'left') {
+                carousel.scrollLeft -= scrollAmount;
+            } else {
+                carousel.scrollLeft += scrollAmount;
+            }
+        }
+        
+        // Dynamic service form updater
+        function updateServiceForm() {
+            const service = document.getElementById('service').value;
+            const serviceInfo = document.getElementById('service-info');
+            const messageLabel = document.getElementById('message-label');
+            const messageField = document.getElementById('message');
+            const checklistDiv = document.getElementById('service-checklist');
+            
+            const serviceData = {
+                'remote-support': {
+                    title: '💻 Remote Tech Support',
+                    info: '<p><strong>Perfect for:</strong> WiFi issues, slow computers, device setup, software help, network troubleshooting.</p><p><strong>How it works:</strong> Phone or screenshare session. I\'ll help you fix it remotely - no travel needed!</p><p><strong>Cost:</strong> $25/hour (30-minute minimum). Most issues resolved in 30-60 minutes.</p><p><strong>Payment:</strong> Check, Venmo, or Cash App (due immediately after session).</p>',
+                    placeholder: 'Describe your issue: What device/program is giving you trouble? When did it start? What have you already tried?',
+                    label: 'Describe Your Tech Issue',
+                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For Remote Support, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Device info** - What computer/phone/tablet is having issues?</li><li>✅ **Problem description** - What\'s happening? Any error messages?</li><li>✅ **When it started** - Did this start suddenly or gradually?</li><li>✅ **What you\'ve tried** - Any troubleshooting steps already?</li><li>✅ **Your availability** - When can you do a phone/screenshare session?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                },
+                '3d-printing': {
+                    title: '🖨️ 3D Printing & Fabrication',
+                    info: '<p><strong>Perfect for:</strong> Custom parts, replacement components, prototypes, cosplay props, decorative items.</p><p><strong>Materials:</strong> PLA, PETG, ASA, Nylon, TPU, PC, Carbon/Glass fiber blends.</p><p><strong>Pricing:</strong> Filament cost + service fee (varies by material and print time).</p>',
+                    placeholder: 'Describe what you need printed: Dimensions? Material preference? Color? Any photos or CAD files?',
+                    label: 'Describe Your Print Project',
+                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For 3D Printing, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Photos or CAD files** - Show me what you need (or describe dimensions)</li><li>✅ **Material preference** - Strength, flexibility, heat resistance, outdoor use?</li><li>✅ **Color preference** - What color filament?</li><li>✅ **Quantity** - How many copies do you need?</li><li>✅ **Timeline** - When do you need it by?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                },
+                'network-infrastructure': {
+                    title: '🌐 Network Infrastructure',
+                    info: '<p><strong>Perfect for:</strong> Whole-home WiFi, network security, smart home setup, VLAN segmentation, Home Assistant.</p><p><strong>Services:</strong> Network design, equipment selection, configuration, optimization.</p><p><strong>Pricing:</strong> Design quotes $200-800 | Installation $25-50/hr or project-based.</p>',
+                    placeholder: 'Tell me about your network needs: Property size? Number of devices? Current issues? Goals (better WiFi, security, smart home)?',
+                    label: 'Describe Your Network Needs',
+                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For Network Projects, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Property details** - House size, number of floors, construction type?</li><li>✅ **Current setup** - What router/ISP do you have now?</li><li>✅ **Problems** - Dead zones, slow speeds, too many devices?</li><li>✅ **Goals** - Better coverage, security, smart home integration?</li><li>✅ **Budget range** - Equipment + labor (equipment quoted separately at retail cost).</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                },
+                'installation': {
+                    title: '🔧 Field Installation',
+                    info: '<p><strong>Perfect for:</strong> Mounting equipment, cable runs, rack setup, camera installation, smart home devices.</p><p><strong>Service area:</strong> 100-mile radius from Milan/Atwood, TN.</p><p><strong>Pricing:</strong> $25-50/hr depending on complexity | Travel fees: 0-25mi FREE, 25-50mi $15, 50-75mi $30, 75-100mi $50.</p>',
+                    placeholder: 'What needs to be installed? Where is it located? Do you have the equipment already or do you need help sourcing it?',
+                    label: 'Describe Your Installation Project',
+                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For Installation, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **What needs installed** - Equipment, cameras, network gear, smart home devices?</li><li>✅ **Location** - Where will it be installed? (indoor/outdoor, height, access)</li><li>✅ **Equipment** - Do you already have it or need help sourcing?</li><li>✅ **Timeline** - When do you need it done?</li><li>✅ **Site access** - Any special requirements (ladder, lift, after-hours)?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                }
+            };
+            
+            // Hide service info if no selection or other
+            if (!service || service === 'other') {
+                serviceInfo.style.display = 'none';
+                checklistDiv.innerHTML = '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ **Project photos** (if applicable) - helps me understand the scope</li><li>✅ **Budget range** - so I can suggest appropriate solutions</li><li>✅ **Timeline** - when do you need this completed?</li><li>✅ **Location** - is it within my 100-mile service area?</li><li>✅ **Rush service needed?** - 48-hour turnaround available for +50%</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ **Typical response time:** 2-4 hours during business hours (9 AM - 6 PM CST)</p>';
+                messageLabel.textContent = 'Project Details';
+                messageField.placeholder = 'Tell me about your project...';
+                return;
+            }
+            
+            // Show service-specific info
+            const data = serviceData[service];
+            if (data) {
+                serviceInfo.innerHTML = '<h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">' + data.title + '</h4>' + data.info;
+                serviceInfo.style.display = 'block';
+                messageLabel.textContent = data.label;
+                messageField.placeholder = data.placeholder;
+                
+                // Update checklist
+                checklistDiv.innerHTML = data.checklist;
+            }
+        }
+    </script>
 </body>
 </html>
