@@ -50,6 +50,7 @@ body {
     background-color: var(--color-bg-dark);
     color: var(--color-text-white);
     line-height: 1.6;
+    padding-top: 80px; /* Space for fixed navbar */
 }
 
 .container {
