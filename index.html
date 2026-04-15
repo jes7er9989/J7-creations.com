@@ -568,6 +568,12 @@
                     <input type="file" id="attachment" name="attachment" accept="image/*,.stl,.obj,.3mf,.step,.stp,.cad,.pdf" multiple style="background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; padding: 0.75rem; color: var(--color-text-white);">
                     <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">📎 Photos, CAD files (STL, OBJ, 3MF, STEP), PDFs. Max 100MB total. Or email files to <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a> after submitting.</p>
                 </div>
+                
+                <!-- hCaptcha -->
+                <div class="form-group" style="margin: 1.5rem 0;">
+                    <div class="h-captcha" data-sitekey="YOUR_HCAPTCHA_SITEKEY"></div>
+                    <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">🔒 Protected by hCaptcha to prevent spam</p>
+                </div>
                 <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
             </form>
             
@@ -593,6 +599,9 @@
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
     <script src="js/app.js"></script>
+    
+    <!-- hCaptcha Script -->
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     
     <!-- Portfolio Carousel Script -->
     <script>
