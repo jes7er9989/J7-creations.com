@@ -1,0 +1,14 @@
+# J7 Creations - Robots.txt
+# Control search engine crawling
+
+User-agent: *
+Allow: /
+
+# Disallow admin page from indexing
+Disallow: /pages/admin.html
+
+# Sitemap location
+Sitemap: https://j7creations.com/sitemap.xml
+
+# Crawl delay (polite crawling)
+Crawl-delay: 1
