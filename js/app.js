@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
     
+    // Ensure all items are visible by default
+    portfolioItems.forEach(item => {
+        item.style.display = 'block';
+    });
+    
     console.log('Portfolio items found:', portfolioItems.length);
     portfolioItems.forEach((item, idx) => {
         console.log(`Item ${idx}: category=${item.dataset.category}, display=${item.style.display}`);

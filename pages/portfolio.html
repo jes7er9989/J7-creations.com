@@ -163,6 +163,19 @@
                         comingSoonSection.children[1].style.display = 'block';
                     }
                 });
+                
+                // Reset all items to visible on page show (for back/forward cache)
+                window.addEventListener('pageshow', function() {
+                    const portfolioItems = document.querySelectorAll('.portfolio-item');
+                    portfolioItems.forEach(item => {
+                        item.style.display = 'block';
+                    });
+                    // Reset active tab to "All"
+                    const tabBtns = document.querySelectorAll('.tab-btn');
+                    tabBtns.forEach(btn => btn.classList.remove('active'));
+                    const allTab = document.querySelector('.tab-btn[data-tab="all"]');
+                    if (allTab) allTab.classList.add('active');
+                });
             </script>
         </div>
     </section>
