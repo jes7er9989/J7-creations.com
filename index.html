@@ -661,6 +661,27 @@
             }
         }
         
+        // Ensure carousel items are visible on load and navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('portfolio-carousel');
+            const items = carousel ? carousel.querySelectorAll('.portfolio-item') : [];
+            console.log('Homepage carousel items:', items.length);
+            items.forEach((item, idx) => {
+                console.log(`Carousel item ${idx}: ${item.dataset.category}, display: ${item.style.display}`);
+            });
+        });
+        
+        // Re-check on page show (for back/forward cache)
+        window.addEventListener('pageshow', function() {
+            const carousel = document.getElementById('portfolio-carousel');
+            if (carousel) {
+                // Force recalculate scroll width
+                carousel.style.display = 'none';
+                carousel.offsetHeight; // trigger reflow
+                carousel.style.display = 'flex';
+            }
+        });
+        
         // Pre-select remote support when clicking banner button
         function selectRemoteSupport() {
             const serviceSelect = document.getElementById('service');
