@@ -1,6 +1,6 @@
 // J7 Creations - Service Worker for PWA Offline Support
 
-const CACHE_NAME = 'j7-creations-v5';
+const CACHE_NAME = 'j7-creations-v6';
 const urlsToCache = [
     '/',
     '/index.html',
