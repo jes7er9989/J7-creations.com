@@ -62,7 +62,7 @@
             </div>
             
             <!-- Portfolio Grid -->
-            <div class="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
+            <div class="portfolio-grid" id="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem;">
                 <!-- Fabrication Projects -->
                 <div class="portfolio-item" data-category="fabrication" style="display: flex; flex-direction: column; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden;">
                     <video controls style="width: 100%; height: 220px; object-fit: cover; display: block; background: #000; flex-shrink: 0;">
@@ -146,6 +146,13 @@
                     const networkItems = document.querySelectorAll('.portfolio-item[data-category="networks"]');
                     const installItems = document.querySelectorAll('.portfolio-item[data-category="installation"]');
                     const comingSoonSection = document.getElementById('coming-soon-section');
+                    const portfolioGrid = document.getElementById('portfolio-grid');
+                    const allItems = portfolioGrid ? portfolioGrid.querySelectorAll('.portfolio-item') : [];
+                    
+                    console.log('Total portfolio items:', allItems.length);
+                    allItems.forEach(item => {
+                        console.log('Item category:', item.dataset.category, 'display:', item.style.display);
+                    });
                     
                     // Show network coming soon if no network items
                     if (networkItems.length === 0 && comingSoonSection) {
