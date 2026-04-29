@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
     
-    // Ensure all items are visible by default
+    // Ensure all items are visible by default - use flex for grid items
     portfolioItems.forEach(item => {
-        item.style.display = 'block';
+        item.style.display = 'flex';
     });
     
     console.log('Portfolio items found:', portfolioItems.length);
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             portfolioItems.forEach(item => {
                 if (category === 'all' || item.dataset.category === category) {
-                    item.style.display = 'block';
+                    item.style.display = 'flex';
                 } else {
                     item.style.display = 'none';
                 }

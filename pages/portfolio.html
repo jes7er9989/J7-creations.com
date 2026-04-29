@@ -110,7 +110,7 @@
                     </div>
                     <div style="padding: 1rem; flex-grow: 1;">
                         <h4 style="color: var(--color-text-white); margin-bottom: 0.5rem; font-size: 1.1rem;">Laser Engraved Business Cards</h4>
-                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Professional laser-engraved business cards on black material. Custom logo design with precision engraving for a premium, lasting impression. Services include technical support, 3D modeling, printing, and network setup.</p>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; line-height: 1.4;">Professional laser-engraved business cards on black material. Custom logo design with precision engraving for a premium, lasting impression.</p>
                     </div>
                 </div>
                 
@@ -141,6 +141,19 @@
             </div>
             
             <script>
+                // Force show all portfolio items immediately on page show (before any other JS runs)
+                window.addEventListener('pageshow', function() {
+                    const portfolioItems = document.querySelectorAll('.portfolio-item');
+                    portfolioItems.forEach(item => {
+                        item.style.display = 'flex';
+                    });
+                    // Reset active tab to "All"
+                    const tabBtns = document.querySelectorAll('.tab-btn');
+                    tabBtns.forEach(btn => btn.classList.remove('active'));
+                    const allTab = document.querySelector('.tab-btn[data-tab="all"]');
+                    if (allTab) allTab.classList.add('active');
+                });
+                
                 // Force show Coming Soon sections if their categories are empty
                 document.addEventListener('DOMContentLoaded', function() {
                     const networkItems = document.querySelectorAll('.portfolio-item[data-category="networks"]');
@@ -162,19 +175,6 @@
                     if (installItems.length === 0 && comingSoonSection) {
                         comingSoonSection.children[1].style.display = 'block';
                     }
-                });
-                
-                // Reset all items to visible on page show (for back/forward cache)
-                window.addEventListener('pageshow', function() {
-                    const portfolioItems = document.querySelectorAll('.portfolio-item');
-                    portfolioItems.forEach(item => {
-                        item.style.display = 'block';
-                    });
-                    // Reset active tab to "All"
-                    const tabBtns = document.querySelectorAll('.tab-btn');
-                    tabBtns.forEach(btn => btn.classList.remove('active'));
-                    const allTab = document.querySelector('.tab-btn[data-tab="all"]');
-                    if (allTab) allTab.classList.add('active');
                 });
             </script>
         </div>
