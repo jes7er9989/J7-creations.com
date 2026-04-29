@@ -1,4 +1,5 @@
 // J7 Creations - Main Application JavaScript
+// Version: 2026-04-28-2
 
 document.addEventListener('DOMContentLoaded', () => {
     
