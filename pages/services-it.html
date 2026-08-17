@@ -14,15 +14,6 @@
     <meta name="description" content="J7 IT & Network Infrastructure - Enterprise WiFi, VLAN segmentation, Home Assistant automation, cloud-free deployment.">
     <title>IT & Network Infrastructure | J7 Creations</title>
     
-    <!-- Breadcrumb -->
-    <nav style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
-        <div class="container">
-            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
-            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
-            <span style="color: var(--color-text-white);">IT & Network Infrastructure</span>
-        </div>
-    </nav>
-    
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
@@ -32,7 +23,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <img src="../assets/images/j7-logo.png" alt="J7 Creations" class="logo-img">
+                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
@@ -49,6 +40,15 @@
                     </button>
                 </li>
             </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
+        <div class="container">
+            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
+            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
+            <span style="color: var(--color-text-white);">IT &amp; Network Infrastructure</span>
         </div>
     </nav>
 
@@ -187,16 +187,17 @@
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Service Type</label>
                         <select id="it-service" onchange="updateITOptions()" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                            <option value="remote">Remote Support ($25/hr)</option>
-                            <option value="install">Installation ($25-50/hr)</option>
-                            <option value="network-design">Network Design ($200-800)</option>
-                            <option value="home-assistant">Home Assistant ($300-1,500)</option>
-                            <option value="audit">Network Audit ($150 flat)</option>
+                            <option value="remote">Remote Support</option>
+                            <option value="install">On-Site Installation</option>
+                            <option value="network-design">Network Design</option>
+                            <option value="home-assistant">Home Assistant / Smart Home</option>
+                            <option value="audit">Network Audit</option>
                         </select>
                     </div>
                     <div id="hours-div" style="display: none;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimated Hours</label>
-                        <input type="number" id="it-hours" placeholder="e.g., 2" min="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <input type="number" id="it-hours" placeholder="e.g., 2" min="0.5" step="0.5" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <p id="hours-note" style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;"></p>
                     </div>
                     <div id="complexity-div" style="display: none;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Complexity</label>
@@ -208,7 +209,30 @@
                     </div>
                     <div id="devices-div" style="display: none;">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Number of Devices</label>
-                        <input type="number" id="it-devices" placeholder="e.g., 10" min="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <input type="number" id="it-devices" placeholder="e.g., 10" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <p style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;">Per-device rate drops on larger systems</p>
+                    </div>
+                    <div id="nodes-div" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Access Points / Switches</label>
+                        <input type="number" id="it-nodes" placeholder="e.g., 4" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <p style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;">How many devices the design has to cover</p>
+                    </div>
+                    <div id="travel-div" style="display: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Distance from Atwood, TN</label>
+                        <select id="it-travel" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="0" selected>Within 25 miles (no fee)</option>
+                            <option value="15">25-50 miles (+$15)</option>
+                            <option value="30">50-75 miles (+$30)</option>
+                            <option value="50">75-100 miles (+$50)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Turnaround</label>
+                        <select id="it-rush" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="1.0" selected>Standard scheduling</option>
+                            <option value="1.5">RUSH - 48 hours (+50%)</option>
+                            <option value="2.0">URGENT - 24 hours (+100%)</option>
+                        </select>
                     </div>
                 </div>
                 <button onclick="calculateITPrice()" class="btn btn-primary" style="margin-bottom: 1.5rem;">Calculate Estimate</button>
@@ -237,7 +261,7 @@
             <div class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                 <div id="remote-support" class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
                     <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Remote Support</h3>
-                    <p><strong>$25/hour</strong> (30-minute minimum)</p>
+                    <p><strong><span data-price="labor.remote" data-price-format="hourly">$25/hr</span></strong> (30-minute minimum)</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Phone or screenshare troubleshooting</li>
                         <li>WiFi issues, slow speeds</li>
@@ -249,7 +273,7 @@
                 </div>
                 <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
                     <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Network Design & Planning</h3>
-                    <p><strong>$200-800</strong> depending on complexity</p>
+                    <p><strong>$200-800</strong> — $150 base plus $50 per access point or switch covered</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Site survey (in-person or remote)</li>
                         <li>Equipment selection & sourcing</li>
@@ -258,12 +282,12 @@
                         <li>PoE budget calculation</li>
                         <li>Written report & recommendations</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Remote quotes: Free | On-site survey: First hour free, then $25/hr + travel fee (0-25mi: free, 25-50mi: $15, 50-75mi: $30, 75-100mi: $50)</em></p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Remote quotes: Free | On-site survey: First hour free, then <span data-price="labor.simple" data-price-format="hourly">$45/hr</span> + travel fee (0-25mi: free, 25-50mi: $15, 50-75mi: $30, 75-100mi: $50)</em></p>
                 </div>
                 
                 <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
                     <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Installation & Deployment</h3>
-                    <p><strong>$25-50/hour</strong> or project-based</p>
+                    <p><strong>$45-85/hour</strong> depending on complexity</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>AP mounting & positioning</li>
                         <li>Cable runs (Cat6/Cat6a)</li>
@@ -272,12 +296,12 @@
                         <li>VLAN setup & testing</li>
                         <li>Speed tests & optimization</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Simple installs (1-2 APs): $50-100 | Whole-house (4-6 APs): $200-400 | 2-hour minimum</em></p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Simple installs (1-2 APs): $90-135 | Whole-house (4-6 APs): $240-360 | 2-hour minimum. Access points can also be quoted per unit — see the Field Installation page.</em></p>
                 </div>
                 
                 <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
                     <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Home Assistant Automation</h3>
-                    <p><strong>$300-1,500+</strong> project-based</p>
+                    <p><strong>$375-1,200+</strong> — $150 base setup plus per-device integration</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Server setup (local, cloud-free)</li>
                         <li>Device integration (lights, sensors, cameras)</li>
@@ -286,7 +310,7 @@
                         <li>Mobile app setup</li>
                         <li>Client training & documentation</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Basic setup (5-10 devices): $300-600 | Whole-home (20+ devices): $800-1,500+</em></p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Basic setup (5-10 devices): $375-530 | Whole-home (20+ devices): $850+. Per-device rate drops from $45 to $35 as the system grows.</em></p>
                 </div>
                 
                 <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
@@ -322,62 +346,134 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 J7 Technical Solutions & Prototyping | Milan/Atwood, TN</p>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Site last updated: April 2026</p>
+            <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a><span data-j7-phone-block> &middot; <a href="#" data-j7-phone style="color: var(--color-accent);"></a></span>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Serving West Tennessee | 100-mile radius | Site last updated: August 2026</p>
         </div>
     </footer>
 
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
+    <script src="../js/pricing.js"></script>
     <script src="../js/app.js"></script>
     <script>
+        // Rates come from js/pricing.js — see that file to change any price.
+        const LABOR = J7_PRICING.labor;
+        const MINS = J7_PRICING.minimums;
+
+        // Which inputs each service needs. Travel only applies on site.
+        const IT_FIELDS = {
+            'remote':         { hours: true,  complexity: false, devices: false, nodes: false, travel: false },
+            'install':        { hours: true,  complexity: true,  devices: false, nodes: false, travel: true },
+            'network-design': { hours: false, complexity: false, devices: false, nodes: true,  travel: false },
+            'home-assistant': { hours: false, complexity: false, devices: true,  nodes: false, travel: true },
+            'audit':          { hours: false, complexity: false, devices: false, nodes: false, travel: true }
+        };
+
         function updateITOptions() {
             const service = document.getElementById('it-service').value;
-            document.getElementById('hours-div').style.display = (service === 'remote' || service === 'install') ? 'block' : 'none';
-            document.getElementById('complexity-div').style.display = (service === 'install' || service === 'network-design') ? 'block' : 'none';
-            document.getElementById('devices-div').style.display = (service === 'home-assistant') ? 'block' : 'none';
+            const fields = IT_FIELDS[service];
+            document.getElementById('hours-div').style.display = fields.hours ? 'block' : 'none';
+            document.getElementById('complexity-div').style.display = fields.complexity ? 'block' : 'none';
+            document.getElementById('devices-div').style.display = fields.devices ? 'block' : 'none';
+            document.getElementById('nodes-div').style.display = fields.nodes ? 'block' : 'none';
+            document.getElementById('travel-div').style.display = fields.travel ? 'block' : 'none';
+
+            document.getElementById('hours-note').textContent = service === 'remote'
+                ? `$${LABOR.remote}/hr, 30-minute minimum, billed in 30-minute blocks`
+                : `2-hour minimum for any site visit`;
         }
-        
+
         function calculateITPrice() {
             const service = document.getElementById('it-service').value;
-            const hours = parseFloat(document.getElementById('it-hours').value) || 0;
+            const fields = IT_FIELDS[service];
             const complexity = document.getElementById('it-complexity').value;
-            const devices = parseInt(document.getElementById('it-devices').value) || 0;
-            
-            let total = 0;
-            let breakdown = '';
-            
-            switch(service) {
-                case 'remote':
-                    total = 25 * Math.max(hours, 0.5); // 30-min minimum
-                    breakdown = `Remote Support: ${hours} hour(s) @ $25/hr (30-min minimum)`;
-                    break;
-                case 'install':
-                    let rate = complexity === 'simple' ? 25 : (complexity === 'medium' ? 35 : 50);
-                    total = rate * Math.max(hours, 2); // 2-hour minimum
-                    breakdown = `Installation: ${hours} hour(s) @ $${rate}/hr (${complexity} complexity, 2-hour minimum)`;
-                    break;
-                case 'network-design':
-                    let designRate = complexity === 'simple' ? 200 : (complexity === 'medium' ? 500 : 800);
-                    total = designRate;
-                    breakdown = `Network Design: ${complexity} complexity project`;
-                    break;
-                case 'home-assistant':
-                    let haRate = devices <= 5 ? 300 : (devices <= 10 ? 600 : (devices <= 20 ? 1000 : 1500));
-                    total = haRate;
-                    breakdown = `Home Assistant: ${devices} device(s) integrated`;
-                    break;
-                case 'audit':
-                    total = 150;
-                    breakdown = 'Network Audit: Flat rate';
-                    break;
+            const rushMultiplier = parseFloat(document.getElementById('it-rush').value);
+            const travelFee = fields.travel
+                ? parseFloat(document.getElementById('it-travel').value) : 0;
+
+            const rawHours = parseFloat(document.getElementById('it-hours').value);
+            const devices = parseInt(document.getElementById('it-devices').value, 10);
+            const nodes = parseInt(document.getElementById('it-nodes').value, 10);
+
+            // Validate only the fields this service actually uses, and say so
+            // rather than silently charging a minimum against a blank box.
+            if (fields.hours && (!rawHours || rawHours <= 0)) {
+                alert('Please enter how many hours you think it will take.');
+                return;
             }
-            
+            if (fields.devices && (!devices || devices < 1)) {
+                alert('Please enter how many devices you want integrated.');
+                return;
+            }
+            if (fields.nodes && (!nodes || nodes < 1)) {
+                alert('Please enter how many access points or switches to cover.');
+                return;
+            }
+
+            let labor = 0;
+            const notes = [];
+
+            switch (service) {
+                case 'remote': {
+                    // Round up to the next 30 minutes, matching the billing copy
+                    const billable = Math.max(Math.ceil(rawHours * 2) / 2, MINS.remoteHours);
+                    labor = LABOR.remote * billable;
+                    notes.push(`Remote support: ${billable} hr @ $${LABOR.remote}/hr`);
+                    if (billable > rawHours) notes.push(`Rounded up to the next 30-minute block`);
+                    break;
+                }
+                case 'install': {
+                    const rate = complexity === 'simple' ? LABOR.simple
+                               : complexity === 'medium' ? LABOR.network
+                               : LABOR.complex;
+                    const billable = Math.max(rawHours, MINS.onsiteHours);
+                    labor = rate * billable;
+                    notes.push(`On-site install: ${billable} hr @ $${rate}/hr (${complexity})`);
+                    if (billable > rawHours) notes.push(`${MINS.onsiteHours}-hour site visit minimum applied`);
+                    break;
+                }
+                case 'network-design': {
+                    const ND = J7_PRICING.networkDesign;
+                    labor = ND.base + ND.perNode * nodes;
+                    notes.push(`Network design: $${ND.base} base + ${nodes} x $${ND.perNode} per device covered`);
+                    break;
+                }
+                case 'home-assistant': {
+                    const devicesCost = j7UnitCost(devices, J7_PRICING.perUnit.smartDevice);
+                    const rate = j7UnitRate(devices, J7_PRICING.perUnit.smartDevice);
+                    labor = J7_PRICING.homeAssistantBase + devicesCost;
+                    notes.push(`Home Assistant: $${J7_PRICING.homeAssistantBase} base setup (hub, config, dashboards)`);
+                    notes.push(`${devices} device${devices === 1 ? '' : 's'} @ $${rate} each`);
+                    break;
+                }
+                case 'audit': {
+                    labor = J7_PRICING.networkAudit;
+                    notes.push(`Network audit: $${J7_PRICING.networkAudit} flat rate`);
+                    break;
+                }
+            }
+
+            // Travel is a pass-through cost, so rush does not multiply it
+            const total = labor * rushMultiplier + travelFee;
+
+            if (rushMultiplier > 1) {
+                const label = rushMultiplier === 2 ? 'URGENT 24hr (+100%)' : 'RUSH 48hr (+50%)';
+                notes.push(`<strong>${label}</strong> applied to $${labor.toFixed(2)} labor`);
+            }
+            if (travelFee > 0) {
+                notes.push(`Travel: $${travelFee.toFixed(2)} (not marked up for rush)`);
+            }
+
             document.getElementById('it-total').textContent = '$' + total.toFixed(2);
-            document.getElementById('it-breakdown').textContent = breakdown;
+            document.getElementById('it-breakdown').innerHTML = notes.join('<br>');
             document.getElementById('it-result').style.display = 'block';
         }
+
+        document.addEventListener('DOMContentLoaded', updateITOptions);
     </script>
 </body>
 </html>

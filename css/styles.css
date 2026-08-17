@@ -249,7 +249,7 @@ body::before {
     transform: translate(-50%, -50%);
     width: 90vw;
     height: 90vh;
-    background: url('/assets/images/j7-logo.png') center center no-repeat;
+    background: url('/assets/images/j7-logo.jpg') center center no-repeat;
     background-size: contain;
     opacity: 0.25;
     z-index: -1;

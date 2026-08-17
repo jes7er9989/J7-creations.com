@@ -4,9 +4,6 @@
 User-agent: *
 Allow: /
 
-# Disallow admin page from indexing
-Disallow: /pages/admin.html
-
 # Sitemap location
 Sitemap: https://j7creations.com/sitemap.xml
 

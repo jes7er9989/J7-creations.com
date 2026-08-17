@@ -14,15 +14,6 @@
     <meta name="description" content="J7 Field Installation - On-site deployment, network installation, custom mounting, 100-mile radius from Milan/Atwood TN.">
     <title>Field Installation | J7 Creations</title>
     
-    <!-- Breadcrumb -->
-    <nav style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
-        <div class="container">
-            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
-            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
-            <span style="color: var(--color-text-white);">Field Installation</span>
-        </div>
-    </nav>
-    
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
@@ -32,7 +23,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <img src="../assets/images/j7-logo.png" alt="J7 Creations" class="logo-img">
+                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
@@ -49,6 +40,15 @@
                     </button>
                 </li>
             </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
+        <div class="container">
+            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
+            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
+            <span style="color: var(--color-text-white);">Field Installation</span>
         </div>
     </nav>
 
@@ -194,23 +194,18 @@
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Service Type</label>
                         <select id="install-type" onchange="updateInstallOptions()" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                            <option value="mounting">Simple Mounting ($25/hr)</option>
-                            <option value="network">Network Equipment ($35/hr)</option>
-                            <option value="complex">Complex Install ($50/hr)</option>
-                            <option value="smart-home">Smart Home ($35/hr)</option>
-                            <option value="camera">Security Cameras ($35/hr)</option>
+                            <option value="camera">Security Cameras (per camera)</option>
+                            <option value="accessPoint">WiFi Access Points (per AP)</option>
+                            <option value="smartDevice">Smart Home Devices (per device)</option>
+                            <option value="mounting">Simple Mounting (hourly)</option>
+                            <option value="network">Network Equipment (hourly)</option>
+                            <option value="complex">Complex Install (hourly)</option>
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quantity / Count</label>
-                        <input type="number" id="install-qty" placeholder="e.g., 4 APs or 2 hours" min="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Unit Type</label>
-                        <select id="install-unit" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                            <option value="hours">Hours of labor</option>
-                            <option value="items">Individual items (APs, cameras, etc.)</option>
-                        </select>
+                        <label id="install-qty-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">How many cameras?</label>
+                        <input type="number" id="install-qty" placeholder="e.g., 4" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <p id="install-qty-note" style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;"></p>
                     </div>
                     <div id="travel-div">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Distance from Atwood, TN</label>
@@ -220,6 +215,14 @@
                             <option value="30">50-75 miles (+$30)</option>
                             <option value="50">75-100 miles (+$50)</option>
                             <option value="custom">Beyond 100 miles (Quote required)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Turnaround</label>
+                        <select id="install-rush" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="1.0" selected>Standard scheduling</option>
+                            <option value="1.5">RUSH - 48 hours (+50%)</option>
+                            <option value="2.0">URGENT - 24 hours (+100%)</option>
                         </select>
                     </div>
                 </div>
@@ -241,7 +244,8 @@
                             <p id="install-total" style="font-size: 1.5rem; font-weight: 700; color: var(--color-accent);">$0.00</p>
                         </div>
                     </div>
-                    <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions. 2-hour minimum applies to most jobs.</em></p>
+                    <p id="install-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem; line-height: 1.7;"></p>
+                    <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions. 2-hour minimum applies to hourly jobs.</em></p>
                 </div>
             </div>
             
@@ -261,27 +265,37 @@
             <div class="advantage-grid">
                 <div class="advantage-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
                     <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Remote Support</h3>
-                    <p><strong>$25/hour</strong> (30-minute minimum)</p>
+                    <p><strong><span data-price="labor.remote" data-price-format="hourly">$25/hr</span></strong> (30-minute minimum)</p>
                     <p style="color: var(--color-text-gray); margin-top: 1rem;">Phone or screenshare troubleshooting for existing installations. Configuration help, device pairing, automation tweaks.</p>
                     <p style="color: var(--color-text-gray); font-size: 0.9rem; margin-top: 0.5rem;"><em>No travel needed. Most issues resolved in 30-60 minutes.</em></p>
                 </div>
                 <div class="advantage-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Hourly Rates</h3>
-                    <p><strong>$25-50/hour</strong> depending on complexity</p>
+                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Per-Unit Pricing</h3>
+                    <p><strong>Fixed price per piece</strong> — the rate drops on larger jobs</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
-                        <li>Simple mounting (APs, cameras, shelves): $25/hr</li>
-                        <li>Network equipment (racks, switches, patch panels): $35/hr</li>
-                        <li>Complex installs (structured wiring, multi-room): $50/hr</li>
-                        <li>Smart home automation (sensors, controllers): $35/hr</li>
+                        <li>Security cameras: <strong>$75</strong> each (1-2), $65 (3-5), $55 (6+)</li>
+                        <li>WiFi access points: <strong>$125</strong> each (1-2), $105 (3-5), $90 (6+)</li>
+                        <li>Smart home devices: <strong>$45</strong> each (1-5), $38 (6-10), $35 (11+)</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Most residential jobs: 2-4 hours | 2-hour minimum</em></p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Mounting, cable run, configuration and testing included. Equipment quoted separately at cost.</em></p>
+                </div>
+
+                <div class="advantage-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
+                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Hourly Rates</h3>
+                    <p><strong>$45-85/hour</strong> depending on complexity</p>
+                    <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
+                        <li>Simple mounting (shelves, brackets, displays): <span data-price="labor.simple" data-price-format="hourly">$45/hr</span></li>
+                        <li>Network equipment (racks, switches, patch panels): <span data-price="labor.network" data-price-format="hourly">$60/hr</span></li>
+                        <li>Complex installs (structured wiring, multi-room): <span data-price="labor.complex" data-price-format="hourly">$85/hr</span></li>
+                    </ul>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>For open-ended work that isn't priced by the piece. Most residential jobs: 2-4 hours | 2-hour minimum</em></p>
                 </div>
                 
                 <div class="advantage-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
                     <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Site Visits & Quotes</h3>
                     <p><strong>First hour FREE</strong></p>
                     <p style="color: var(--color-text-gray); margin-top: 1rem;">I'll come out, assess the job, take measurements, and provide a detailed written estimate — no charge for the first hour.</p>
-                    <p style="color: var(--color-text-gray); margin-top: 0.5rem;"><strong>After first hour: $25/hour</strong></p>
+                    <p style="color: var(--color-text-gray); margin-top: 0.5rem;"><strong>After first hour: <span data-price="labor.simple" data-price-format="hourly">$45/hr</span></strong></p>
                     <p style="color: var(--color-text-gray); font-size: 0.9rem;">Travel fee may apply for distances over 25 miles. Quote fee credited toward project if approved within 7 days.</p>
                 </div>
                 
@@ -388,62 +402,111 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 J7 Technical Solutions & Prototyping | Milan/Atwood, TN</p>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Site last updated: April 2026</p>
+            <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a><span data-j7-phone-block> &middot; <a href="#" data-j7-phone style="color: var(--color-accent);"></a></span>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Serving West Tennessee | 100-mile radius | Site last updated: August 2026</p>
         </div>
     </footer>
 
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
+    <script src="../js/pricing.js"></script>
     <script src="../js/app.js"></script>
     <script>
+        // Rates come from js/pricing.js — see that file to change any price.
+        // Per-unit types quote by the piece, which is how customers compare
+        // installers. Hourly types are open-ended work where a unit count
+        // would be meaningless.
+        const INSTALL_TYPES = {
+            camera:      { mode: 'unit', bands: 'camera',      label: 'How many cameras?',       noun: 'camera' },
+            accessPoint: { mode: 'unit', bands: 'accessPoint', label: 'How many access points?', noun: 'access point' },
+            smartDevice: { mode: 'unit', bands: 'smartDevice', label: 'How many devices?',       noun: 'device' },
+            mounting:    { mode: 'hourly', rate: 'simple',  label: 'Estimated hours' },
+            network:     { mode: 'hourly', rate: 'network', label: 'Estimated hours' },
+            complex:     { mode: 'hourly', rate: 'complex', label: 'Estimated hours' }
+        };
+
         function updateInstallOptions() {
-            // Could add dynamic options here if needed
-        }
-        
-        function calculateInstallPrice() {
-            const type = document.getElementById('install-type').value;
-            const qty = parseFloat(document.getElementById('install-qty').value) || 0;
-            const unit = document.getElementById('install-unit').value;
-            const travel = document.getElementById('install-distance').value;
-            
-            let hourlyRate = 0;
-            let hoursNeeded = 0;
-            let travelFee = 0;
-            
-            // Set hourly rate based on service type
-            switch(type) {
-                case 'mounting': hourlyRate = 25; break;
-                case 'network': hourlyRate = 35; break;
-                case 'complex': hourlyRate = 50; break;
-                case 'smart-home': hourlyRate = 35; break;
-                case 'camera': hourlyRate = 35; break;
-            }
-            
-            // Calculate hours needed
-            if (unit === 'hours') {
-                hoursNeeded = Math.max(qty, 2); // 2-hour minimum
+            const config = INSTALL_TYPES[document.getElementById('install-type').value];
+            const input = document.getElementById('install-qty');
+
+            document.getElementById('install-qty-label').textContent = config.label;
+
+            if (config.mode === 'unit') {
+                const bands = J7_PRICING.perUnit[config.bands];
+                input.step = '1';
+                input.placeholder = 'e.g., 4';
+                document.getElementById('install-qty-note').textContent =
+                    bands.map(b => b.upTo === Infinity
+                        ? `$${b.each} each beyond that`
+                        : `$${b.each} each up to ${b.upTo}`).join(', ');
             } else {
-                // Estimate time per item
-                hoursNeeded = Math.max(qty * 0.5, 2); // 30 min per item, 2-hour minimum
+                input.step = '0.5';
+                input.placeholder = 'e.g., 3';
+                document.getElementById('install-qty-note').textContent =
+                    `$${J7_PRICING.labor[config.rate]}/hr, ${J7_PRICING.minimums.onsiteHours}-hour site visit minimum`;
             }
-            
-            // Calculate travel fee
-            if (travel === 'custom') {
-                alert('For distances beyond 100 miles, please contact me directly for a custom quote. Travel arrangements may be required.');
+        }
+
+        function calculateInstallPrice() {
+            const config = INSTALL_TYPES[document.getElementById('install-type').value];
+            const qty = parseFloat(document.getElementById('install-qty').value);
+            const travel = document.getElementById('install-distance').value;
+            const rushMultiplier = parseFloat(document.getElementById('install-rush').value);
+
+            if (!qty || qty <= 0) {
+                alert(config.mode === 'unit'
+                    ? 'Please enter how many units you need installed.'
+                    : 'Please enter roughly how many hours the job will take.');
                 return;
             }
-            travelFee = parseInt(travel) || 0;
-            
-            const laborCost = hourlyRate * hoursNeeded;
-            const total = laborCost + travelFee;
-            
-            document.getElementById('install-labor').textContent = '$' + laborCost.toFixed(2);
-            document.getElementById('install-travel').textContent = '$' + travelFee.toFixed(2);
+
+            // Beyond 100 miles is a conversation, not a number — but show the
+            // labor figure anyway rather than discarding the whole estimate.
+            const beyondRange = travel === 'custom';
+            const travelFee = beyondRange ? 0 : (parseInt(travel, 10) || 0);
+
+            let labor = 0;
+            const notes = [];
+
+            if (config.mode === 'unit') {
+                const bands = J7_PRICING.perUnit[config.bands];
+                const each = j7UnitRate(qty, bands);
+                labor = j7UnitCost(qty, bands);
+                notes.push(`${qty} ${config.noun}${qty === 1 ? '' : 's'} @ $${each} each`);
+            } else {
+                const rate = J7_PRICING.labor[config.rate];
+                const billable = Math.max(qty, J7_PRICING.minimums.onsiteHours);
+                labor = rate * billable;
+                notes.push(`${billable} hr @ $${rate}/hr`);
+                if (billable > qty) {
+                    notes.push(`${J7_PRICING.minimums.onsiteHours}-hour site visit minimum applied`);
+                }
+            }
+
+            // Travel is a pass-through cost, so rush does not multiply it
+            const rushedLabor = labor * rushMultiplier;
+            const total = rushedLabor + travelFee;
+
+            if (rushMultiplier > 1) {
+                const label = rushMultiplier === 2 ? 'URGENT 24hr (+100%)' : 'RUSH 48hr (+50%)';
+                notes.push(`<strong>${label}</strong> applied to $${labor.toFixed(2)} labor`);
+            }
+            if (beyondRange) {
+                notes.push('<strong>Beyond 100 miles</strong> — travel quoted separately, contact me to confirm.');
+            }
+
+            document.getElementById('install-labor').textContent = '$' + rushedLabor.toFixed(2);
+            document.getElementById('install-travel').textContent = beyondRange ? 'Quote' : '$' + travelFee.toFixed(2);
             document.getElementById('install-total').textContent = '$' + total.toFixed(2);
+            document.getElementById('install-breakdown').innerHTML = notes.join('<br>');
             document.getElementById('install-result').style.display = 'block';
         }
+
+        document.addEventListener('DOMContentLoaded', updateInstallOptions);
     </script>
 </body>
 </html>

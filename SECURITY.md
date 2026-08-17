@@ -3,9 +3,13 @@
 ## Current Security Measures
 
 ✅ **Security Headers** - Prevent XSS, clickjacking, MIME sniffing
-✅ **robots.txt** - Blocks admin page from search engines
 ✅ **sitemap.xml** - Helps search engines index public pages
-✅ **hCaptcha Ready** - Contact form protection (needs activation)
+⬜ **hCaptcha** - Not yet added. There is no hCaptcha markup in the repo today;
+   step 3 below is a from-scratch setup, not an activation.
+
+> Note: earlier versions of this guide referenced an admin page and a
+> `YOUR_HCAPTCHA_SITEKEY` placeholder. Neither exists in the repo — `pages/admin.html`
+> was never committed, so the `robots.txt` rule blocking it has been removed.
 
 ## Traffic from Poland - What to Do
 
@@ -31,8 +35,10 @@
 2. Sign up for free account
 3. Register your site (j7creations.com)
 4. Copy your **Site Key** and **Secret Key**
-5. Update `index.html`:
-   - Replace `YOUR_HCAPTCHA_SITEKEY` with your actual site key
+5. Add the hCaptcha widget to the contact form in `index.html` — the form is at
+   `#contact-form`, posting to Formspree. The widget script and a
+   `<div class="h-captcha" data-sitekey="...">` go inside the form, above the
+   submit button.
 6. Update Formspree or your form handler to verify hCaptcha response
 
 **Formspree Integration:**

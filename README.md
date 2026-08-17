@@ -2,18 +2,37 @@
 
 **J7 Technical Solutions & Prototyping** - Enterprise IT, Custom Fabrication, Integrated Deployment
 
+## Changing prices
+
+**All rates live in one file: `js/pricing.js`.** Edit the constant there and every
+calculator and pricing table on the site updates together — do not edit prices
+in the HTML, they are overwritten from that file on load.
+
+After changing a rate, run the check:
+
+```bash
+node scripts/verify-pricing.js
+```
+
+It enforces the rule that a bigger job must never cost less than a smaller one,
+and confirms the advertised price ranges still match what the calculators produce.
+
+## Adding the business phone number
+
+Fill in `J7_PHONE` and `J7_PHONE_DISPLAY` at the top of `js/app.js`. Every phone
+link, footer, and contact line fills itself in from there. Until both are set,
+phone elements stay hidden rather than showing a placeholder.
+
+Also add a `"telephone"` field to the LocalBusiness schema block in `index.html` —
+search crawlers do not run the JavaScript, so that one has to be typed in literally.
+
 ## Deployment (Cloudflare Pages via Git)
 
-This site deploys exactly like Ashes of Command — push to Git, Cloudflare Pages auto-deploys.
+Push to `main` and Cloudflare Pages auto-deploys in ~30 seconds. No build step.
 
-### Setup Steps
+**Repository:** https://github.com/jes7er9989/J7-creations.com
 
-1. **Create GitHub Repository**
-   ```bash
-   cd /home/thomas/.openclaw/workspace/j7-website
-   git remote add origin https://github.com/YOUR_USERNAME/j7-creations.git
-   git push -u origin main
-   ```
+### First-time setup (already done)
 
 2. **Connect to Cloudflare Pages**
    - Go to https://dash.cloudflare.com/?to=/:account/pages
@@ -28,13 +47,8 @@ This site deploys exactly like Ashes of Command — push to Git, Cloudflare Page
    - **Build output directory:** `/` (root)
    - Click "Save and Deploy"
 
-4. **Set Up Contact Form**
-   - Go to https://formspree.io/
-   - Create a free account
-   - Create a new form
-   - Copy your form ID
-   - Edit `index.html` line ~180: Replace `YOUR_FORM_ID_HERE` with your actual Formspree form ID
-   - Commit and push
+4. **Contact Form** — already live. Formspree form ID `xzdypkbz`, wired up in
+   `index.html` at the `#contact-form` action. Free tier is 50 submissions/month.
 
 5. **Add Custom Domain (Optional)**
    - In Cloudflare Pages → j7-creations → Custom domains
@@ -53,29 +67,39 @@ Add your portfolio photos to `assets/images/portfolio/`:
 
 ### PWA Icons
 
-Generate icons at https://realfavicongenerator.net/ and place in `assets/icons/`:
-- `icon-192x192.png`
-- `icon-512x512.png`
-- `favicon-32x32.png`
-- `apple-touch-icon.png`
+Already generated in `assets/icons/` (192, 512, favicon, apple-touch), cropped to
+the J7 monogram with maskable safe-zone padding. To regenerate after a logo
+change, the 512 and 192 need the mark at ~74% of the canvas so Android's
+circular crop doesn't clip it.
+
+### Images
+
+The logo is served as JPEG, not PNG — it is a photographic 3D render, so PNG cost
+6.76MB for the same picture that JPEG delivers in 213KB. `j7-logo.jpg` (1600px) is
+the page background and social share image; `j7-logo-nav.jpg` (480px) is the navbar.
+Keep new portfolio photos under ~400KB; `scripts/optimize-media.sh` handles bulk resizing.
 
 ### Site Structure
 
 ```
-j7-website/
+J7-creations.com/
 ├── index.html                    # Homepage
 ├── manifest.json                 # PWA manifest
-├── sw.js                         # Service worker (offline support)
+├── sw.js                         # Service worker (network-first for content)
 ├── assets/
 │   ├── images/
-│   │   ├── j7-logo.png
-│   │   └── portfolio/           # Portfolio photos
-│   └── icons/                   # PWA icons
+│   │   ├── j7-logo.jpg           # Background + social (1600px)
+│   │   ├── j7-logo-nav.jpg       # Navbar (480px)
+│   │   └── portfolio/            # Portfolio photos
+│   └── icons/                    # PWA icons + favicons
 ├── css/
-│   ├── styles.css               # Main stylesheet
-│   └── admin.css                # (Future admin page)
+│   ├── styles.css                # Main stylesheet
+│   └── mobile-fix.css            # Mobile responsive polish
 ├── js/
-│   └── app.js                   # Portfolio tabs, mobile nav
+│   ├── pricing.js                # ALL RATES LIVE HERE - single source of truth
+│   └── app.js                    # Phone wiring, theme, tabs, nav, contact form
+├── scripts/
+│   └── verify-pricing.js         # Run after any price change
 └── pages/
     ├── services-it.html
     ├── services-fabrication.html

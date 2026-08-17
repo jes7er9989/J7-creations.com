@@ -1,8 +1,44 @@
 // J7 Creations - Main Application JavaScript
-// Version: 2026-04-28-2
+// Version: 2026-08-17
+
+// ========== Business Phone ==========
+// TO ADD THE GOOGLE VOICE NUMBER: fill in both values below. Every phone
+// link, footer, and contact line on the site fills itself in from here, so
+// this is the only place it needs to change.
+//
+// Until both are set, phone elements stay hidden rather than showing a
+// placeholder — better no number than a fake one a customer might dial.
+// Remember to also add it to the LocalBusiness schema in index.html.
+const J7_PHONE = '';          // tel: format, digits only, e.g. '+17315551234'
+const J7_PHONE_DISPLAY = '';  // human-readable, e.g. '(731) 555-1234'
+
+function j7PopulatePhone() {
+    const configured = J7_PHONE && J7_PHONE_DISPLAY;
+
+    document.querySelectorAll('[data-j7-phone]').forEach(el => {
+        if (!configured) {
+            el.style.display = 'none';
+            return;
+        }
+        el.style.removeProperty('display');
+        if (el.tagName === 'A') {
+            el.href = 'tel:' + J7_PHONE;
+            if (!el.dataset.j7PhoneKeepText) el.textContent = J7_PHONE_DISPLAY;
+        } else {
+            el.textContent = J7_PHONE_DISPLAY;
+        }
+    });
+
+    // Whole blocks that only make sense once a number exists
+    document.querySelectorAll('[data-j7-phone-block]').forEach(el => {
+        el.style.display = configured ? '' : 'none';
+    });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
+    j7PopulatePhone();
+
     // ========== Theme Toggle (remembers preference) ==========
     const themeToggle = document.querySelector('.theme-toggle');
     const html = document.documentElement;
@@ -27,11 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ensure all items are visible by default - use flex for grid items
     portfolioItems.forEach(item => {
         item.style.display = 'flex';
-    });
-    
-    console.log('Portfolio items found:', portfolioItems.length);
-    portfolioItems.forEach((item, idx) => {
-        console.log(`Item ${idx}: category=${item.dataset.category}, display=${item.style.display}`);
     });
     
     tabBtns.forEach(btn => {

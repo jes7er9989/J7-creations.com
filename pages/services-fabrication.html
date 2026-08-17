@@ -14,15 +14,6 @@
     <meta name="description" content="J7 3D Printing & Fabrication - Industrial materials, custom parts, replacement components, laser etching.">
     <title>3D Printing & Fabrication | J7 Creations</title>
     
-    <!-- Breadcrumb -->
-    <nav style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
-        <div class="container">
-            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
-            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
-            <span style="color: var(--color-text-white);">3D Printing & Fabrication</span>
-        </div>
-    </nav>
-    
     <link rel="manifest" href="../manifest.json">
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
@@ -32,7 +23,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <img src="../assets/images/j7-logo.png" alt="J7 Creations" class="logo-img">
+                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
@@ -49,6 +40,15 @@
                     </button>
                 </li>
             </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
+        <div class="container">
+            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
+            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
+            <span style="color: var(--color-text-white);">3D Printing &amp; Fabrication</span>
         </div>
     </nav>
 
@@ -196,7 +196,7 @@
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Part Weight</label>
                         <div style="display: flex; gap: 0.5rem;">
-                            <input type="number" id="part-weight" placeholder="e.g., 0.33" step="0.01" style="flex: 1; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <input type="number" id="part-weight" placeholder="e.g., 0.33" step="0.01" oninput="convertWeight()" style="flex: 1; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
                             <select id="weight-unit" onchange="convertWeight()" style="padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
                                 <option value="lbs">lbs</option>
                                 <option value="kg">kg</option>
@@ -222,9 +222,30 @@
                     <div>
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quality Level</label>
                         <select id="quality-level" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                            <option value="0.03">Draft (0.28-0.32mm) - $0.03-0.05/g</option>
-                            <option value="0.065" selected>Standard (0.2mm) - $0.05-0.08/g</option>
-                            <option value="0.10">High Quality (0.12mm) - $0.08-0.12/g</option>
+                            <option value="0.7">Draft (0.28-0.32mm) - faster, visible layers</option>
+                            <option value="1.0" selected>Standard (0.2mm) - most common</option>
+                            <option value="1.5">High Quality (0.12mm) - smooth finish</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quantity</label>
+                        <input type="number" id="part-quantity" value="1" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <p style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;">Setup fee charged once per order</p>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Supports / Waste</label>
+                        <select id="waste-factor" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="0.03" selected>Minimal - simple part, no supports (+3%)</option>
+                            <option value="0.10">Supports needed - overhangs, brim (+10%)</option>
+                            <option value="0.25">Multi-color / AMS - purge waste (+25%)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Turnaround</label>
+                        <select id="rush-level" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <option value="1.0" selected>Standard - 5-10 business days</option>
+                            <option value="1.5">RUSH - 48 hours (+50%)</option>
+                            <option value="2.0">URGENT - 24 hours (+100%)</option>
                         </select>
                     </div>
                 </div>
@@ -246,6 +267,7 @@
                             <p id="total-cost" style="font-size: 1.5rem; font-weight: 700; color: var(--color-accent);">$0.00</p>
                         </div>
                     </div>
+                    <p id="price-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem; line-height: 1.7;"></p>
                     <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*This is an estimate only. Final quote may vary based on complexity, support requirements, and current filament availability. Contact me for a firm quote.</em></p>
                 </div>
             </div>
@@ -254,9 +276,10 @@
                 <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">How 3D Printing Pricing Works</h3>
                 <p style="font-size: 1.05rem; margin-bottom: 1rem;"><strong>Two-part pricing: Filament + Print Service Fee</strong></p>
                 <ul style="color: var(--color-text-gray); margin-left: 1.5rem; margin-bottom: 1rem;">
-                    <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers material, shipping, and storage.</li>
-                    <li><strong>Print service fee:</strong> Covers machine time, power, wear, setup/slicing, and basic post-processing (support removal, cleaning).</li>
-                    <li><strong>Total cost:</strong> Filament + Print Fee = Your Price. Detailed quote provided before printing.</li>
+                    <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers material, shipping, and storage. A small allowance is added for supports, brim, and multi-color purge — the plastic that gets used but isn't part of your finished piece.</li>
+                    <li><strong>Print service fee:</strong> A <span data-price="print.setupFee">$5.00</span> setup fee once per order, plus a per-gram rate covering machine time, power, wear, slicing, and basic post-processing (support removal, cleaning).</li>
+                    <li><strong>Volume pricing:</strong> The per-gram rate steps down as the job gets bigger. A 1kg print costs about half what it would on a flat rate.</li>
+                    <li><strong>Total cost:</strong> Filament + Print Fee = Your Price, with a <span data-price="print.orderMinimum">$10.00</span> minimum order. Detailed quote provided before printing.</li>
                 </ul>
                 <p style="color: var(--color-text-gray); font-size: 0.95rem;"><em>Design work, laser etching, and advanced post-processing (sanding, vapor smoothing, painting) are quoted separately.</em></p>
             </div>
@@ -318,27 +341,58 @@
             <!-- Print Service Fees -->
             <div style="margin-bottom: 3rem;">
                 <h3 style="margin-bottom: 1.5rem; color: var(--color-accent);">Print Service Fees</h3>
-                <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Service fees cover machine time, power, wear, setup/slicing, and basic post-processing (support removal, cleaning). Pricing based on print time and quality level.</p>
+                <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Service fees cover machine time, power, wear, setup/slicing, and basic post-processing (support removal, cleaning). A <strong><span data-price="print.setupFee">$5.00</span> setup fee</strong> applies once per order — not per part — and the per-gram rate <strong>drops as the job gets bigger</strong>, because setup is spread across more parts and large prints run faster per gram.</p>
+
+                <div style="overflow-x: auto; margin-bottom: 1.5rem;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 400px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--color-accent);">
+                                <th style="text-align: left; padding: 0.75rem;">Job size</th>
+                                <th style="text-align: right; padding: 0.75rem;">Rate per gram</th>
+                            </tr>
+                        </thead>
+                        <tbody style="color: var(--color-text-gray);">
+                            <tr style="border-bottom: 1px solid var(--color-border);">
+                                <td style="padding: 0.75rem;">First 100g</td>
+                                <td style="text-align: right; padding: 0.75rem;">$0.035/g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--color-border);">
+                                <td style="padding: 0.75rem;">100g – 500g</td>
+                                <td style="text-align: right; padding: 0.75rem;">$0.022/g</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--color-border);">
+                                <td style="padding: 0.75rem;">500g – 1kg</td>
+                                <td style="text-align: right; padding: 0.75rem;">$0.015/g</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;">Over 1kg</td>
+                                <td style="text-align: right; padding: 0.75rem;">$0.012/g</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-bottom: 1.5rem; color: var(--color-text-gray); font-size: 0.9rem;">Each band applies only to the grams inside it, so the price never jumps at a boundary. Minimum order <strong><span data-price="print.orderMinimum">$10.00</span></strong>.</p>
+
                 <div class="advantage-grid">
                     <div class="advantage-item">
                         <h4>Standard Quality (0.2mm layer)</h4>
-                        <p><strong>$0.05-0.08/gram</strong></p>
+                        <p><strong>Base rate (x1.0)</strong></p>
                         <p style="color: var(--color-text-gray); font-size: 0.9rem;">Most common choice. Good balance of speed and finish. Functional parts, prototypes.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>High Quality (0.12mm layer)</h4>
-                        <p><strong>$0.08-0.12/gram</strong></p>
+                        <p><strong>1.5x base rate</strong></p>
                         <p style="color: var(--color-text-gray); font-size: 0.9rem;">Visible surfaces, cosmetic prints, detailed models. Smooth finish, longer print time.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Draft Quality (0.28-0.32mm layer)</h4>
-                        <p><strong>$0.03-0.05/gram</strong></p>
+                        <p><strong>0.7x base rate</strong></p>
                         <p style="color: var(--color-text-gray); font-size: 0.9rem;">Large parts, test fits, structural components. Fast turnaround, visible layer lines.</p>
                     </div>
                     <div class="advantage-item">
-                        <h4>Small Parts (Under 50g)</h4>
-                        <p><strong>$5 setup fee + $0.05/g</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Flat setup fee for small prints. Covers slicing, setup, and machine wear. Most small parts: $7-12 total.</p>
+                        <h4>Multi-part Orders</h4>
+                        <p><strong>Setup charged once</strong></p>
+                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Batches share one setup fee and reach the volume rate sooner — 20 small parts work out around $2.58 each.</p>
                     </div>
                 </div>
                 <p style="margin-top: 1.5rem; color: var(--color-text-gray); font-size: 0.9rem;"><em>*Service fees are separate from filament cost. Total = Filament + Print Service Fee. Quote provided before printing.</em></p>
@@ -363,8 +417,8 @@
                 </div>
                 <div class="advantage-item">
                     <h3>Rush Service</h3>
-                    <p><strong>+50% surcharge</strong></p>
-                    <p>24-hour turnaround when I have capacity. Standard turnaround: 24-72 hours for most jobs.</p>
+                    <p><strong>+50% for 48hr, +100% for 24hr</strong></p>
+                    <p>Rush turnaround when I have capacity. Standard turnaround: 5-10 business days for most jobs.</p>
                 </div>
             </div>
             
@@ -413,14 +467,18 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 J7 Technical Solutions & Prototyping | Milan/Atwood, TN</p>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Site last updated: April 2026</p>
+            <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>
+            <p style="margin-top: 0.5rem;">
+                <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a><span data-j7-phone-block> &middot; <a href="#" data-j7-phone style="color: var(--color-accent);"></a></span>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Serving West Tennessee | 100-mile radius | Site last updated: August 2026</p>
         </div>
     </footer>
 
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
+    <script src="../js/pricing.js"></script>
     <script src="../js/app.js"></script>
     <script>
         function convertWeight() {
@@ -442,41 +500,72 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
+        // All rates come from js/pricing.js so they cannot drift from the
+        // pricing tables below or from the other two service pages.
+        const PRINT = J7_PRICING.print;
+        const SETUP_FEE = PRINT.setupFee;
+        const ORDER_MINIMUM = PRINT.orderMinimum;
+
         function calculatePrice() {
             let weight = parseFloat(document.getElementById('part-weight').value);
             const unit = document.getElementById('weight-unit').value;
             const filamentPricePerKg = parseFloat(document.getElementById('material-type').value);
-            const serviceFeePerGram = parseFloat(document.getElementById('quality-level').value);
-            
+            const qualityMultiplier = parseFloat(document.getElementById('quality-level').value);
+            const quantity = parseInt(document.getElementById('part-quantity').value, 10);
+            const wasteFactor = parseFloat(document.getElementById('waste-factor').value);
+            const rushMultiplier = parseFloat(document.getElementById('rush-level').value);
+
             if (!weight || weight <= 0) {
                 alert('Please enter a valid weight');
                 return;
             }
-            
+            if (!quantity || quantity < 1) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
             // Convert to grams
             switch(unit) {
                 case 'lbs': weight = weight * 453.592; break;
                 case 'kg': weight = weight * 1000; break;
             }
-            
-            // Calculate filament cost (price per kg / 1000 = price per gram)
-            const filamentCost = (filamentPricePerKg / 1000) * weight;
-            
-            // Calculate service fee
-            let serviceFee = serviceFeePerGram * weight;
-            
-            // Small parts minimum ($5 setup + $0.05/g for under 50g)
-            if (weight < 50) {
-                serviceFee = 5 + (0.05 * weight);
-            }
-            
-            // Calculate total
-            const total = filamentCost + serviceFee;
-            
-            // Display results
+
+            // Total printed mass across the whole order
+            const partWeight = weight * quantity;
+
+            // Filament purchased includes supports, brim, and purge waste
+            const filamentWeight = partWeight * (1 + wasteFactor);
+            const filamentCost = (filamentPricePerKg / 1000) * filamentWeight;
+
+            // Machine time scales on the tiered rate; setup is once per order
+            const machineCost = j7TieredCost(partWeight, PRINT.tiers) * qualityMultiplier;
+            const serviceFee = SETUP_FEE + machineCost;
+
+            // Apply order minimum before rush, so rush multiplies a real price
+            let subtotal = filamentCost + serviceFee;
+            const belowMinimum = subtotal < ORDER_MINIMUM;
+            if (belowMinimum) subtotal = ORDER_MINIMUM;
+
+            const total = subtotal * rushMultiplier;
+
             document.getElementById('filament-cost').textContent = '$' + filamentCost.toFixed(2);
             document.getElementById('service-fee').textContent = '$' + serviceFee.toFixed(2);
             document.getElementById('total-cost').textContent = '$' + total.toFixed(2);
+
+            // Plain-language breakdown so the number never looks arbitrary
+            const notes = [];
+            notes.push(`${quantity} × ${weight.toFixed(1)}g = <strong>${partWeight.toFixed(1)}g</strong> printed`);
+            notes.push(`+${(wasteFactor * 100).toFixed(0)}% waste = ${filamentWeight.toFixed(1)}g of filament purchased`);
+            notes.push(`Service fee = $${SETUP_FEE.toFixed(2)} setup + $${machineCost.toFixed(2)} machine time`);
+            if (belowMinimum) {
+                notes.push(`<strong>$${ORDER_MINIMUM.toFixed(2)} order minimum applied</strong>`);
+            }
+            if (rushMultiplier > 1) {
+                const label = rushMultiplier === 2 ? 'URGENT 24hr (+100%)' : 'RUSH 48hr (+50%)';
+                notes.push(`<strong>${label}</strong> applied to $${subtotal.toFixed(2)}`);
+            }
+            document.getElementById('price-breakdown').innerHTML = notes.join('<br>');
+
             document.getElementById('price-result').style.display = 'block';
         }
     </script>
