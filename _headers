@@ -23,13 +23,12 @@
   # Cache control for HTML files - prevent stale content
   Cache-Control: public, max-age=0, must-revalidate
 
-# Cache static assets aggressively
-/*.css
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.js
-  Cache-Control: public, max-age=31536000, immutable
-
+# Cache static assets aggressively.
+#
+# NOTE: "immutable" is only safe for files whose NAME changes when their
+# content changes. This site has no build step, so nothing is content-hashed
+# — which is why JavaScript and CSS are deliberately excluded below. Images
+# are fine because a new image gets a new filename by hand.
 /*.png
   Cache-Control: public, max-age=31536000, immutable
 
@@ -53,3 +52,19 @@
 
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
+
+# The service worker must always be revalidated. Cached with a long TTL it can
+# never replace itself, which strands every returning visitor on whatever
+# version of the site their worker last cached.
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Scripts and styles are not content-hashed, so they must revalidate too.
+# js/pricing.js holds every price on the site — if it is cached hard, a price
+# change never reaches anyone who has visited before. Revalidation is cheap:
+# unchanged files return a 304 with no body.
+/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/css/*
+  Cache-Control: public, max-age=0, must-revalidate
