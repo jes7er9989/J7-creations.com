@@ -349,19 +349,21 @@ body::before {
     transform: translate(-50%, -50%);
     width: 90vw;
     height: 90vh;
-    background: url('/assets/images/j7-logo.jpg') center center no-repeat;
+    background: url('/assets/images/j7-mark.2833d89c.webp') center center no-repeat;
     background-size: contain;
-    /* The logo file has an opaque dark panel baked in, so this is a wash of
-       colour, not a transparent mark. Kept low: section titles and footer
-       text sit directly on it with no scrim, and at higher opacity that is
-       both a contrast risk and a muddy grey band in light mode. */
-    opacity: 0.16;
+    /* Now a transparent monogram, so the artwork keeps its real colours
+       instead of blending with the page. That means it no longer washes out
+       to grey on a light background, and it can carry more presence without
+       becoming a muddy rectangle. */
+    opacity: 0.20;
     z-index: -1;
     pointer-events: none;
 }
 
 [data-theme="light"] body::before {
-    opacity: 0.06;
+    /* Dark artwork on a light page reads stronger than the same mark on dark,
+       so it is eased back a little - but it stays true colour, not grey. */
+    opacity: 0.14;
 }
 
 .hero-container {
@@ -1196,3 +1198,34 @@ body::before {
 @media (max-width: 768px) {
     .service-map { height: 300px !important; }
 }
+
+/* ---------------------------------------------------------------------------
+   FIXES FOUND IN VISUAL REVIEW
+   --------------------------------------------------------------------------- */
+
+/* js/app.js sets display:flex on every .portfolio-item so the grid lays out.
+   The homepage carousel cards never declared a direction, so they defaulted to
+   row: image, heading and caption sat side by side inside a 350px card and the
+   captions wrapped to one or two words per line. */
+.portfolio-item {
+    flex-direction: column;
+}
+
+/* Four service cards in a three-column grid left one stranded on its own row
+   with a large empty gap beside it. Two rows of two reads as deliberate. */
+@media (min-width: 900px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* The embedded map is a bright light-mode tile set sitting on a dark page,
+   directly above the contact form - the highest-contrast thing on the screen.
+   Ease it back so it stops shouting, and let it come forward on hover. */
+.service-map {
+    filter: saturate(0.85) brightness(0.92);
+    transition: filter 0.3s ease;
+}
+.service-map:hover { filter: none; }
+
+[data-theme="light"] .service-map { filter: none; }
