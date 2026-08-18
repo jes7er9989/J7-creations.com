@@ -29,7 +29,11 @@
     /* Brand — one purple and one teal, not four and three.
        --color-accent is the interactive/brand colour; --color-success is the
        "included / no fee / confirmed" colour. */
-    --color-accent: #c3aeff;
+    /* As close to the Covenant violet as a dark card allows. The card floor
+       is grey ~34 where the wallpaper is brightest behind it, so anything
+       below about 0.245 relative luminance drops the inline links under
+       4.5:1. #4c1d95 itself measures 1.6:1 here — invisible. */
+    --color-accent: #9b78f5;
     --color-accent-strong: #5b21b6;
     --color-success: #7fe6c3;
     --color-gradient-start: #6d28d9;
@@ -1432,6 +1436,13 @@ body::after {
 :root, [data-theme="light"] {
     --color-control-fill: #4c1d95;
 }
+
+/* The estimator result panel carries a brand wash on top of the card, so it
+   sits lighter than a plain panel and the deepened violet drops to 4.04:1 on
+   it. This one surface keeps a lighter accent. The light-mode rule below is
+   explicit so the deep purple is never at the mercy of source order. */
+.result-panel { --color-accent: #b9a2ff; }
+[data-theme="light"] .result-panel { --color-accent: #4c1d95; }
 
 /* The arrows set `background: var(--color-accent)` inline. Redefining the
    token on the element is cleaner than an !important override. */
