@@ -82,3 +82,10 @@
 
 /css/*
   Cache-Control: public, max-age=0, must-revalidate
+
+# Never cache the not-found page. Without a real 404, Cloudflare Pages answers
+# a missing asset with 200 + the homepage HTML — and because the URL still ends
+# in .jpg, the immutable rule above then pins that HTML to the image URL for a
+# year. One typo in an image path becomes a year-long broken image.
+/404.html
+  Cache-Control: no-store
