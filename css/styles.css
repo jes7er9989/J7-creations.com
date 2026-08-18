@@ -280,11 +280,18 @@ a:not(.btn):hover {
        over a card, so light text is what reads there. That is also why the
        navbar is deliberately absent from the light-mode card scope and the
        light glass rules below; adding it back would flip this text dark and
-       drop it to ~1.6:1 against the wallpaper. */
-    background: transparent;
-    padding: var(--spacing-sm) 0;
+       drop it to ~1.6:1 against the wallpaper.
+       Not a panel, a fade: the bar has no edge, it just darkens toward the
+       top of the viewport and dissolves. That keeps the wallpaper visible
+       through it while stopping page content from colliding with the nav
+       links as it scrolls past. A hard border would put the edge back. */
+    background: linear-gradient(to bottom,
+        rgba(10, 10, 12, 0.80) 0%,
+        rgba(10, 10, 12, 0.62) 55%,
+        rgba(10, 10, 12, 0) 100%);
+    padding: var(--spacing-sm) 0 calc(var(--spacing-sm) + 0.5rem);
     z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    border-bottom: none;
 }
 
 .nav-container {

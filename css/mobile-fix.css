@@ -14,14 +14,20 @@
         position: sticky !important;
         top: 0 !important;
         z-index: 1000 !important;
-        background: transparent !important;
+        background: linear-gradient(to bottom,
+            rgba(10, 10, 12, 0.80) 0%,
+            rgba(10, 10, 12, 0.62) 55%,
+            rgba(10, 10, 12, 0) 100%) !important;
         backdrop-filter: none !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-bottom: none !important;
     }
     
     [data-theme="light"] .navbar {
-        background: transparent !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: linear-gradient(to bottom,
+            rgba(10, 10, 12, 0.80) 0%,
+            rgba(10, 10, 12, 0.62) 55%,
+            rgba(10, 10, 12, 0) 100%) !important;
+        border-bottom: none !important;
     }
     
     /* Better hamburger menu */
