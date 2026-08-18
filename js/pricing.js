@@ -74,6 +74,16 @@ const J7_PRICING = {
     networkDesign: { base: 150, perNode: 50 },  // 1 node = $200 ... 13 = $800
     networkAudit: 150,
 
+    // ---------- Other fabrication services ----------
+    // These were quoted only in page copy with no entry here, which is how
+    // they drift. The fabrication page also claimed they were "quoted
+    // separately" a hundred lines above listing firm rates for them.
+    cadPerHour: 75,
+    cadFlatRange: [50, 150],
+    laserPerSqIn: 0.08,
+    laserSetup: 25,
+    postProcessRange: [25, 75],
+
     // ---------- Modifiers ----------
     travel: [
         { maxMiles: 25, fee: 0 },
@@ -144,6 +154,29 @@ function j7SyncPricingLabels() {
             default:        el.textContent = j7Money(value);
         }
     });
+}
+
+
+/**
+ * Hand an estimate to the contact form.
+ *
+ * All three calculators used to produce a full itemised breakdown and then
+ * throw it away — the visitor retyped it into a textarea from memory, or
+ * gave up. This stashes it for the contact page to pick up.
+ */
+function j7SendEstimate(serviceValue, headline, lines) {
+    try {
+        sessionStorage.setItem('j7Estimate', JSON.stringify({
+            service: serviceValue,
+            headline: headline,
+            lines: lines,
+            page: document.title,
+            at: Date.now()
+        }));
+    } catch (e) {
+        /* private mode: fall through, the form still works by hand */
+    }
+    window.location.href = '/#contact';
 }
 
 // Guarded so scripts/verify-pricing.js can require this file under Node.

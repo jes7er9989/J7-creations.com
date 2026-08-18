@@ -6,11 +6,11 @@
 // link, footer, and contact line on the site fills itself in from here, so
 // this is the only place it needs to change.
 //
-// Until both are set, phone elements stay hidden rather than showing a
-// placeholder — better no number than a fake one a customer might dial.
-// Remember to also add it to the LocalBusiness schema in index.html.
-const J7_PHONE = '';          // tel: format, digits only, e.g. '+17315551234'
-const J7_PHONE_DISPLAY = '';  // human-readable, e.g. '(731) 555-1234'
+// If either is blanked, phone elements hide themselves rather than showing a
+// half-set or placeholder number. The same number is also in the
+// LocalBusiness schema in index.html, which crawlers read directly.
+const J7_PHONE = '+17312381438';
+const J7_PHONE_DISPLAY = '(731) 238-1438';
 
 function j7PopulatePhone() {
     const configured = J7_PHONE && J7_PHONE_DISPLAY;

@@ -18,11 +18,9 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Local Business Schema -->
-    <!-- WHEN THE GOOGLE VOICE NUMBER EXISTS: add it as a "telephone" field
-         below, in full international form, e.g. "telephone": "+17315551234"
-         This is what Google reads for the local business listing, and it does
-         not run JavaScript here — so unlike the rest of the site, this one has
-         to be typed in literally. Also fill in J7_PHONE in js/app.js. -->
+    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js.
+         Crawlers do not run the JavaScript that fills the visible number, so
+         this one is a literal on purpose. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -57,7 +55,8 @@
         "opens": "00:00",
         "closes": "23:59"
       },
-      "priceRange": "$"
+      "priceRange": "$",
+      "telephone": "+17312381438"
     }
     </script>
     
