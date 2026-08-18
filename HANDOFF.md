@@ -85,7 +85,30 @@ Both themes share the same dark wallpaper and the same scrim. **Only the cards
 change** — in light mode they become translucent white frosted glass, so the
 artwork stays visible through and around them.
 
-This has two consequences that are easy to trip over:
+**The glass lifts the backdrop rather than covering it.** Measured from
+`j7-wall.fd59da6c.jpg` itself, blurred to what a 14px `backdrop-filter`
+samples and composited with the scrim, the backdrop is **grey 5 to grey 40** —
+very nearly black. A plain white wash bright enough to carry dark text on that
+therefore has to be almost opaque, which is why simply thinning it makes the
+cards dim instead of clear.
+
+So the light-mode glass filter is `blur() contrast(0.34) brightness(1.72)
+saturate(1.5)`. `contrast()` below 1 is an *additive* transfer — it pulls the
+backdrop toward mid-grey — where `brightness()` multiplies and so cannot lift
+black at all. The artwork comes up into view instead of being papered over,
+and a 29% wash lands brighter than the old 60% one did.
+
+Two things to know about it:
+
+- The filter lives in `--glass-filter` / `--glass-filter-dense`, defined
+  **only** under `[data-theme="light"]`. `mobile-fix.css` refers to it as
+  `var(--glass-filter, blur(12px))`, so dark mode silently takes the plain
+  blur. Do not move those tokens to `:root`.
+- Anything whose surface comes from an inline `background: var(--color-bg-*)`
+  needs the filter applied by the `[style*="var(--color-bg-dark)"]` selector
+  group, or it is a thin wash straight onto black.
+
+This has two further consequences that are easy to trip over:
 
 - **Text colour depends on whether an element sits on a card or on the
   wallpaper.** Page-level text tokens stay *light* in light mode, because
@@ -118,9 +141,22 @@ from the CSS. Two things will give false results:
   transitions before measuring.
 - **Offscreen iframes.** Browsers throttle compositing for offscreen content,
   so transitions never advance there at all.
+- **Guessing what the wallpaper's luminance is.** An earlier pass assumed the
+  backdrop was around grey 70 and reported a clean sweep while grey card text
+  was actually sitting at 3.05:1. *Measure the image file* (any blurred
+  downsample plus the scrim will do) and run the check at the darkest, median
+  and brightest values — the wallpaper is fixed and the content scrolls, so
+  every card passes over every part of it.
+- **Ignoring `backdrop-filter` when compositing.** With a `contrast()` or
+  `brightness()` in the chain, the element's own background colour is not the
+  whole story; the filter is applied to everything behind it first.
 
-Current state: **1,348 text elements across six pages, both themes, zero
-contrast failures.**
+Sanity-check the checker itself by re-running it against the previous recipe.
+If it does not light up, it is not measuring what you think it is.
+
+Current state: **10,320 text measurements — six pages × two themes × three
+wallpaper brightnesses × desktop and mobile widths — zero contrast
+failures.**
 
 ---
 

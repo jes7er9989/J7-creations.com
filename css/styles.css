@@ -88,10 +88,10 @@
        card surface. Making them glass converts the cards that set
        `background: var(--color-bg-dark)` inline, which a stylesheet rule
        could not override. */
-    --color-bg-dark: rgba(255, 255, 255, 0.48);
-    --color-bg-darker: rgba(255, 255, 255, 0.53);
-    --color-card-bg: rgba(255, 255, 255, 0.48);
-    --color-input-bg: rgba(255, 255, 255, 0.40);
+    --color-bg-dark: rgba(255, 255, 255, 0.29);
+    --color-bg-darker: rgba(255, 255, 255, 0.32);
+    --color-card-bg: rgba(255, 255, 255, 0.29);
+    --color-input-bg: rgba(255, 255, 255, 0.24);
     --color-border: rgba(0, 0, 0, 0.14);
 
     --color-text-white: #ffffff;
@@ -107,8 +107,21 @@
     --wash-success: rgba(111, 216, 180, 0.14);
 
     /* The frosted glass itself */
-    --panel-bg: rgba(255, 255, 255, 0.48);
-    --panel-bg-solid: rgba(255, 255, 255, 0.56);
+    --panel-bg: rgba(255, 255, 255, 0.29);
+    --panel-bg-solid: rgba(255, 255, 255, 0.34);
+
+    /* Frosted glass over a near-black photograph.
+       Measured from the wallpaper itself: after the body::after scrim, the
+       blurred backdrop sits between grey 5 and grey 40. A white wash bright
+       enough to carry dark text therefore has to be nearly opaque, which is
+       why thinning it alone just makes the cards dim rather than clear.
+       contrast() below 1 pulls the backdrop toward mid-grey. That is an
+       ADDITIVE transfer, unlike brightness(), which multiplies and so cannot
+       lift black at all — it brings the artwork UP into view instead of
+       covering it over. A 29% wash on a lifted backdrop lands brighter than
+       the old 48% wash did, and the logo stays legible through the card. */
+    --glass-filter: blur(14px) contrast(0.34) brightness(1.72) saturate(1.5);
+    --glass-filter-dense: blur(16px) contrast(0.34) brightness(1.72) saturate(1.5);
     --panel-border: rgba(255, 255, 255, 0.55);
 
     --shadow-color: rgba(0, 0, 0, 0.35);
@@ -142,11 +155,11 @@
 [data-theme="light"] [style*="var(--color-bg-dark)"],
 [data-theme="light"] [style*="var(--panel-bg)"] {
     --color-text-white: #101010;
-    --color-text-gray: #22222a;
-    --color-text-muted: #2b2b33;
-    --color-accent: #431287;
+    --color-text-gray: #33333a;
+    --color-text-muted: #3f3f4a;
+    --color-accent: #4c1d95;
     --color-accent-strong: #3b1478;
-    --color-success: #0b3a2c;
+    --color-success: #0f4a38;
     --color-border: rgba(0, 0, 0, 0.16);
     color: var(--color-text-white);
 }
@@ -495,8 +508,8 @@ body::after {
 }
 
 [data-theme="light"] .service-card {
-    background: rgba(255, 255, 255, 0.48);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.29);
+    backdrop-filter: var(--glass-filter);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
@@ -544,8 +557,8 @@ body::after {
 }
 
 [data-theme="light"] .capability-column {
-    background: rgba(255, 255, 255, 0.48);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.29);
+    backdrop-filter: var(--glass-filter);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
@@ -603,8 +616,8 @@ body::after {
 }
 
 [data-theme="light"] .advantage-item {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.27);
+    backdrop-filter: var(--glass-filter);
     border-left: 4px solid var(--color-accent);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -698,8 +711,8 @@ body::after {
 }
 
 [data-theme="light"] .why-item {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.27);
+    backdrop-filter: var(--glass-filter);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
@@ -751,8 +764,9 @@ body::after {
 [data-theme="light"] .form-group input,
 [data-theme="light"] .form-group select,
 [data-theme="light"] .form-group textarea {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(5px);
+    background: rgba(255, 255, 255, 0.54);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
     border: 2px solid rgba(0, 0, 0, 0.3);
     color: #000000;
     font-weight: 600;
@@ -775,8 +789,8 @@ body::after {
 }
 
 [data-theme="light"] .contact-direct {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.27);
+    backdrop-filter: var(--glass-filter);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
@@ -1335,9 +1349,9 @@ body::after {
 [data-theme="light"] .cta-box,
 [data-theme="light"] .hero-container,
 [data-theme="light"] .portfolio-item {
-    background: rgba(255, 255, 255, 0.48);
-    backdrop-filter: blur(14px) saturate(1.1);
-    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    background: rgba(255, 255, 255, 0.29);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
     border-color: rgba(255, 255, 255, 0.6);
     box-shadow: var(--shadow-card);
 }
@@ -1349,13 +1363,15 @@ body::after {
 [data-theme="light"] .navbar,
 [data-theme="light"] .submenu,
 [data-theme="light"] .breadcrumb {
-    background: rgba(255, 255, 255, 0.53);
-    backdrop-filter: blur(16px) saturate(1.1);
-    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+    background: rgba(255, 255, 255, 0.32);
+    backdrop-filter: var(--glass-filter-dense);
+    -webkit-backdrop-filter: var(--glass-filter-dense);
 }
 
 [data-theme="light"] .form-control {
-    background: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.27);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
     border-color: rgba(0, 0, 0, 0.18);
     color: #101010;
 }
@@ -1363,9 +1379,21 @@ body::after {
 /* Callouts keep their brand tint but on a light base so they still read */
 [data-theme="light"] .callout,
 [data-theme="light"] .result-panel {
-    background: rgba(255, 255, 255, 0.40);
-    backdrop-filter: blur(14px) saturate(1.1);
-    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    background: rgba(255, 255, 255, 0.24);
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
+}
+
+/* The CTA and callout boxes on the service pages take their surface from a
+   token in an inline style, so no class rule reaches them. Without the lift
+   they would be a 29% wash straight onto near-black artwork. */
+[data-theme="light"] [style*="var(--color-bg-dark)"],
+[data-theme="light"] [style*="var(--color-bg-darker)"],
+[data-theme="light"] [style*="var(--color-card-bg)"],
+[data-theme="light"] [style*="var(--panel-bg)"] {
+    backdrop-filter: var(--glass-filter);
+    -webkit-backdrop-filter: var(--glass-filter);
+    border-radius: var(--radius);
 }
 
 /* Where backdrop-filter is unsupported, fall back to a more opaque card so
