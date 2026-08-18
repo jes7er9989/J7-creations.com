@@ -49,12 +49,22 @@
         "latitude": "35.9198",
         "longitude": "-88.7591"
       },
-      "openingHoursSpecification": {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        "opens": "00:00",
-        "closes": "23:59"
-      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Saturday"],
+          "opens": "10:00",
+          "closes": "16:00"
+        }
+      ],
+      "image": "https://j7creations.com/assets/images/j7-logo.jpg",
+      "logo": "https://j7creations.com/assets/icons/icon-512x512.png",
       "priceRange": "$",
       "telephone": "+17312381438"
     }
@@ -101,10 +111,10 @@
             <a href="/" class="nav-logo">
                 <img src="assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img" width="480" height="262">
             </a>
-            <button class="nav-toggle" aria-label="Toggle navigation">
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
                 <span class="hamburger"></span>
             </button>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="primary-nav">
                 <li class="has-submenu">
                     <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
                         Services <span class="caret" aria-hidden="true"></span>
@@ -370,7 +380,7 @@
                 <button onclick="scrollPortfolio('left')" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: var(--color-accent); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" aria-label="Scroll left">&#8249;</button>
                 
                 <!-- Scrollable Container -->
-                <div id="portfolio-carousel" style="display: flex; gap: 2rem; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: auto; -ms-overflow-style: auto; padding: 1rem 2rem;">
+                <div id="portfolio-carousel" role="group" aria-label="Featured work, scrollable" tabindex="0" style="display: flex; gap: 2rem; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: auto; -ms-overflow-style: auto; padding: 1rem 2rem;">
                     <!-- DeWalt Battery Holder -->
                     <div class="portfolio-item" data-category="fabrication" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
                         <video controls preload="none" playsinline poster="assets/videos/posters/dewalt-battery-holder-print.jpg" style="width: 100%; height: 280px; object-fit: cover; display: block; background: #000;">
@@ -431,17 +441,37 @@
                 <button onclick="scrollPortfolio('right')" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: var(--color-accent); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" aria-label="Scroll right">&#8250;</button>
             </div>
             
-            <!-- Coming Soon Message -->
-            <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); text-align: center; margin-bottom: 2rem;">
-                <p style="color: var(--color-text-gray); font-size: 0.95rem;">🚧 Network and Installation photos coming soon!</p>
-            </div>
-            
             <div class="portfolio-cta" style="text-align: center; margin-top: 2rem;">
                 <a href="pages/portfolio.html" class="btn btn-secondary">View Full Portfolio →</a>
             </div>
         </div>
     </section>
     
+    <!-- How I Work -->
+    <section id="how-i-work" class="advantage">
+        <div class="container">
+            <h2 class="section-title">How I Work</h2>
+            <div class="grid grid--auto">
+                <div class="panel">
+                    <h3 class="panel-title">No markup on equipment</h3>
+                    <p class="text-muted">Cameras, access points, racks, cable &mdash; all quoted at actual retail cost, and I show you the receipts. You approve the full quote before any work begins.</p>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-title">First hour on site is free</h3>
+                    <p class="text-muted">I come out, look at the job, take measurements, and give you a written estimate. No charge for the first hour, and no obligation to book.</p>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-title">30-day callback on installs</h3>
+                    <p class="text-muted">If something I installed fails within 30 days, I come back and fix it at no charge. On printed parts: if it doesn't fit or work, I make it right.</p>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-title">One person, start to finish</h3>
+                    <p class="text-muted">Design, fabrication and installation are the same pair of hands. Nothing falls between contractors, and you always know who to call.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Why J7 Section -->
     <section class="why-j7">
         <div class="container">
@@ -509,7 +539,7 @@
             
             <p style="text-align: center; color: var(--color-text-gray); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">Serving West Tennessee - including Jackson, Martin, Union City, Dyersburg, Paris, Huntingdon, and surrounding communities.</p>
             <div style="max-width: 900px; margin: 0 auto; border-radius: 12px; overflow: hidden; border: 2px solid var(--color-accent); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);">
-                <iframe 
+                <iframe title="Map of the J7 Creations service area around Milan and Atwood, Tennessee" 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d208842.5678945678!2d-88.7591!3d35.9198!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDU1JzExLjMiTiA4OMKwNDUnMzIuOCJX!5e0!3m2!1sen!2sus!4v1234567890" 
                     width="100%" 
                     height="500" 
@@ -565,7 +595,12 @@
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone (optional)</label>
-                    <input type="tel" id="phone" name="phone">
+                    <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="(731) 555-0123">
+                </div>
+                <div class="form-group">
+                    <label for="location">Town or ZIP <span class="text-muted" style="font-weight: 400;">(for on-site work)</span></label>
+                    <input type="text" id="location" name="location" autocomplete="postal-code" placeholder="e.g. Jackson, or 38301">
+                    <p class="field-hint">Travel is free within 25 miles of Milan/Atwood. Leave blank for remote support &mdash; that's available nationwide.</p>
                 </div>
                 <div class="form-group">
                     <label for="service">Service Needed</label>
@@ -586,6 +621,7 @@
                     <label for="timeline">Timeline</label>
                     <select id="timeline" name="timeline" required>
                         <option value="">Select timeline...</option>
+                        <option value="not-sure">Not sure yet &mdash; just exploring</option>
                         <option value="flexible">Flexible (1-2 weeks)</option>
                         <option value="soon">Soon (within 1 week)</option>
                         <option value="rush">RUSH (48 hours) - +50% fee</option>

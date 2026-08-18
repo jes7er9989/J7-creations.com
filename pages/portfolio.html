@@ -14,6 +14,24 @@
     <meta name="description" content="J7 Creations Portfolio - Featured projects in IT infrastructure, 3D fabrication, signage, and installation.">
     <title>Portfolio | J7 Creations</title>
     <link rel="manifest" href="../manifest.json">
+
+    <!-- Canonical + social preview. Without these a link texted to someone
+         renders as a bare grey card with no image, which is exactly how a
+         local business gets passed around. -->
+    <link rel="canonical" href="https://j7creations.com/pages/portfolio.html">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="J7 Creations">
+    <meta property="og:url" content="https://j7creations.com/pages/portfolio.html">
+    <meta property="og:title" content="Portfolio | J7 Creations">
+    <meta property="og:description" content="J7 Creations Portfolio - Featured projects in IT infrastructure, 3D fabrication, signage, and installation.">
+    <meta property="og:image" content="https://j7creations.com/assets/images/j7-logo.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Portfolio | J7 Creations">
+    <meta name="twitter:description" content="J7 Creations Portfolio - Featured projects in IT infrastructure, 3D fabrication, signage, and installation.">
+    <meta name="twitter:image" content="https://j7creations.com/assets/images/j7-logo.jpg">
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
     <script>
       // Applied before first paint: reading the theme in DOMContentLoaded
       // makes light-mode users see a flash of dark on every navigation.
@@ -35,10 +53,10 @@
             <a href="/" class="nav-logo">
                 <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img" width="480" height="262">
             </a>
-            <button class="nav-toggle" aria-label="Toggle navigation">
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
                 <span class="hamburger"></span>
             </button>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="primary-nav">
                 <li class="has-submenu">
                     <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
                         Services <span class="caret" aria-hidden="true"></span>
@@ -85,12 +103,10 @@
     <!-- Portfolio Grid -->
     <section class="portfolio">
         <div class="container">
-            <div class="portfolio-tabs">
-                <button class="tab-btn active" data-tab="all">All</button>
-                <button class="tab-btn" data-tab="fabrication">Fabrication</button>
-                <button class="tab-btn" data-tab="networks">Networks</button>
-                <button class="tab-btn" data-tab="signage">Signage</button>
-                <button class="tab-btn" data-tab="installation">Installation</button>
+            <div class="portfolio-tabs" role="tablist" aria-label="Filter work by category">
+                <button class="tab-btn active" data-tab="all" role="tab" aria-selected="true">All</button>
+                <button class="tab-btn" data-tab="fabrication" role="tab" aria-selected="false">Fabrication</button>
+                <button class="tab-btn" data-tab="signage" role="tab" aria-selected="false">Signage</button>
             </div>
             
             <!-- Portfolio Grid -->
@@ -159,60 +175,9 @@
                 </div>
             </div>
             
-            <!-- Coming Soon for Empty Categories -->
-            <div style="margin-top: 3rem; display: grid; gap: 2rem;" id="coming-soon-section">
-                <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); text-align: center;">
-                    <h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">🚧 Network Projects Coming Soon</h4>
-                    <p style="color: var(--color-text-gray); font-size: 0.95rem;">Photos from recent WiFi deployments, VLAN installations, and rack mounts coming soon!</p>
-                </div>
-                
-                <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); text-align: center;">
-                    <h4 style="color: var(--color-accent); margin-bottom: 0.5rem;">🚧 Installation Projects Coming Soon</h4>
-                    <p style="color: var(--color-text-gray); font-size: 0.95rem;">On-site installation photos from recent deployments coming soon!</p>
-                </div>
-            </div>
             
-            <script>
-                // Force show all portfolio items immediately on page show (before any other JS runs)
-                window.addEventListener('pageshow', function() {
-                    const portfolioItems = document.querySelectorAll('.portfolio-item');
-                    portfolioItems.forEach(item => {
-                        item.style.display = 'flex';
-                    });
-                    // Reset active tab to "All"
-                    const tabBtns = document.querySelectorAll('.tab-btn');
-                    tabBtns.forEach(btn => btn.classList.remove('active'));
-                    const allTab = document.querySelector('.tab-btn[data-tab="all"]');
-                    if (allTab) allTab.classList.add('active');
-                });
-                
-                // Force show Coming Soon sections if their categories are empty
-                document.addEventListener('DOMContentLoaded', function() {
-                    const networkItems = document.querySelectorAll('.portfolio-item[data-category="networks"]');
-                    const installItems = document.querySelectorAll('.portfolio-item[data-category="installation"]');
-                    const comingSoonSection = document.getElementById('coming-soon-section');
-                    const portfolioGrid = document.getElementById('portfolio-grid');
-                    const allItems = portfolioGrid ? portfolioGrid.querySelectorAll('.portfolio-item') : [];
-                    
-                    console.log('Total portfolio items:', allItems.length);
-                    allItems.forEach(item => {
-                        console.log('Item category:', item.dataset.category, 'display:', item.style.display);
-                    });
-                    
-                    // Show network coming soon if no network items
-                    if (networkItems.length === 0 && comingSoonSection) {
-                        comingSoonSection.children[0].style.display = 'block';
-                    }
-                    // Show installation coming soon if no installation items  
-                    if (installItems.length === 0 && comingSoonSection) {
-                        comingSoonSection.children[1].style.display = 'block';
-                    }
-                });
-            </script>
         </div>
     </section>
-
-    <!-- Footer -->
 
         <div class="container">
             <div class="cta-box" id="portfolio-cta-end">
@@ -223,6 +188,7 @@
         </div>
     </main>
 
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>

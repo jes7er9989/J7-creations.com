@@ -76,8 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                if (b.hasAttribute('role')) b.setAttribute('aria-selected', 'false');
+            });
             btn.classList.add('active');
+            if (btn.hasAttribute('role')) btn.setAttribute('aria-selected', 'true');
             
             const category = btn.dataset.tab;
             
@@ -126,13 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (navToggle && navMenu) {
         navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
+            const open = navMenu.classList.toggle('active');
+            navToggle.setAttribute('aria-expanded', String(open));
         });
         
         // Close mobile menu when clicking a link
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
+                navToggle.setAttribute('aria-expanded', 'false');
             });
         });
     }

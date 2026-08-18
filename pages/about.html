@@ -14,6 +14,24 @@
     <meta name="description" content="About J7 Technical Solutions - Thomas Ipock, serving West Tennessee with IT infrastructure and custom fabrication.">
     <title>About | J7 Technical Solutions</title>
     <link rel="manifest" href="../manifest.json">
+
+    <!-- Canonical + social preview. Without these a link texted to someone
+         renders as a bare grey card with no image, which is exactly how a
+         local business gets passed around. -->
+    <link rel="canonical" href="https://j7creations.com/pages/about.html">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="J7 Creations">
+    <meta property="og:url" content="https://j7creations.com/pages/about.html">
+    <meta property="og:title" content="About | J7 Technical Solutions">
+    <meta property="og:description" content="About J7 Technical Solutions - Thomas Ipock, serving West Tennessee with IT infrastructure and custom fabrication.">
+    <meta property="og:image" content="https://j7creations.com/assets/images/j7-logo.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="About | J7 Technical Solutions">
+    <meta name="twitter:description" content="About J7 Technical Solutions - Thomas Ipock, serving West Tennessee with IT infrastructure and custom fabrication.">
+    <meta name="twitter:image" content="https://j7creations.com/assets/images/j7-logo.jpg">
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
     <script>
       // Applied before first paint: reading the theme in DOMContentLoaded
       // makes light-mode users see a flash of dark on every navigation.
@@ -35,10 +53,10 @@
             <a href="/" class="nav-logo">
                 <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Technical Solutions" class="logo-img" width="480" height="262">
             </a>
-            <button class="nav-toggle" aria-label="Toggle navigation">
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
                 <span class="hamburger"></span>
             </button>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="primary-nav">
                 <li class="has-submenu">
                     <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
                         Services <span class="caret" aria-hidden="true"></span>

@@ -15,6 +15,70 @@
     <title>IT & Network Infrastructure | J7 Creations</title>
     
     <link rel="manifest" href="../manifest.json">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://j7creations.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "IT & Network Infrastructure",
+              "item": "https://j7creations.com/pages/services-it.html"
+            }
+          ]
+        },
+        {
+          "@type": "Service",
+          "name": "IT & Network Infrastructure",
+          "description": "Remote tech support, whole-property WiFi, VLAN segmentation, Home Assistant automation and network audits.",
+          "url": "https://j7creations.com/pages/services-it.html",
+          "serviceType": "IT & Network Infrastructure",
+          "provider": {
+            "@type": "LocalBusiness",
+            "name": "J7 Technical Solutions & Prototyping",
+            "telephone": "+17312381438",
+            "email": "t.i@j7creations.com"
+          },
+          "areaServed": {
+            "@type": "GeoCircle",
+            "geoMidpoint": {
+              "@type": "GeoCoordinates",
+              "latitude": "35.9198",
+              "longitude": "-88.7591"
+            },
+            "geoRadius": "160934"
+          }
+        }
+      ]
+    }
+    </script>
+    <!-- Canonical + social preview. Without these a link texted to someone
+         renders as a bare grey card with no image, which is exactly how a
+         local business gets passed around. -->
+    <link rel="canonical" href="https://j7creations.com/pages/services-it.html">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="J7 Creations">
+    <meta property="og:url" content="https://j7creations.com/pages/services-it.html">
+    <meta property="og:title" content="IT & Network Infrastructure | J7 Creations">
+    <meta property="og:description" content="J7 IT & Network Infrastructure - Enterprise WiFi, VLAN segmentation, Home Assistant automation, cloud-free deployment.">
+    <meta property="og:image" content="https://j7creations.com/assets/images/j7-logo.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="IT & Network Infrastructure | J7 Creations">
+    <meta name="twitter:description" content="J7 IT & Network Infrastructure - Enterprise WiFi, VLAN segmentation, Home Assistant automation, cloud-free deployment.">
+    <meta name="twitter:image" content="https://j7creations.com/assets/images/j7-logo.jpg">
+    <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
     <script>
       // Applied before first paint: reading the theme in DOMContentLoaded
       // makes light-mode users see a flash of dark on every navigation.
@@ -36,10 +100,10 @@
             <a href="/" class="nav-logo">
                 <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img" width="480" height="262">
             </a>
-            <button class="nav-toggle" aria-label="Toggle navigation">
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
                 <span class="hamburger"></span>
             </button>
-            <ul class="nav-menu">
+            <ul class="nav-menu" id="primary-nav">
                 <li class="has-submenu">
                     <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
                         Services <span class="caret" aria-hidden="true"></span>
