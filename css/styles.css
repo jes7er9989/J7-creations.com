@@ -342,28 +342,47 @@ a:hover {
 
 /* Fixed Logo Background - stays centered while scrolling on ALL pages */
 body::before {
+    /* The logo used as a fixed wallpaper: it stays centred while the page
+       scrolls in front of it. background-attachment: fixed is what pins it;
+       cover keeps it filling the viewport at any aspect ratio. */
     content: '';
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90vw;
-    height: 90vh;
-    background: url('/assets/images/j7-mark.2833d89c.webp') center center no-repeat;
-    background-size: contain;
-    /* Now a transparent monogram, so the artwork keeps its real colours
-       instead of blending with the page. That means it no longer washes out
-       to grey on a light background, and it can carry more presence without
-       becoming a muddy rectangle. */
-    opacity: 0.20;
+    inset: 0;
+    background-image: url('/assets/images/j7-wall.fd59da6c.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    z-index: -2;
+    pointer-events: none;
+}
+
+/* Scrim between wallpaper and content. Without it, text crossing the bright
+   metallic monogram drops well below readable contrast — the wallpaper is a
+   photograph, so contrast varies pixel to pixel and cannot be relied on. */
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 12, 14, 0.35);
     z-index: -1;
     pointer-events: none;
 }
 
-[data-theme="light"] body::before {
-    /* Dark artwork on a light page reads stronger than the same mark on dark,
-       so it is eased back a little - but it stays true colour, not grey. */
-    opacity: 0.14;
+/* Light theme needs a light scrim, otherwise dark text sits on a dark
+   wallpaper. The wallpaper is dark artwork, so it necessarily reads much
+   fainter here than it does on the dark theme. */
+[data-theme="light"] body::after {
+    background: rgba(248, 248, 250, 0.88);
+}
+
+/* Phones get a smaller rendition, and fixed attachment is unreliable on iOS,
+   so it scrolls with the page there instead of juddering. */
+@media (max-width: 768px) {
+    body::before {
+        background-image: url('/assets/images/j7-wall-sm.faab30a7.jpg');
+        background-attachment: scroll;
+    }
 }
 
 .hero-container {
@@ -1229,3 +1248,17 @@ body::before {
 .service-map:hover { filter: none; }
 
 [data-theme="light"] .service-map { filter: none; }
+
+/* The contact block and footer carry the accent-coloured email and phone
+   links. On bare wallpaper those sit at 2.79:1 against the brightest part of
+   the artwork, so they get their own surface — which a form and a footer want
+   regardless, since both are places a visitor needs to read carefully. */
+.contact,
+.footer {
+    background: var(--panel-bg);
+    backdrop-filter: blur(6px);
+}
+
+.footer {
+    border-top: 1px solid var(--panel-border);
+}
