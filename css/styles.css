@@ -1188,3 +1188,11 @@ body::before {
 }
 
 .related-link .panel-title { margin-bottom: var(--spacing-2xs); }
+
+/* The service-area map was a fixed 500px with no mobile reduction — half a
+   phone screen of embedded map sitting between the visitor and the form. */
+.service-map { width: 100%; border: 0; display: block; border-radius: var(--radius); }
+
+@media (max-width: 768px) {
+    .service-map { height: 300px !important; }
+}

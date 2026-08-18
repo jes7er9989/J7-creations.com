@@ -141,17 +141,6 @@
 
     <main id="main-content">
 
-    <!-- Remote Tech Support Banner -->
-    <section style="background: linear-gradient(135deg, var(--wash-accent-strong), var(--wash-success)); border-bottom: 2px solid var(--color-accent); padding: 2rem 0;">
-        <div class="container" style="text-align: center;">
-            <h2 style="color: var(--color-accent); margin-bottom: 0.5rem; font-size: 1.5rem;">💻 Need Tech Help?</h2>
-            <p style="color: var(--color-text-gray); font-size: 1rem; margin-bottom: 0.75rem;">WiFi acting up? Computer running slow? Device won't connect? I can help remotely — <strong>available nationwide</strong>, no travel fee, most issues fixed in under an hour.</p>
-            <p style="font-size: 1.1rem; color: var(--color-text-white); margin-bottom: 1rem;"><strong>Only $25/hour</strong> (30-minute minimum) • Phone or screenshare support</p>
-            <a href="#contact" onclick="selectRemoteSupport()" class="btn btn-primary" style="margin: 0 0.5rem;">Get Remote Help →</a>
-            <a href="pages/services-it.html#remote-support" class="btn btn-secondary" style="margin: 0 0.5rem;">Learn More</a>
-        </div>
-    </section>
-
     <!-- Hero Section -->
     <header class="hero">
         <div class="hero-container">
@@ -163,6 +152,17 @@
             </div>
         </div>
     </header>
+
+    <!-- Remote Tech Support Banner -->
+    <section style="background: linear-gradient(135deg, var(--wash-accent-strong), var(--wash-success)); border-bottom: 2px solid var(--color-accent); padding: 2rem 0;">
+        <div class="container" style="text-align: center;">
+            <h2 style="color: var(--color-accent); margin-bottom: 0.5rem; font-size: 1.5rem;">💻 Need Tech Help?</h2>
+            <p style="color: var(--color-text-gray); font-size: 1rem; margin-bottom: 0.75rem;">WiFi acting up? Computer running slow? Device won't connect? I can help remotely — <strong>available nationwide</strong>, no travel fee, most issues fixed in under an hour.</p>
+            <p style="font-size: 1.1rem; color: var(--color-text-white); margin-bottom: 1rem;"><strong>Only $25/hour</strong> (30-minute minimum) • Phone or screenshare support</p>
+            <a href="#contact" onclick="selectRemoteSupport()" class="btn btn-primary" style="margin: 0 0.5rem;">Get Remote Help →</a>
+            <a href="pages/services-it.html#remote-support" class="btn btn-secondary" style="margin: 0 0.5rem;">Learn More</a>
+        </div>
+    </section>
 
     <!-- Services Overview -->
     <section id="services" class="services">
@@ -248,124 +248,6 @@
             </div>
 
             <p class="text-muted" style="text-align: center; margin-top: var(--spacing-md); font-size: var(--text-sm);">Equipment is quoted separately at actual retail cost &mdash; I show you the receipts, and there is no markup. You approve the full quote before any work begins.</p>
-        </div>
-    </section>
-
-    <!-- Capabilities Table -->
-    <section class="capabilities">
-        <div class="container">
-            <h2 class="section-title">Capabilities</h2>
-            <p style="text-align: center; margin-bottom: 2rem; color: var(--color-text-gray);">Click any card to learn more about that service.</p>
-            <div class="capabilities-table" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
-                <a href="pages/services-it.html" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 class="panel-title">IT & Network Infrastructure</h3>
-                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
-                        <li>Enterprise WiFi design & deployment (UniFi, EdgeMax)</li>
-                        <li>VLAN segmentation & network isolation</li>
-                        <li>PoE++ switching & power management</li>
-                        <li>Cloud-free local automation (Home Assistant)</li>
-                        <li>Self-hosted AI & local LLM deployment</li>
-                        <li>Network security audits & penetration testing</li>
-                        <li>Traffic analysis & performance optimization</li>
-                        <li><strong>Remote support available nationwide</strong></li>
-                    </ul>
-                    <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
-                </a>
-                <a href="pages/services-fabrication.html" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 class="panel-title">3D Printing & Fabrication</h3>
-                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
-                        <li>Multi-material additive manufacturing (FDM)</li>
-                        <li>Materials: PLA, PETG, ABS, ASA, Nylon, TPU, PC, CF/GF composites</li>
-                        <li>Custom enclosures, mounts & mechanical parts</li>
-                        <li>Laser etching & permanent part marking</li>
-                        <li>CAD design & 3D modeling (Fusion 360, Blender)</li>
-                        <li>Reverse engineering from broken/discontinued parts</li>
-                        <li>Functional prototyping & iterative design</li>
-                        <li><strong>📦 Shipping available nationwide</strong></li>
-                    </ul>
-                    <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
-                </a>
-                <a href="pages/services-installation.html" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 class="panel-title">Field Installation</h3>
-                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
-                        <li>On-site equipment deployment & commissioning</li>
-                        <li>Structured cabling (Cat6/Cat6a, fiber)</li>
-                        <li>Rack mounting & professional cable management</li>
-                        <li>AP/camera placement, alignment & tuning</li>
-                        <li>Outdoor/weatherproof mounting (IP-rated enclosures)</li>
-                        <li>Smart home device installation (Lutron, Hue, Aqara)</li>
-                        <li>Client training & as-built documentation</li>
-                        <li><strong>📍 100-mile radius from Milan/Atwood, TN</strong></li>
-                    </ul>
-                    <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
-                </a>
-                <a href="pages/services-it.html#remote-support" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 class="panel-title">Remote Support</h3>
-                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
-                        <li>Remote troubleshooting & diagnostics</li>
-                        <li>WiFi/network analysis & optimization</li>
-                        <li>Device configuration & setup</li>
-                        <li>Software installation & support</li>
-                        <li>Cross-platform support (Windows, macOS, Linux, iOS, Android)</li>
-                        <li>Screenshare sessions (Zoom, Discord, TeamViewer)</li>
-                        <li>Phone support available</li>
-                    </ul>
-                    <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
-                </a>
-                <div class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 class="panel-title">Service Area</h3>
-                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
-                        <li>100-mile radius from Milan/Atwood</li>
-                        <li>West Tennessee</li>
-                        <li>Jackson, Martin, Union City</li>
-                        <li>Dyersburg, Paris, Huntingdon</li>
-                        <li>Shipping available for prints</li>
-                    </ul>
-                    <p style="margin-top: 1.5rem; color: var(--color-text-gray); font-size: 0.9rem;"><em>Local service with remote support available nationwide.</em></p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- J7 Advantage -->
-    <section class="advantage">
-        <div class="container">
-            <h2 class="section-title">The J7 Advantage</h2>
-            <p class="advantage-intro">If it's broken, obsolete, or never existed — I'll make it.</p>
-            <div class="advantage-grid">
-                <div class="advantage-item">
-                    <h3>Replacement Parts</h3>
-                    <p>Automotive clips, appliance latches, machinery guides, HVAC components — functional replacements in industrial materials.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Custom Mounts & Brackets</h3>
-                    <p>Network gear, cameras, sensors, tools, automotive — designed for your space, not off-the-shelf compromises.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Enclosures & Housings</h3>
-                    <p>Weatherproof boxes, control panel enclosures, protective covers — custom sizes, gasket channels, mounting points.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Signage & Displays</h3>
-                    <p>Lighted signs, nameplates, business displays — designed, printed, and wired. Ready to hang.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Network Infrastructure</h3>
-                    <p>Enterprise WiFi, VLAN segmentation, PoE++ deployment — whole-property coverage, no dead zones.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Home Automation</h3>
-                    <p>Home Assistant, local AI, smart lighting — cloud-free, no subscriptions, your data stays yours.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Cable Management</h3>
-                    <p>Custom clips, raceways, rack organization — clean installs, professional results.</p>
-                </div>
-                <div class="advantage-item">
-                    <h3>Field Installation</h3>
-                    <p>On-site within 100 miles of Milan/Atwood. I mount it, wire it, test it, make sure it works.</p>
-                </div>
-            </div>
         </div>
     </section>
 
@@ -465,41 +347,16 @@
                     <p class="text-muted">If something I installed fails within 30 days, I come back and fix it at no charge. On printed parts: if it doesn't fit or work, I make it right.</p>
                 </div>
                 <div class="panel">
+                    <h3 class="panel-title">Cloud-free by default</h3>
+                    <p class="text-muted">Automation and networks that keep working when the internet doesn't. No subscriptions, no external dependencies, no data leaving your property.</p>
+                </div>
+                <div class="panel">
+                    <h3 class="panel-title">Rush work when you need it</h3>
+                    <p class="text-muted">Standard turnaround is 5-10 business days. 48-hour and 24-hour rush available when I have capacity, priced up front so there are no surprises.</p>
+                </div>
+                <div class="panel">
                     <h3 class="panel-title">One person, start to finish</h3>
                     <p class="text-muted">Design, fabrication and installation are the same pair of hands. Nothing falls between contractors, and you always know who to call.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why J7 Section -->
-    <section class="why-j7">
-        <div class="container">
-            <h2 class="section-title">Why J7?</h2>
-            <div class="why-grid">
-                <div class="why-item">
-                    <h3>100-Mile Radius</h3>
-                    <p>Service area across West Tennessee and beyond</p>
-                </div>
-                <div class="why-item">
-                    <h3>Rush Available</h3>
-                    <p>Standard turnaround 5-10 business days; 48-hour and 24-hour rush when I have capacity</p>
-                </div>
-                <div class="why-item">
-                    <h3>One Provider</h3>
-                    <p>Design → fabricate → install, no coordination needed</p>
-                </div>
-                <div class="why-item">
-                    <h3>Cloud-Free</h3>
-                    <p>No subscriptions, no external dependencies</p>
-                </div>
-                <div class="why-item">
-                    <h3>Industrial Materials</h3>
-                    <p>PLA through carbon/glass blends</p>
-                </div>
-                <div class="why-item">
-                    <h3>Frontloaded Design</h3>
-                    <p>I invest effort upfront so systems run themselves</p>
                 </div>
             </div>
         </div>
@@ -542,7 +399,8 @@
                 <iframe title="Map of the J7 Creations service area around Milan and Atwood, Tennessee" 
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d208842.5678945678!2d-88.7591!3d35.9198!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzXCsDU1JzExLjMiTiA4OMKwNDUnMzIuOCJX!5e0!3m2!1sen!2sus!4v1234567890" 
                     width="100%" 
-                    height="500" 
+                    height="500"
+                    class="service-map"
                     style="border:0;" 
                     allowfullscreen="" 
                     loading="lazy" 
