@@ -1,6 +1,6 @@
 // J7 Creations - Service Worker for PWA Offline Support
 
-const CACHE_NAME = 'j7-creations-v8';
+const CACHE_NAME = 'j7-creations-v9';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -15,7 +15,8 @@ const urlsToCache = [
     '/js/pricing.js?v=f3ce48d3',
     '/manifest.json',
     '/assets/images/j7-mark-nav.379b77f9.png',
-    '/assets/images/j7-mark.2833d89c.webp'
+    '/assets/images/j7-wall.fd59da6c.jpg',
+    '/assets/images/j7-wall-sm.faab30a7.jpg'
 ];
 
 // Install event - cache assets
