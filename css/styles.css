@@ -147,8 +147,6 @@
 [data-theme="light"] .contact-form,
 [data-theme="light"] .contact-direct,
 [data-theme="light"] .footer .container,
-[data-theme="light"] .navbar,
-[data-theme="light"] .submenu,
 [data-theme="light"] .breadcrumb,
 [data-theme="light"] .portfolio-item,
 [data-theme="light"] .form-group,
@@ -273,10 +271,16 @@ a:not(.btn):hover {
     top: 0;
     left: 0;
     right: 0;
-    background: var(--color-bg-darker);
+    /* No surface: the wallpaper runs straight through the bar. The nav keeps
+       its dark-theme treatment in BOTH themes — it is over artwork, never
+       over a card, so light text is what reads there. That is also why the
+       navbar is deliberately absent from the light-mode card scope and the
+       light glass rules below; adding it back would flip this text dark and
+       drop it to ~1.6:1 against the wallpaper. */
+    background: transparent;
     padding: var(--spacing-sm) 0;
     z-index: 1000;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .nav-container {
@@ -1203,8 +1207,11 @@ body::after {
     top: 100%;
     left: 0;
     min-width: 250px;
-    background: var(--color-bg-darker);
-    border: 1px solid var(--color-border);
+    background: rgba(16, 16, 18, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: var(--radius);
     box-shadow: var(--shadow-card);
     padding: 0.5rem 0;
@@ -1364,8 +1371,6 @@ body::after {
 [data-theme="light"] .contact-form,
 [data-theme="light"] .contact-direct,
 [data-theme="light"] .footer .container,
-[data-theme="light"] .navbar,
-[data-theme="light"] .submenu,
 [data-theme="light"] .breadcrumb {
     background: rgba(255, 255, 255, 0.32);
     backdrop-filter: var(--glass-filter-dense);
@@ -1411,8 +1416,7 @@ body::after {
     [data-theme="light"] .hero-container,
     [data-theme="light"] .portfolio-item,
     [data-theme="light"] .contact,
-    [data-theme="light"] .footer,
-    [data-theme="light"] .navbar {
+    [data-theme="light"] .footer {
         background: rgba(255, 255, 255, 0.94);
     }
 }

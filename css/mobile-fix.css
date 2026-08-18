@@ -14,14 +14,14 @@
         position: sticky !important;
         top: 0 !important;
         z-index: 1000 !important;
-        background: rgba(15, 15, 15, 0.95) !important;
-        backdrop-filter: var(--glass-filter-dense, blur(10px)) !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     [data-theme="light"] .navbar {
-        background: rgba(255, 255, 255, 0.95) !important;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     /* Better hamburger menu */
@@ -32,22 +32,22 @@
     }
     
     [data-theme="light"] .nav-toggle {
-        background: rgba(255, 255, 255, 0.38) !important;
-        border: 1px solid rgba(0, 0, 0, 0.2) !important;
+        background: rgba(15, 15, 15, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
     }
     
     /* Mobile menu dropdown */
     .nav-menu {
-        background: var(--color-bg-darker) !important;
-        backdrop-filter: var(--glass-filter-dense, blur(10px)) !important;
+        background: rgba(16, 16, 18, 0.94) !important;
+        backdrop-filter: blur(10px) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
         z-index: 999 !important;
     }
     
     [data-theme="light"] .nav-menu {
-        background: var(--color-bg-darker) !important;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+        background: rgba(16, 16, 18, 0.94) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
     /* Better hero spacing */
