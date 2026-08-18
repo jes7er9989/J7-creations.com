@@ -118,10 +118,14 @@
        contrast() below 1 pulls the backdrop toward mid-grey. That is an
        ADDITIVE transfer, unlike brightness(), which multiplies and so cannot
        lift black at all — it brings the artwork UP into view instead of
-       covering it over. A 29% wash on a lifted backdrop lands brighter than
-       the old 48% wash did, and the logo stays legible through the card. */
-    --glass-filter: blur(14px) contrast(0.34) brightness(1.72) saturate(1.5);
-    --glass-filter-dense: blur(16px) contrast(0.34) brightness(1.72) saturate(1.5);
+       covering it over.
+       Keep contrast() as HIGH as the text floor allows. Every step down
+       flattens the artwork as well as lifting it, and past about 0.4 the
+       card stops showing the mark at all — it just looks like a paler panel,
+       which defeats the point of thinning the wash. 0.5 leaves roughly 25
+       levels of the logo visible through the glass; 0.34 left about 14. */
+    --glass-filter: blur(14px) contrast(0.5) brightness(2) saturate(1.8);
+    --glass-filter-dense: blur(16px) contrast(0.5) brightness(2) saturate(1.8);
     --panel-border: rgba(255, 255, 255, 0.55);
 
     --shadow-color: rgba(0, 0, 0, 0.35);
@@ -156,10 +160,10 @@
 [data-theme="light"] [style*="var(--panel-bg)"] {
     --color-text-white: #101010;
     --color-text-gray: #33333a;
-    --color-text-muted: #3f3f4a;
+    --color-text-muted: #3a3a44;
     --color-accent: #4c1d95;
     --color-accent-strong: #3b1478;
-    --color-success: #0f4a38;
+    --color-success: #0d4030;
     --color-border: rgba(0, 0, 0, 0.16);
     color: var(--color-text-white);
 }
