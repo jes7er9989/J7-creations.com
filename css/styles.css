@@ -29,7 +29,7 @@
     /* Brand — one purple and one teal, not four and three.
        --color-accent is the interactive/brand colour; --color-success is the
        "included / no fee / confirmed" colour. */
-    --color-accent: #9b7fd4;
+    --color-accent: #b499e8;
     --color-accent-strong: #7b5cb8;
     --color-success: #4fc79f;
     --color-gradient-start: #7b5cb8;
@@ -79,31 +79,76 @@
 }
 
 [data-theme="light"] {
-    --color-bg-dark: #f5f5f5;
-    --color-bg-darker: #ffffff;
-    --color-card-bg: #ffffff;
-    --color-input-bg: #f0f0f0;
-    --color-border: #d8d8d8;
+    /* Light mode keeps the same dark wallpaper and scrim as dark mode. Only
+       the cards change: they become light frosted glass that the content sits
+       on. So the page-level text tokens stay LIGHT here, because anything not
+       on a card (section titles, the footer note) is still on dark artwork.
+       Card-scoped overrides further down flip the text to dark inside glass. */
+    /* Both of these are only ever seen through the wallpaper, or used as a
+       card surface. Making them glass converts the cards that set
+       `background: var(--color-bg-dark)` inline, which a stylesheet rule
+       could not override. */
+    --color-bg-dark: rgba(255, 255, 255, 0.75);
+    --color-bg-darker: rgba(255, 255, 255, 0.82);
+    --color-card-bg: rgba(255, 255, 255, 0.75);
+    --color-input-bg: rgba(255, 255, 255, 0.62);
+    --color-border: rgba(0, 0, 0, 0.14);
 
+    --color-text-white: #ffffff;
+    --color-text-gray: #c8c8c8;
+    --color-text-muted: #b0b0b0;
+
+    --color-accent: #b9a1e8;
+    --color-accent-strong: #9b7fd4;
+    --color-success: #6fd8b4;
+
+    --wash-accent: rgba(155, 127, 212, 0.16);
+    --wash-accent-strong: rgba(155, 127, 212, 0.24);
+    --wash-success: rgba(111, 216, 180, 0.14);
+
+    /* The frosted glass itself */
+    --panel-bg: rgba(255, 255, 255, 0.75);
+    --panel-bg-solid: rgba(255, 255, 255, 0.88);
+    --panel-border: rgba(255, 255, 255, 0.55);
+
+    --shadow-color: rgba(0, 0, 0, 0.35);
+    --shadow-card: 0 4px 18px rgba(0, 0, 0, 0.28);
+}
+
+/* Inside a light-mode glass card, text flips to dark. Custom properties
+   inherit, so redefining them on the card cascades to everything within it —
+   no per-element overrides needed. */
+[data-theme="light"] .panel,
+[data-theme="light"] .service-card,
+[data-theme="light"] .capability-column,
+[data-theme="light"] .advantage-item,
+[data-theme="light"] .why-item,
+[data-theme="light"] .callout,
+[data-theme="light"] .cta-box,
+[data-theme="light"] .result-panel,
+[data-theme="light"] .hero-container,
+[data-theme="light"] .contact,
+[data-theme="light"] .footer,
+[data-theme="light"] .navbar,
+[data-theme="light"] .submenu,
+[data-theme="light"] .breadcrumb,
+[data-theme="light"] .portfolio-item,
+[data-theme="light"] .band,
+[data-theme="light"] .form-group,
+/* Catches the inline-styled CTA and callout boxes scattered through the
+   service pages. They take their surface from --color-bg-dark, which is glass
+   in light mode, so their text has to flip too. Matching the inline style is
+   more reliable than maintaining a list of anonymous divs. */
+[data-theme="light"] [style*="var(--color-bg-dark)"],
+[data-theme="light"] [style*="var(--panel-bg)"] {
     --color-text-white: #101010;
-    --color-text-gray: #3a3a3a;
-    --color-text-muted: #55555f;
-
-    /* Darker brand values so they clear 4.5:1 on a light ground */
+    --color-text-gray: #33333a;
+    --color-text-muted: #4a4a55;
     --color-accent: #5d3f92;
     --color-accent-strong: #4d3379;
-    --color-success: #1f7a5c;
-
-    --wash-accent: rgba(93, 63, 146, 0.10);
-    --wash-accent-strong: rgba(93, 63, 146, 0.16);
-    --wash-success: rgba(31, 122, 92, 0.10);
-
-    --panel-bg: rgba(255, 255, 255, 0.86);
-    --panel-bg-solid: #ffffff;
-    --panel-border: rgba(0, 0, 0, 0.12);
-
-    --shadow-color: rgba(0, 0, 0, 0.1);
-    --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.08);
+    --color-success: #14614a;
+    --color-border: rgba(0, 0, 0, 0.16);
+    color: var(--color-text-white);
 }
 
 /* Reset & Base */
@@ -367,13 +412,6 @@ body::after {
     background: rgba(12, 12, 14, 0.35);
     z-index: -1;
     pointer-events: none;
-}
-
-/* Light theme needs a light scrim, otherwise dark text sits on a dark
-   wallpaper. The wallpaper is dark artwork, so it necessarily reads much
-   fainter here than it does on the dark theme. */
-[data-theme="light"] body::after {
-    background: rgba(248, 248, 250, 0.88);
 }
 
 /* Phones get a smaller rendition, and fixed attachment is unreliable on iOS,
@@ -1261,4 +1299,113 @@ body::after {
 
 .footer {
     border-top: 1px solid var(--panel-border);
+}
+
+/* ---------------------------------------------------------------------------
+   LIGHT MODE: FROSTED GLASS CARDS OVER THE DARK WALLPAPER
+
+   Light mode is not an inverted page. The wallpaper and scrim stay exactly as
+   they are in dark mode; what changes is that content sits on translucent
+   white glass instead of dark panels. The blur is what makes it read as glass
+   rather than a flat white box — the artwork stays visible through it.
+   --------------------------------------------------------------------------- */
+
+[data-theme="light"] .panel,
+[data-theme="light"] .service-card,
+[data-theme="light"] .capability-column,
+[data-theme="light"] .advantage-item,
+[data-theme="light"] .why-item,
+[data-theme="light"] .cta-box,
+[data-theme="light"] .hero-container,
+[data-theme="light"] .portfolio-item {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: var(--shadow-card);
+}
+
+/* Slightly denser where a visitor reads carefully or types */
+[data-theme="light"] .contact,
+[data-theme="light"] .footer,
+[data-theme="light"] .navbar,
+[data-theme="light"] .submenu,
+[data-theme="light"] .breadcrumb {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(16px) saturate(1.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+}
+
+[data-theme="light"] .form-control {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(0, 0, 0, 0.18);
+    color: #101010;
+}
+
+/* Callouts keep their brand tint but on a light base so they still read */
+[data-theme="light"] .callout,
+[data-theme="light"] .result-panel {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+}
+
+/* Where backdrop-filter is unsupported, fall back to a more opaque card so
+   text never lands on bare artwork. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    [data-theme="light"] .panel,
+    [data-theme="light"] .service-card,
+    [data-theme="light"] .capability-column,
+    [data-theme="light"] .advantage-item,
+    [data-theme="light"] .cta-box,
+    [data-theme="light"] .hero-container,
+    [data-theme="light"] .portfolio-item,
+    [data-theme="light"] .contact,
+    [data-theme="light"] .footer,
+    [data-theme="light"] .navbar {
+        background: rgba(255, 255, 255, 0.94);
+    }
+}
+
+
+/* A full-width glass band, used for the service-area section. Same surface as
+   a card, so text inside it follows the card rules rather than the wallpaper. */
+.band {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .band {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(14px) saturate(1.1);
+    -webkit-backdrop-filter: blur(14px) saturate(1.1);
+}
+
+/* Controls with a filled background and white text need a fill that stays
+   dark in BOTH themes. The theme tokens cannot serve this: light mode's accent
+   is deliberately light so it reads on the dark wallpaper, which leaves white
+   text on light purple at ~2.5:1. */
+:root, [data-theme="light"] {
+    --color-control-fill: #5d3f92;
+}
+
+/* The arrows set `background: var(--color-accent)` inline. Redefining the
+   token on the element is cleaner than an !important override. */
+button[onclick^="scrollPortfolio"] {
+    --color-accent: var(--color-control-fill);
+    color: #ffffff;
+}
+
+.skip-link {
+    background: var(--color-control-fill);
+    color: #ffffff;
+}
+
+/* Active filter tab is a filled control with white text, so it needs the
+   theme-independent fill for the same reason the arrows do. */
+.tab-btn.active {
+    background: var(--color-control-fill);
+    border-color: var(--color-control-fill);
+    color: #ffffff;
 }
