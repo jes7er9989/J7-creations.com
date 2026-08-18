@@ -23,16 +23,16 @@
 
     /* Text */
     --color-text-white: #ffffff;
-    --color-text-gray: #c0c0c0;
-    --color-text-muted: #a8a8a8;
+    --color-text-gray: #cfcfcf;
+    --color-text-muted: #bcbcbc;
 
     /* Brand — one purple and one teal, not four and three.
        --color-accent is the interactive/brand colour; --color-success is the
        "included / no fee / confirmed" colour. */
-    --color-accent: #b499e8;
-    --color-accent-strong: #7b5cb8;
-    --color-success: #4fc79f;
-    --color-gradient-start: #7b5cb8;
+    --color-accent: #c3aeff;
+    --color-accent-strong: #5b21b6;
+    --color-success: #7fe6c3;
+    --color-gradient-start: #6d28d9;
     --color-gradient-mid: #3db896;
     --color-gradient-end: #e85d6f;
 
@@ -43,7 +43,7 @@
 
     /* Panels that sit on the photographic body background. These carry a
        scrim so text on them stays readable over the logo image. */
-    --panel-bg: rgba(26, 26, 26, 0.72);
+    --panel-bg: rgba(26, 26, 26, 0.58);
     --panel-bg-solid: #202020;
     --panel-border: rgba(255, 255, 255, 0.10);
 
@@ -88,27 +88,27 @@
        card surface. Making them glass converts the cards that set
        `background: var(--color-bg-dark)` inline, which a stylesheet rule
        could not override. */
-    --color-bg-dark: rgba(255, 255, 255, 0.75);
-    --color-bg-darker: rgba(255, 255, 255, 0.82);
-    --color-card-bg: rgba(255, 255, 255, 0.75);
-    --color-input-bg: rgba(255, 255, 255, 0.62);
+    --color-bg-dark: rgba(255, 255, 255, 0.60);
+    --color-bg-darker: rgba(255, 255, 255, 0.66);
+    --color-card-bg: rgba(255, 255, 255, 0.60);
+    --color-input-bg: rgba(255, 255, 255, 0.50);
     --color-border: rgba(0, 0, 0, 0.14);
 
     --color-text-white: #ffffff;
-    --color-text-gray: #c8c8c8;
-    --color-text-muted: #b0b0b0;
+    --color-text-gray: #d6d6d6;
+    --color-text-muted: #c2c2c2;
 
-    --color-accent: #b9a1e8;
-    --color-accent-strong: #9b7fd4;
-    --color-success: #6fd8b4;
+    --color-accent: #c4b0ff;
+    --color-accent-strong: #6d28d9;
+    --color-success: #8fecd0;
 
     --wash-accent: rgba(155, 127, 212, 0.16);
     --wash-accent-strong: rgba(155, 127, 212, 0.24);
     --wash-success: rgba(111, 216, 180, 0.14);
 
     /* The frosted glass itself */
-    --panel-bg: rgba(255, 255, 255, 0.75);
-    --panel-bg-solid: rgba(255, 255, 255, 0.88);
+    --panel-bg: rgba(255, 255, 255, 0.60);
+    --panel-bg-solid: rgba(255, 255, 255, 0.70);
     --panel-border: rgba(255, 255, 255, 0.55);
 
     --shadow-color: rgba(0, 0, 0, 0.35);
@@ -127,13 +127,13 @@
 [data-theme="light"] .cta-box,
 [data-theme="light"] .result-panel,
 [data-theme="light"] .hero-container,
-[data-theme="light"] .contact,
-[data-theme="light"] .footer,
+[data-theme="light"] .contact-form,
+[data-theme="light"] .contact-direct,
+[data-theme="light"] .footer .container,
 [data-theme="light"] .navbar,
 [data-theme="light"] .submenu,
 [data-theme="light"] .breadcrumb,
 [data-theme="light"] .portfolio-item,
-[data-theme="light"] .band,
 [data-theme="light"] .form-group,
 /* Catches the inline-styled CTA and callout boxes scattered through the
    service pages. They take their surface from --color-bg-dark, which is glass
@@ -144,8 +144,8 @@
     --color-text-white: #101010;
     --color-text-gray: #33333a;
     --color-text-muted: #4a4a55;
-    --color-accent: #5d3f92;
-    --color-accent-strong: #4d3379;
+    --color-accent: #4c1d95;
+    --color-accent-strong: #3b1478;
     --color-success: #14614a;
     --color-border: rgba(0, 0, 0, 0.16);
     color: var(--color-text-white);
@@ -488,7 +488,7 @@ body::after {
 }
 
 [data-theme="light"] .service-card {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.60);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -537,7 +537,7 @@ body::after {
 }
 
 [data-theme="light"] .capability-column {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.60);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -596,7 +596,7 @@ body::after {
 }
 
 [data-theme="light"] .advantage-item {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.56);
     backdrop-filter: blur(10px);
     border-left: 4px solid var(--color-accent);
     border: 2px solid rgba(0, 0, 0, 0.3);
@@ -691,7 +691,7 @@ body::after {
 }
 
 [data-theme="light"] .why-item {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.56);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -768,7 +768,7 @@ body::after {
 }
 
 [data-theme="light"] .contact-direct {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.56);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -1287,18 +1287,28 @@ body::after {
 
 [data-theme="light"] .service-map { filter: none; }
 
-/* The contact block and footer carry the accent-coloured email and phone
-   links. On bare wallpaper those sit at 2.79:1 against the brightest part of
-   the artwork, so they get their own surface — which a form and a footer want
-   regardless, since both are places a visitor needs to read carefully. */
-.contact,
-.footer {
-    background: var(--panel-bg);
-    backdrop-filter: blur(6px);
-}
-
+/* Sections stay transparent — the wallpaper is meant to show between content.
+   The blocks that need a readable surface get their own card below, rather
+   than the whole section becoming one slab. */
 .footer {
     border-top: 1px solid var(--panel-border);
+}
+
+/* The form and the contact details carry the accent-coloured email and phone
+   links, which sit at 2.79:1 on bare wallpaper. They get a card each. */
+.contact-form,
+.contact-direct,
+.footer .container {
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: var(--spacing-md);
+}
+
+.footer .container {
+    padding: var(--spacing-m) var(--spacing-md);
 }
 
 /* ---------------------------------------------------------------------------
@@ -1318,7 +1328,7 @@ body::after {
 [data-theme="light"] .cta-box,
 [data-theme="light"] .hero-container,
 [data-theme="light"] .portfolio-item {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.60);
     backdrop-filter: blur(14px) saturate(1.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
     border-color: rgba(255, 255, 255, 0.6);
@@ -1326,18 +1336,19 @@ body::after {
 }
 
 /* Slightly denser where a visitor reads carefully or types */
-[data-theme="light"] .contact,
-[data-theme="light"] .footer,
+[data-theme="light"] .contact-form,
+[data-theme="light"] .contact-direct,
+[data-theme="light"] .footer .container,
 [data-theme="light"] .navbar,
 [data-theme="light"] .submenu,
 [data-theme="light"] .breadcrumb {
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.66);
     backdrop-filter: blur(16px) saturate(1.1);
     -webkit-backdrop-filter: blur(16px) saturate(1.1);
 }
 
 [data-theme="light"] .form-control {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.56);
     border-color: rgba(0, 0, 0, 0.18);
     color: #101010;
 }
@@ -1345,7 +1356,7 @@ body::after {
 /* Callouts keep their brand tint but on a light base so they still read */
 [data-theme="light"] .callout,
 [data-theme="light"] .result-panel {
-    background: rgba(255, 255, 255, 0.78);
+    background: rgba(255, 255, 255, 0.50);
     backdrop-filter: blur(14px) saturate(1.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
 }
@@ -1368,26 +1379,15 @@ body::after {
 }
 
 
-/* A full-width glass band, used for the service-area section. Same surface as
-   a card, so text inside it follows the card rules rather than the wallpaper. */
-.band {
-    background: var(--panel-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-[data-theme="light"] .band {
-    background: rgba(255, 255, 255, 0.78);
-    backdrop-filter: blur(14px) saturate(1.1);
-    -webkit-backdrop-filter: blur(14px) saturate(1.1);
-}
+/* The service-area section is transparent; the cards inside it carry their
+   own surface. A full-width band here swallowed the wallpaper. */
 
 /* Controls with a filled background and white text need a fill that stays
    dark in BOTH themes. The theme tokens cannot serve this: light mode's accent
    is deliberately light so it reads on the dark wallpaper, which leaves white
    text on light purple at ~2.5:1. */
 :root, [data-theme="light"] {
-    --color-control-fill: #5d3f92;
+    --color-control-fill: #4c1d95;
 }
 
 /* The arrows set `background: var(--color-accent)` inline. Redefining the
@@ -1408,4 +1408,20 @@ button[onclick^="scrollPortfolio"] {
     background: var(--color-control-fill);
     border-color: var(--color-control-fill);
     color: #ffffff;
+}
+
+/* A violet link on a green wash is inherently low-contrast — the two sit at
+   similar luminance. Inside a tinted callout, links take the body colour and
+   lean on an underline to read as links. */
+/* The links carry an inline `color: var(--color-accent)`, which beats any
+   stylesheet rule — so redefine the token on the container instead. */
+[style*="var(--wash-success)"],
+[style*="var(--wash-accent)"] {
+    --color-accent: var(--color-text-white);
+}
+
+[style*="var(--wash-success)"] a,
+[style*="var(--wash-accent)"] a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
