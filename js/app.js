@@ -23,10 +23,23 @@ function j7PopulatePhone() {
         el.style.removeProperty('display');
         if (el.tagName === 'A') {
             el.href = 'tel:' + J7_PHONE;
-            if (!el.dataset.j7PhoneKeepText) el.textContent = J7_PHONE_DISPLAY;
+            // hasAttribute, not dataset: a valueless attribute reads back as
+            // '' from dataset, which is falsy, so the label got overwritten.
+            if (!el.hasAttribute('data-j7-phone-keep-text')) el.textContent = J7_PHONE_DISPLAY;
         } else {
             el.textContent = J7_PHONE_DISPLAY;
         }
+    });
+
+    // Text links. sms: is a separate scheme from tel: and needs its own
+    // href, but it comes from the same single constant.
+    document.querySelectorAll('[data-j7-sms]').forEach(el => {
+        if (!configured) {
+            el.style.display = 'none';
+            return;
+        }
+        el.style.removeProperty('display');
+        el.href = 'sms:' + J7_PHONE;
     });
 
     // Whole blocks that only make sense once a number exists
@@ -237,8 +250,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = document.getElementById('message');
         if (!serviceSelect || !message) return;
 
-        if (data.service && [...serviceSelect.options].some(o => o.value === data.service)) {
-            serviceSelect.value = data.service;
+        if (data.service) {
+            if ([...serviceSelect.options].some(o => o.value === data.service)) {
+                serviceSelect.value = data.service;
+            } else {
+                // A calculator sent a value this form does not have. Silence
+                // here is how the IT estimator shipped 'network' against an
+                // option named 'network-infrastructure' and left the field
+                // blank for four of its five services.
+                console.warn('J7: no #service option "' + data.service + '" — falling back to "other"');
+                serviceSelect.value = 'other';
+            }
             if (typeof updateServiceForm === 'function') updateServiceForm();
         }
 

@@ -89,8 +89,8 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="../css/styles.css?v=fd7fa57c">
-    <link rel="stylesheet" href="../css/mobile-fix.css?v=54e2547b">
+    <link rel="stylesheet" href="../css/styles.css?v=612f051f">
+    <link rel="stylesheet" href="../css/mobile-fix.css?v=e8c72478">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
 <body>
@@ -100,6 +100,7 @@
             <a href="/" class="nav-logo">
                 <img src="../assets/images/j7-mark-nav.379b77f9.png" alt="J7 Creations" class="logo-img" width="240" height="245">
             </a>
+            <a href="/" class="nav-link nav-home">Home</a>
             <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-nav">
                 <span class="hamburger"></span>
             </button>
@@ -356,7 +357,7 @@
                     </div>
                     <p id="price-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem; line-height: 1.7;"></p>
                     <p style="margin-top: var(--spacing-m);">
-                        <button type="button" class="btn btn-primary" id="send-print-estimate">Send this estimate &rarr;</button>
+                        <button type="button" class="btn btn-primary" id="send-print-estimate">Request a Quote &rarr;</button>
                     </p>
                     <p class="note"><em>*This is an estimate only. Final quote may vary based on complexity, support requirements, and current filament availability. Contact me for a firm quote.</em></p>
                 </div>
@@ -579,7 +580,7 @@
         <div class="container">
             <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>
             <p style="margin-top: 0.5rem;">
-                <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a><span data-j7-phone-block> &middot; <a href="#" data-j7-phone style="color: var(--color-accent);"></a></span>
+                <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a><span data-j7-phone-block> &middot; <a href="#" data-j7-phone style="color: var(--color-accent);"></a> &middot; <a href="#" data-j7-sms style="color: var(--color-accent);">Text me</a></span>
             </p>
             <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Serving West Tennessee | 100-mile radius | Site last updated: August 2026</p>
         </div>
@@ -589,7 +590,7 @@
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
     <script src="../js/pricing.js?v=f3ce48d3"></script>
-    <script src="../js/app.js?v=d7ad2656"></script>
+    <script src="../js/app.js?v=af9f342e"></script>
     <script>
         function convertWeight() {
             const weight = parseFloat(document.getElementById('part-weight').value);

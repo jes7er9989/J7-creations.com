@@ -355,6 +355,16 @@ a:not(.btn):hover {
     width: auto;
 }
 
+/* Home belongs with the logo, not in the right-hand group. The auto margin
+   soaks up the container's free space, so justify-content: space-between has
+   none left to distribute and the pair stays flush left while everything
+   else is pushed to the right edge. */
+.nav-home {
+    margin-left: var(--spacing-s);
+    margin-right: auto;
+    white-space: nowrap;
+}
+
 .nav-menu {
     display: flex;
     list-style: none;
