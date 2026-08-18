@@ -264,6 +264,9 @@
                     <h4 class="panel-title">Estimated Cost:</h4>
                     <p id="it-total" style="font-size: 2rem; font-weight: 700; color: var(--color-accent);">$0.00</p>
                     <p id="it-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem;"></p>
+                    <p style="margin-top: var(--spacing-m);">
+                        <button type="button" class="btn btn-primary" id="send-it-estimate">Send this estimate &rarr;</button>
+                    </p>
                     <p class="note"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions and specific requirements.</em></p>
                 </div>
             </div>
@@ -517,6 +520,22 @@
         }
 
         document.addEventListener('DOMContentLoaded', updateITOptions);
+
+        document.getElementById('send-it-estimate').addEventListener('click', () => {
+            const svc = document.getElementById('it-service');
+            const map = { 'remote':'remote-support', 'install':'network',
+                          'network-design':'network', 'home-assistant':'network',
+                          'audit':'network' };
+            j7SendEstimate(
+                map[svc.value] || 'other',
+                'Total estimate: ' + document.getElementById('it-total').textContent,
+                [
+                    'Service: ' + svc.selectedOptions[0].text,
+                    document.getElementById('it-breakdown').innerText,
+                    'Turnaround: ' + document.getElementById('it-rush').selectedOptions[0].text
+                ]
+            );
+        });
     </script>
 </body>
 </html>

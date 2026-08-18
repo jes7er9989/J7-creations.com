@@ -291,6 +291,9 @@
                         </div>
                     </div>
                     <p id="price-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem; line-height: 1.7;"></p>
+                    <p style="margin-top: var(--spacing-m);">
+                        <button type="button" class="btn btn-primary" id="send-print-estimate">Send this estimate &rarr;</button>
+                    </p>
                     <p class="note"><em>*This is an estimate only. Final quote may vary based on complexity, support requirements, and current filament availability. Contact me for a firm quote.</em></p>
                 </div>
             </div>
@@ -611,6 +614,22 @@
 
             document.getElementById('price-result').style.display = 'block';
         }
+
+        // Carry the estimate to the contact form instead of discarding it.
+        document.getElementById('send-print-estimate').addEventListener('click', () => {
+            j7SendEstimate(
+                '3d-printing',
+                'Total estimate: ' + document.getElementById('total-cost').textContent,
+                [
+                    'Filament: ' + document.getElementById('filament-cost').textContent,
+                    'Print service fee: ' + document.getElementById('service-fee').textContent,
+                    document.getElementById('price-breakdown').innerText,
+                    'Material: ' + document.getElementById('material-type').selectedOptions[0].text,
+                    'Quality: ' + document.getElementById('quality-level').selectedOptions[0].text,
+                    'Turnaround: ' + document.getElementById('rush-level').selectedOptions[0].text
+                ]
+            );
+        });
     </script>
 </body>
 </html>

@@ -268,6 +268,9 @@
                         </div>
                     </div>
                     <p id="install-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem; line-height: 1.7;"></p>
+                    <p style="margin-top: var(--spacing-m);">
+                        <button type="button" class="btn btn-primary" id="send-install-estimate">Send this estimate &rarr;</button>
+                    </p>
                     <p class="note"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions. 2-hour minimum applies to hourly jobs.</em></p>
                 </div>
             </div>
@@ -552,6 +555,21 @@
         }
 
         document.addEventListener('DOMContentLoaded', updateInstallOptions);
+
+        document.getElementById('send-install-estimate').addEventListener('click', () => {
+            j7SendEstimate(
+                'installation',
+                'Total estimate: ' + document.getElementById('install-total').textContent,
+                [
+                    'Service: ' + document.getElementById('install-type').selectedOptions[0].text,
+                    'Labor: ' + document.getElementById('install-labor').textContent,
+                    'Travel: ' + document.getElementById('install-travel').textContent,
+                    document.getElementById('install-breakdown').innerText,
+                    'Distance: ' + document.getElementById('install-distance').selectedOptions[0].text,
+                    'Turnaround: ' + document.getElementById('install-rush').selectedOptions[0].text
+                ]
+            );
+        });
     </script>
 </body>
 </html>

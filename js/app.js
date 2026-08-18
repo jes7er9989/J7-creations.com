@@ -210,6 +210,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // ========== Estimate handoff from the calculators ==========
+    // The three estimators used to produce a full breakdown and then discard
+    // it, leaving the visitor to retype it. If one handed us an estimate,
+    // pre-select the service and write the figures into the message.
+    (function applyIncomingEstimate() {
+        let data;
+        try {
+            const raw = sessionStorage.getItem('j7Estimate');
+            if (!raw) return;
+            sessionStorage.removeItem('j7Estimate');
+            data = JSON.parse(raw);
+        } catch (e) {
+            return;
+        }
+        // Ignore anything stale enough to be from a previous visit
+        if (!data || !data.at || Date.now() - data.at > 30 * 60 * 1000) return;
+
+        const serviceSelect = document.getElementById('service');
+        const message = document.getElementById('message');
+        if (!serviceSelect || !message) return;
+
+        if (data.service && [...serviceSelect.options].some(o => o.value === data.service)) {
+            serviceSelect.value = data.service;
+            if (typeof updateServiceForm === 'function') updateServiceForm();
+        }
+
+        const lines = (data.lines || []).filter(Boolean).join('\n');
+        const preamble = 'Estimate from the ' + (data.page || 'website') +
+                         ' calculator:\n\n' +
+                         (data.headline ? data.headline + '\n' : '') + lines +
+                         '\n\n(Figures from your online estimator - happy to adjust.)\n\n';
+        message.value = preamble + message.value;
+
+        const note = document.getElementById('estimate-loaded');
+        if (note) note.style.display = 'block';
+        document.getElementById('contact').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    })();
+
     // ========== Back to Top Button ==========
     const backToTopBtn = document.getElementById('back-to-top');
     
