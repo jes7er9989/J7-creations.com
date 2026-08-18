@@ -27,8 +27,14 @@
 #
 # NOTE: "immutable" is only safe for files whose NAME changes when their
 # content changes. This site has no build step, so nothing is content-hashed
-# — which is why JavaScript and CSS are deliberately excluded below. Images
-# are fine because a new image gets a new filename by hand.
+# automatically — which is why JavaScript and CSS are deliberately excluded
+# below.
+#
+# Images and video ARE cached hard, so they carry a content hash in the
+# filename (e.g. waterproof-box-view1.c983b9a8.jpg). If you edit an image,
+# you MUST give it a new hash or the edge will keep serving the old bytes
+# for a year. Editing one in place and keeping the name does not work — the
+# deploy succeeds and visitors still see the old picture.
 /*.png
   Cache-Control: public, max-age=31536000, immutable
 
