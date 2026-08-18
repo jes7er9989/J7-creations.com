@@ -53,6 +53,14 @@
 /*.woff2
   Cache-Control: public, max-age=31536000, immutable
 
+# Video inherits max-age=0 from the /* block otherwise, which means 17.5 MB of
+# MP4 revalidates on every page view. Filenames are stable, so cache hard.
+/*.mp4
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.webm
+  Cache-Control: public, max-age=31536000, immutable
+
 # The service worker must always be revalidated. Cached with a long TTL it can
 # never replace itself, which strands every returning visitor on whatever
 # version of the site their worker last cached.

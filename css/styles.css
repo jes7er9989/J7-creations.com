@@ -46,7 +46,14 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* 'Inter' was listed here for months but never actually loaded — no font
+       link, no @font-face — so every visitor has always seen the system face.
+       Leading with the system stack makes the declaration honest and costs no
+       download, which matters on rural connections. To use Inter for real,
+       self-host the woff2 and add an @font-face rule; do not hotlink Google
+       Fonts (extra origin, and the CSP would need widening). */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, sans-serif;
     background-color: var(--color-bg-dark);
     color: var(--color-text-white);
     line-height: 1.6;
@@ -165,13 +172,25 @@ a:hover {
     box-shadow: 0 4px 12px rgba(107, 76, 154, 0.5);
 }
 
-.theme-toggle::before {
-    content: '🌙';
+/* Line icons rather than emoji — emoji render differently per platform and
+   cannot inherit colour. The markup ships both; CSS shows one per theme. */
+.theme-toggle svg {
+    width: 20px;
+    height: 20px;
     display: block;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-[data-theme="light"] .theme-toggle::before {
-    content: '☀️';
+.theme-toggle .sun-icon,
+[data-theme="light"] .theme-toggle .moon-icon {
+    display: none;
+}
+
+[data-theme="light"] .theme-toggle .sun-icon {
     display: block;
 }
 

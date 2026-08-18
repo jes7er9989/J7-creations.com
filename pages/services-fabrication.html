@@ -15,6 +15,16 @@
     <title>3D Printing & Fabrication | J7 Creations</title>
     
     <link rel="manifest" href="../manifest.json">
+    <script>
+      // Applied before first paint: reading the theme in DOMContentLoaded
+      // makes light-mode users see a flash of dark on every navigation.
+      try {
+        document.documentElement.setAttribute(
+          'data-theme', localStorage.getItem('theme') || 'dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    </script>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
@@ -23,7 +33,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img">
+                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img" width="480" height="262">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
@@ -34,9 +44,9 @@
                 <li><a href="/pages/about.html" class="nav-link">About</a></li>
                 <li><a href="/#contact" class="nav-link nav-cta">Contact</a></li>
                 <li>
-                    <button class="theme-toggle" aria-label="Toggle theme">
-                        <svg class="moon-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                        <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <button class="theme-toggle" aria-label="Toggle light and dark theme" aria-pressed="false">
+                        <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                     </button>
                 </li>
             </ul>
@@ -56,7 +66,7 @@
     <header class="hero">
         <div class="hero-container">
             <h1 class="hero-title">3D Printing & Fabrication</h1>
-            <p class="hero-subtitle">If it's broken, obsolete, or never existed — we'll make it. Industrial materials, functional parts, real solutions.</p>
+            <p class="hero-subtitle">If it's broken, obsolete, or never existed — I'll make it. Industrial materials, functional parts, real solutions.</p>
             <div class="hero-cta">
                 <a href="/#contact" class="btn btn-primary">Request a Quote</a>
                 <a href="#materials" class="btn btn-secondary">View Materials</a>
@@ -71,7 +81,7 @@
             <div class="services-grid">
                 <div class="service-card">
                     <h3>Replacement Parts</h3>
-                    <p>Automotive clips, appliance latches, machinery guides, HVAC components — if it's plastic and they don't make it anymore, we'll print it better than the original.</p>
+                    <p>Automotive clips, appliance latches, machinery guides, HVAC components — if it's plastic and they don't make it anymore, I'll print it better than the original.</p>
                     <p><strong>Common jobs:</strong> Car door clips, dishwasher racks, conveyor guides, vent covers.</p>
                 </div>
                 <div class="service-card">
@@ -91,7 +101,7 @@
                 </div>
                 <div class="service-card">
                     <h3>Prototypes</h3>
-                    <p>Got an idea? We'll print it fast so you can test fit, function, and form before committing to production.</p>
+                    <p>Got an idea? I'll print it fast so you can test fit, function, and form before committing to production.</p>
                     <p><strong>Common jobs:</strong> Product prototypes, concept models, fitment testing, iterative design.</p>
                 </div>
                 <div class="service-card">
@@ -438,17 +448,17 @@
                 <ol style="list-style: none; counter-reset: steps;">
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
                         <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">1</span>
-                        <h3>Send Us Details</h3>
+                        <h3>Send Me Details</h3>
                         <p>Email photos, measurements, or CAD files. Tell me what the part does, where it lives, and what conditions it faces (heat, UV, chemicals, etc.).</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
                         <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">2</span>
-                        <h3>We Quote</h3>
-                        <p>We'll review your request and send a quote with material recommendation, price, and turnaround time. No obligation.</p>
+                        <h3>I Quote</h3>
+                        <p>I'll review your request and send a quote with material recommendation, price, and turnaround time. No obligation.</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
                         <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">3</span>
-                        <h3>We Print</h3>
+                        <h3>I Print</h3>
                         <p>Once approved, I print your part(s) in the specified material. I'll send photos before shipping/pickup.</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">

@@ -67,7 +67,7 @@ resize_images() {
     echo "📐 Resizing images for web..."
     
     # Portfolio images - max 1920px wide (Full HD)
-    find "$ASSETS_DIR/portfolio" -type f \( -name "*.jpg" -o -name "*.jpeg" \) | while read -r file; do
+    find "$ASSETS_DIR/images/portfolio" -type f \( -name "*.jpg" -o -name "*.jpeg" \) | while read -r file; do
         echo "   Resizing: $(basename "$file")"
         
         # Get current dimensions
@@ -82,11 +82,11 @@ resize_images() {
     done
     
     # Logo - keep small
-    if [ -f "$ASSETS_DIR/j7-logo.png" ]; then
-        width=$(exiftool -s -s -s -ImageWidth "$ASSETS_DIR/j7-logo.png")
+    if [ -f "$ASSETS_DIR/images/j7-logo.jpg" ]; then
+        width=$(exiftool -s -s -s -ImageWidth "$ASSETS_DIR/images/j7-logo.jpg")
         if [ "$width" -gt 400 ]; then
             echo "   Resizing logo to 400px"
-            convert "$ASSETS_DIR/j7-logo.png" -resize '400x>' "$ASSETS_DIR/j7-logo.png"
+            convert "$ASSETS_DIR/images/j7-logo.jpg" -resize '400x>' "$ASSETS_DIR/images/j7-logo.jpg"
         fi
     fi
     

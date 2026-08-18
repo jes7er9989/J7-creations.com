@@ -14,6 +14,16 @@
     <meta name="description" content="About J7 Technical Solutions - Thomas Ipock, serving West Tennessee with IT infrastructure and custom fabrication.">
     <title>About | J7 Technical Solutions</title>
     <link rel="manifest" href="../manifest.json">
+    <script>
+      // Applied before first paint: reading the theme in DOMContentLoaded
+      // makes light-mode users see a flash of dark on every navigation.
+      try {
+        document.documentElement.setAttribute(
+          'data-theme', localStorage.getItem('theme') || 'dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    </script>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
@@ -22,7 +32,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Technical Solutions" class="logo-img">
+                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Technical Solutions" class="logo-img" width="480" height="262">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
@@ -33,7 +43,10 @@
                 <li><a href="/pages/about.html" class="nav-link">About</a></li>
                 <li><a href="/#contact" class="nav-link nav-cta">Contact</a></li>
                 <li>
-                    <button class="theme-toggle" aria-label="Toggle theme"></button>
+                    <button class="theme-toggle" aria-label="Toggle light and dark theme" aria-pressed="false">
+                        <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -58,7 +71,7 @@
                 
                 <h3 style="margin-bottom: 1rem;">Service Approach</h3>
                 <p style="margin-bottom: 1rem;">I handle projects that don't have off-the-shelf solutions. When standard equipment doesn't fit, when network coverage gaps persist, or when custom mounting is required — I design and deploy integrated solutions.</p>
-                <p style="margin-bottom: 1rem;">Our work combines three core capabilities:</p>
+                <p style="margin-bottom: 1rem;">My work combines three core capabilities:</p>
                 <ul style="margin-bottom: 2rem; margin-left: 1.5rem; color: #b0b0b0;">
                     <li><strong>IT Infrastructure</strong> — Network design, VLAN segmentation, PoE deployment, Home Assistant automation</li>
                     <li><strong>Custom Fabrication</strong> — 3D printing, CAD design, laser etching, replacement parts, enclosures</li>

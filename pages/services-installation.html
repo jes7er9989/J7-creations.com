@@ -15,6 +15,16 @@
     <title>Field Installation | J7 Creations</title>
     
     <link rel="manifest" href="../manifest.json">
+    <script>
+      // Applied before first paint: reading the theme in DOMContentLoaded
+      // makes light-mode users see a flash of dark on every navigation.
+      try {
+        document.documentElement.setAttribute(
+          'data-theme', localStorage.getItem('theme') || 'dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    </script>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/mobile-fix.css">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
@@ -23,7 +33,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
-                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img">
+                <img src="../assets/images/j7-logo-nav.jpg" alt="J7 Creations" class="logo-img" width="480" height="262">
             </a>
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <span class="hamburger"></span>
@@ -34,9 +44,9 @@
                 <li><a href="/pages/about.html" class="nav-link">About</a></li>
                 <li><a href="/#contact" class="nav-link nav-cta">Contact</a></li>
                 <li>
-                    <button class="theme-toggle" aria-label="Toggle theme">
-                        <svg class="moon-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                        <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <button class="theme-toggle" aria-label="Toggle light and dark theme" aria-pressed="false">
+                        <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
                     </button>
                 </li>
             </ul>
@@ -86,7 +96,7 @@
                 </div>
                 <div class="service-card">
                     <h3>Cable Management</h3>
-                    <p>Messy cables? We'll route, bundle, label, and dress everything for a clean, professional install.</p>
+                    <p>Messy cables? I'll route, bundle, label, and dress everything for a clean, professional install.</p>
                     <p><strong>Includes:</strong> Cable trays, ties, labels, strain relief.</p>
                 </div>
                 <div class="service-card">
@@ -358,6 +368,8 @@
                 <p style="color: var(--color-text-gray);">All equipment and materials (cables, mounts, racks, cameras, APs, etc.) are quoted at actual retail cost. I'll show you the receipts/invoices — no markup, no hidden fees.</p>
                 <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.95rem;"><em>You can purchase equipment yourself or I can purchase it on your behalf — your choice. I'll provide a detailed line-item estimate with current pricing before any purchase.</em></p>
             </div>
+
+            <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); margin-top: 2rem; text-align: center;">
                 <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Need a Custom Quote?</h3>
                 <p style="margin-bottom: 1.5rem;">Send me photos, floor plans, or a description of what you need installed. I'll provide a detailed estimate with equipment recommendations, labor costs, and timeline — no obligation.</p>
                 <a href="/#contact" class="btn btn-primary">Request a Free Quote</a>
