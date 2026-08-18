@@ -1,15 +1,15 @@
 // J7 Creations - Service Worker for PWA Offline Support
 
-const CACHE_NAME = 'j7-creations-v9';
+const CACHE_NAME = 'j7-creations-v10';
 const urlsToCache = [
     '/',
     '/index.html',
-    '/pages/about.html',
-    '/pages/portfolio.html',
-    '/pages/services-it.html',
-    '/pages/services-fabrication.html',
-    '/pages/services-installation.html',
-    '/css/styles.css?v=612f051f',
+    '/pages/about',
+    '/pages/portfolio',
+    '/pages/services-it',
+    '/pages/services-fabrication',
+    '/pages/services-installation',
+    '/css/styles.css?v=3523d291',
     '/css/mobile-fix.css?v=e8c72478',
     '/js/app.js?v=af9f342e',
     '/js/pricing.js?v=f3ce48d3',

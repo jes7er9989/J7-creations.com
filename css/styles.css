@@ -80,6 +80,18 @@
 
     --radius: 8px;
     --radius-sm: 4px;
+
+    /* The navbar is fixed and 90px tall, so a jump to #contact scrolls the
+       section's top edge to y=0 — underneath the bar. Every anchor target
+       needs to stop short by at least the bar's height. */
+    --nav-offset: 6.5rem;
+}
+
+/* scroll-margin only affects where a fragment jump or scrollIntoView comes to
+   rest, so applying it to every id is safe and catches targets added later.
+   It also keeps an invalid form field from landing under the bar on submit. */
+[id] {
+    scroll-margin-top: var(--nav-offset);
 }
 
 [data-theme="light"] {
@@ -466,6 +478,8 @@ body::after {
 /* Phones get a smaller rendition, and fixed attachment is unreliable on iOS,
    so it scrolls with the page there instead of juddering. */
 @media (max-width: 768px) {
+    :root { --nav-offset: 5rem; }
+
     body::before {
         background-image: url('/assets/images/j7-wall-sm.faab30a7.jpg');
         background-attachment: scroll;
