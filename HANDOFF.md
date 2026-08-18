@@ -1,232 +1,182 @@
-# J7 Website Project - Handoff Document
+# J7 Creations — Handoff
 
-**Created:** April 12, 2026  
-**Assistant:** Bob  
-**Client:** Thomas Ipock (J7 Creations)
+**Last updated:** 18 August 2026
+**Live:** https://j7creations.com · **Repo:** https://github.com/jes7er9989/J7-creations.com
 
----
-
-## 🎉 Project Status: COMPLETE
-
-The J7 Technical Solutions & Prototyping website is **100% production-ready** and deployed.
+Static site — plain HTML/CSS/JS, no build step, no framework. Pushing to `main`
+deploys to Cloudflare Pages in about 30 seconds. **Merging to `main` *is*
+deploying**; there is no staging step.
 
 ---
 
-## 📦 What Was Built
+## The three rules that matter
 
-### **Architecture**
-- Static PWA (HTML/CSS/JS only)
-- Deployed to Cloudflare Pages via GitHub auto-deploy
-- Custom domain: j7creations.com (ACTIVE)
-- Contact form via Formspree (ID: xzdypkbz)
-- No backend, no Workers, no D1
+Everything else in this document is detail. These three cost real time to
+rediscover.
 
-### **Pages Created**
-1. `index.html` - Homepage (7 sections + map + contact)
-2. `pages/about.html` - Professional about page
-3. `pages/portfolio.html` - Filterable portfolio (tabs by category)
-4. `pages/services-it.html` - IT services + estimator calculator
-5. `pages/services-fabrication.html` - 3D printing + estimator + weight converter
-6. `pages/services-installation.html` - Field installation + estimator + service area map
-7. `pages/admin.html` - Admin dashboard (password auth, for future use)
+### 1. Run the stamp script after touching CSS or JS
 
-### **Assets**
-- `css/styles.css` - Main stylesheet (dark/light theme)
-- `css/mobile-fix.css` - Mobile responsive polish
-- `css/admin.css` - Admin styles
-- `js/app.js` - Theme toggle (localStorage), portfolio tabs, contact AJAX, back-to-top
-- `js/admin.js` - Admin functionality
-- `manifest.json` - PWA manifest
-- `sw.js` - Service worker (v2)
-- `assets/images/j7-logo.png` - Logo (watermark removed)
-
----
-
-## ✨ Features Implemented
-
-### **Core Features**
-- ✅ Dark/light theme toggle (🌙/☀️) with localStorage persistence
-- ✅ Logo as fixed background (25% dark / 20% light opacity)
-- ✅ High-contrast light mode (black text, solid borders)
-- ✅ Mobile responsive (full design + mobile-fix.css)
-- ✅ PWA enabled (installable on mobile)
-- ✅ Smooth scroll navigation
-- ✅ Back-to-top button (appears after 300px scroll)
-- ✅ Enhanced hover effects on all cards
-
-### **Contact Form**
-- ✅ AJAX submission (no page reload)
-- ✅ Service dropdown (3D Printing, Network, Fabrication, Installation, Other)
-- ✅ Timeline dropdown (Flexible, Soon, RUSH +50%, URGENT +100%)
-- ✅ Budget dropdown (Under $100 to $1,000+)
-- ✅ Service request checklist (green box with 5 items to have ready)
-- ✅ Payment info (Cash, Check, Venmo, Cash App, Invoice Net 7)
-- ✅ Deposit policy (50% upfront for $300+ projects)
-- ✅ Email: t.i@j7creations.com
-- ✅ Response time: 2-4 hours during business hours
-
-### **Estimator Calculators**
-- ✅ 3D Printing (weight + material + quality = price)
-- ✅ IT Services (remote, install, network design, Home Assistant, audit)
-- ✅ Installation (service type + quantity + travel fee)
-- ✅ Weight converter (lbs/kg/g) on fabrication page
-
-### **SEO & Social**
-- ✅ Meta tags on all pages (description, keywords, robots, theme-color)
-- ✅ Open Graph tags (Facebook/LinkedIn sharing)
-- ✅ Twitter Card tags
-- ✅ Canonical URLs
-- ✅ "Last updated: April 2026" in all footers
-
-### **Navigation**
-- ✅ Breadcrumbs on all service pages (Home > Service Name)
-- ✅ Homepage capability cards link to service pages
-- ✅ Service area map (Google Maps embed on homepage)
-- ✅ Service area text map (Installation page with 6 cities + distances)
-
-### **Pricing Display**
-- ✅ Travel fees: 4 tiers (0-25mi free, 25-50mi $15, 50-75mi $30, 75-100mi $50)
-- ✅ No travel fee waivers
-- ✅ 3D printing: Filament cost + service fee (per-lb AND per-kg shown)
-- ✅ Rush service: +50% for 48hr, +100% for 24hr
-
-### **Content Decisions**
-- ✅ Solo operator language ("I/me/my" not "we/us/our")
-- ✅ Professional tone (not overly friendly)
-- ✅ No board-level electronics repair (liability)
-- ✅ 100-mile service radius from Milan/Atwood, TN
-- ✅ Rural TN-friendly pricing ($25/hr base)
-- ✅ "No Black Boxes Principle" documented
-
----
-
-## 🔗 Live URLs
-
-- **Production:** https://j7creations.com/
-- **Preview:** https://j7-creations-com.pages.dev/
-- **GitHub:** https://github.com/jes7er9989/J7-creations.com
-- **Formspree ID:** xzdypkbz
-
----
-
-## 📁 Workspace Location
-
-`/home/thomas/.openclaw/workspace/j7-website/`
-
----
-
-## 🎨 Design System
-
-### **Colors**
-```css
---color-gradient-start: #7b5cb8 (purple)
---color-gradient-mid: #3db896 (teal)
---color-gradient-end: #e85d6f (coral)
---color-accent: #7b5cb8
+```bash
+python scripts/stamp-assets.py
 ```
 
-### **Typography**
-- Font: Inter (Google Fonts)
-- High contrast in light mode (pure black #000000)
+Then commit the result. It rewrites every `?v=` on the stylesheet and script
+tags with a hash of the file's contents.
 
-### **Logo Background**
-- Fixed, centered, visible on all pages
-- 25% opacity dark mode / 20% light mode
+Cloudflare's free tier **overrides `Cache-Control` with a 4-hour minimum**, so
+without a content-derived stamp an edited file keeps serving stale to anyone
+who visited recently. This is not hypothetical: during this work it shipped a
+broken navigation menu and hid a newly added phone number from the live site.
 
----
+A *fixed* version string does not help. The site previously carried
+`app.js?v=2026042802`, which never changed, so browsers pinned that file
+indefinitely.
 
-## 📝 Pending Items (Optional Future Work)
+### 2. Changing an image means changing its filename
 
-### **Not Yet Done**
-- [ ] Portfolio photos (user needs to print + photograph work first)
-- [ ] PWA icons (generate at https://realfavicongenerator.net/)
-- [ ] Google Analytics or Plausible (optional tracking)
-- [ ] Testimonials section (optional)
-- [ ] FAQ section (optional)
+`_headers` caches images and video as `immutable, max-age=1yr`. That is only
+safe when the filename changes with the content, so every processed image
+carries a content hash — `waterproof-box-view1.7ce79569.jpg`.
 
-### **20 Suggestions Provided** (user picked 1, 2.5, 10, 11, 13, 14, 18 + map + payment + rush)
-Only the selected ones were implemented. The rest are available for future consideration.
+**Editing an image in place and keeping its name does not work.** The deploy
+succeeds and visitors keep seeing the old picture, for a year. This happened
+during this work.
 
----
+Related: never request an asset URL while a deploy is still propagating. Doing
+so once cached a 404 HTML fallback *as* an image, under a one-year TTL. There
+is now a real `404.html`, so misses return 404 instead of a cacheable 200 —
+but poll the HTML, not the assets, when checking a deploy.
 
-## 🧠 Key Context About Thomas
+### 3. All prices live in `js/pricing.js`
 
-- **Name:** Thomas Ipock
-- **Location:** Milan/Atwood, TN
-- **Background:** Tesla field experience
-- **Situation:** Introvert with social anxiety, chronic pain, caregiver for grandparents
-- **Goal:** Income that can be done from home property
-- **Contact:** t.i@j7creations.com
-- **Timezone:** America/Chicago
+One file. Editing a price anywhere else will drift, which is exactly how the
+site ended up quoting two different figures for the same job. After any change:
 
----
+```bash
+node scripts/verify-pricing.js
+```
 
-## 🛠️ Technical Notes
-
-### **Deployment**
-- Push to `main` branch = auto-deploy to Cloudflare Pages
-- No build step required (static files)
-- Custom domain already configured and active
-
-### **Contact Form Testing**
-- Formspree free tier
-- Submissions go to configured email
-- AJAX submission working (no page reload)
-- Should test with actual submission
-
-### **Theme Toggle**
-- CSS-based emoji icons (🌙 dark / ☀️ light)
-- localStorage persistence (remembers choice across sessions)
-- Default: dark theme
-
-### **Back-to-Top Button**
-- Appears after 300px scroll
-- Bottom-right corner
-- Gradient purple/teal
-- Smooth scroll to top on click
+It enforces the rule that a bigger job must never cost less than a smaller one
+— a rule the original estimators broke in three separate places — and checks
+that the advertised ranges still match what the calculators produce.
 
 ---
 
-## 📊 Site Audit Score: 5/5 ⭐⭐⭐⭐⭐
+## How the design works
 
-**Production-ready. Share with clients.**
+### The wallpaper
+
+The logo is a fixed, centred background on `body::before`; content scrolls in
+front of it. `body::after` is a scrim that keeps text readable over the
+artwork.
+
+The image is **dimmed in the file itself** (`brightness ×0.42`), not veiled by
+a heavy overlay. Multiplying preserves the dark canvas texture and the relative
+colour; a flat overlay lifts the blacks and pushes the whole thing toward grey.
+That is what lets the scrim sit at 0.35 instead of 0.78, so the mark is
+actually visible.
+
+Phones get a smaller rendition and `background-attachment: scroll`, because
+fixed backgrounds judder badly on iOS.
+
+### Light mode is not an inverted page
+
+Both themes share the same dark wallpaper and the same scrim. **Only the cards
+change** — in light mode they become translucent white frosted glass, so the
+artwork stays visible through and around them.
+
+This has two consequences that are easy to trip over:
+
+- **Text colour depends on whether an element sits on a card or on the
+  wallpaper.** Page-level text tokens stay *light* in light mode, because
+  section titles sit on dark artwork. Card-scoped rules flip them dark.
+- **Sections must stay transparent.** Giving `.contact` or `.footer` a
+  full-width background turns the lower half of the page into one continuous
+  translucent sheet, which reads as flat grey. Blocks that need a surface —
+  the form, the contact details, the footer content — get their own card.
+
+### Inline styles beat stylesheets
+
+Much of the markup still carries inline `style` attributes. An inline
+`color: var(--color-accent)` cannot be overridden by a CSS rule.
+
+**The fix is to redefine the token on the parent, not to reach for
+`!important`.** The inline reference then resolves to the new value. This is
+how the carousel arrows, the callout links and the light-mode cards are all
+handled. `[style*="var(--color-bg-dark)"]` is used to catch anonymous
+inline-styled boxes without maintaining a list of unnamed divs.
 
 ---
 
-## 🎯 Next Steps for Thomas
+## Verifying a change
 
-1. ✅ Test contact form submission
-2. ⏳ Add portfolio photos (when ready)
-3. ⏳ Generate PWA icons
-4. ✅ Share site with potential clients
+Contrast is measured against computed styles in a real browser, not estimated
+from the CSS. Two things will give false results:
 
----
+- **Colour transitions.** `a { transition: color 0.3s }` means reading
+  immediately after switching theme catches a half-faded value. Disable
+  transitions before measuring.
+- **Offscreen iframes.** Browsers throttle compositing for offscreen content,
+  so transitions never advance there at all.
 
-## 💬 Session Notes
-
-This session was long and productive. Built the entire website from scratch with:
-- 7 HTML pages
-- 3 CSS files
-- 2 JS files
-- PWA manifest + service worker
-- 3 interactive calculators
-- Google Maps embed
-- Comprehensive SEO tags
-- Mobile responsive design
-- Dark/light theme
-- Contact form with AJAX
-- Service request checklist
-- Payment info
-- Rush service options
-- Breadcrumbs
-- Back-to-top button
-- Enhanced hover effects
-- Service area maps (text + visual)
-
-**All features requested were implemented.**
+Current state: **1,348 text elements across six pages, both themes, zero
+contrast failures.**
 
 ---
 
-**Handoff complete. Session ready for reset.**
+## Where things are
 
-— Bob 🤖
+| Thing | File |
+|---|---|
+| All prices | `js/pricing.js` |
+| Phone number | `js/app.js` (`J7_PHONE`) **and** the JSON-LD in `index.html` |
+| Design tokens | top of `css/styles.css` |
+| Light-mode card rules | `css/styles.css`, the `[data-theme="light"]` blocks |
+| Cache stamping | `scripts/stamp-assets.py` |
+| Pricing tests | `scripts/verify-pricing.js` |
+
+The phone number appears in two places on purpose: crawlers do not run the
+JavaScript that fills the visible copies, so the structured data carries a
+literal. **Keep them in sync.**
+
+---
+
+## Decisions that were made deliberately
+
+Do not silently reverse these.
+
+- **Remote support stays $25/hr.** It is the accessible entry point, held low
+  on purpose. Everything else was raised toward market.
+- **On-site labour is $45 / $60 / $85** by complexity, roughly 60% of national
+  rate. Market research showed the previous rates were 2–20× *under* market,
+  not over — a salaried IT tech in Tennessee earns more per hour than the
+  business was charging.
+- **Cameras and access points are priced per unit** with volume breaks, because
+  that is how customers compare installers.
+- **3D printing is cheaper on large jobs.** A 1kg print went from $91 to $52.
+  The old flat per-gram rate scaled linearly forever.
+- **No checks.** Cash, Venmo, Cash App and Net-7 invoicing only.
+- **No testimonials or invented credibility.** There are none yet, so the site
+  surfaces the real commitments instead: no markup on equipment with receipts
+  shown, free first hour on site, 30-day callback on installs.
+
+---
+
+## Known gaps
+
+- **No portfolio evidence for IT or field installation** — two of the three
+  business lines. The six existing items are fabrication and signage. This is
+  the weakest thing on the site and only new photos can fix it.
+- Two of the portfolio entries are J7's own business cards, i.e. marketing
+  collateral rather than client work.
+- `about.html` and `portfolio.html` have no structured data.
+- Roughly 350 inline `style` attributes remain, mostly layout one-offs.
+- **Cloudflare Browser Cache TTL** should be set to *Respect Existing Headers*
+  in the dashboard. The stamp script works around the override, but that
+  setting removes the problem at source.
+
+## The highest-value thing left is not code
+
+A **Google Business Profile**. The site now has the phone number, service
+radius and structured data that local search ranks on. For a business defined
+by a 100-mile radius, that listing will do more than any further work here.
