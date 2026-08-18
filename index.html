@@ -106,10 +106,20 @@
                 <span class="hamburger"></span>
             </button>
             <ul class="nav-menu">
-                <li><a href="#services" class="nav-link">Services</a></li>
-                <li><a href="#portfolio" class="nav-link">Portfolio</a></li>
-                <li><a href="pages/about.html" class="nav-link">About</a></li>
-                <li><a href="#contact" class="nav-link nav-cta">Contact</a></li>
+                <li class="has-submenu">
+                    <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
+                        Services <span class="caret" aria-hidden="true"></span>
+                    </button>
+                    <ul class="submenu" id="services-submenu">
+                        <li><a href="/pages/services-it.html">IT &amp; Networks</a></li>
+                        <li><a href="/pages/services-fabrication.html">3D Printing &amp; Fabrication</a></li>
+                        <li><a href="/pages/services-installation.html">Field Installation</a></li>
+                        <li><a href="/#services">All services</a></li>
+                    </ul>
+                </li>
+                <li><a href="/pages/portfolio.html" class="nav-link">Portfolio</a></li>
+                <li><a href="/pages/about.html" class="nav-link">About</a></li>
+                <li><a href="/#contact" class="nav-link nav-cta">Contact</a></li>
                 <li>
                     <button class="theme-toggle" aria-label="Toggle light and dark theme" aria-pressed="false">
                         <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>

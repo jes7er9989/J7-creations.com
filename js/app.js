@@ -91,6 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
+    // ========== Services Submenu ==========
+    // Hover alone is not enough: it excludes keyboard and touch users, and
+    // the three service pages are the only route to the detailed pricing.
+    const submenuToggle = document.querySelector('.submenu-toggle');
+    const submenu = document.getElementById('services-submenu');
+
+    if (submenuToggle && submenu) {
+        const isMobileLayout = () => window.matchMedia('(max-width: 768px)').matches;
+
+        const closeSubmenu = () => submenuToggle.setAttribute('aria-expanded', 'false');
+
+        submenuToggle.addEventListener('click', () => {
+            if (isMobileLayout()) return; // always expanded in the mobile menu
+            const open = submenuToggle.getAttribute('aria-expanded') === 'true';
+            submenuToggle.setAttribute('aria-expanded', String(!open));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.has-submenu')) closeSubmenu();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && submenuToggle.getAttribute('aria-expanded') === 'true') {
+                closeSubmenu();
+                submenuToggle.focus();
+            }
+        });
+    }
+
     // ========== Mobile Navigation ==========
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');

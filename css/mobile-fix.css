@@ -3,6 +3,13 @@
 
 @media (max-width: 768px) {
     /* Sticky navbar on top */
+    /* styles.css reserves 70px of body padding for a FIXED navbar. Below this
+       breakpoint the navbar becomes sticky and occupies real space, so that
+       reservation became an empty 70px gap at the top of every mobile page. */
+    body {
+        padding-top: 0 !important;
+    }
+
     .navbar {
         position: sticky !important;
         top: 0 !important;
@@ -31,7 +38,7 @@
     
     /* Mobile menu dropdown */
     .nav-menu {
-        background: rgba(15, 15, 15, 0.98) !important;
+        background: var(--color-bg-darker) !important;
         backdrop-filter: blur(10px) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
@@ -39,7 +46,7 @@
     }
     
     [data-theme="light"] .nav-menu {
-        background: rgba(255, 255, 255, 0.98) !important;
+        background: var(--color-bg-darker) !important;
         border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
     }
     
@@ -139,5 +146,33 @@
     .form-group select,
     .form-group textarea {
         font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+}
+
+@media (max-width: 768px) {
+    /* The collapsed menu used max-height:0 with overflow:hidden, but with
+       box-sizing:border-box it could never shrink past its own 2rem of
+       padding — so a 65px band stayed on screen and the first item showed
+       through. Collapse the padding with it, and anchor the panel to the
+       navbar rather than a hardcoded 70px offset that assumed a fixed bar. */
+    .navbar { position: sticky; }
+
+    .nav-menu {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        max-height: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        overflow: hidden !important;
+        transition: max-height 0.3s ease, padding 0.3s ease !important;
+    }
+
+    .nav-menu.active {
+        max-height: 80vh !important;
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+        overflow-y: auto !important;
     }
 }

@@ -39,8 +39,18 @@
                 <span class="hamburger"></span>
             </button>
             <ul class="nav-menu">
-                <li><a href="../#services" class="nav-link">Services</a></li>
-                <li><a href="../#portfolio" class="nav-link">Portfolio</a></li>
+                <li class="has-submenu">
+                    <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
+                        Services <span class="caret" aria-hidden="true"></span>
+                    </button>
+                    <ul class="submenu" id="services-submenu">
+                        <li><a href="/pages/services-it.html">IT &amp; Networks</a></li>
+                        <li><a href="/pages/services-fabrication.html">3D Printing &amp; Fabrication</a></li>
+                        <li><a href="/pages/services-installation.html">Field Installation</a></li>
+                        <li><a href="/#services">All services</a></li>
+                    </ul>
+                </li>
+                <li><a href="/pages/portfolio.html" class="nav-link">Portfolio</a></li>
                 <li><a href="/pages/about.html" class="nav-link">About</a></li>
                 <li><a href="/#contact" class="nav-link nav-cta">Contact</a></li>
                 <li>
@@ -53,6 +63,15 @@
         </div>
     </nav>
 
+
+    <!-- Breadcrumb -->
+    <nav aria-label="Breadcrumb" class="breadcrumb">
+        <div class="container">
+            <a href="/">Home</a>
+            <span class="sep" aria-hidden="true">&gt;</span>
+            <span class="current" aria-current="page">Portfolio</span>
+        </div>
+    </nav>
     <main id="main-content">
 
     <!-- Hero Section -->
@@ -194,6 +213,14 @@
     </section>
 
     <!-- Footer -->
+
+        <div class="container">
+            <div class="cta-box" id="portfolio-cta-end">
+                <h2 style="margin-bottom: var(--spacing-2xs);">Want something like this?</h2>
+                <p class="text-muted" style="margin-bottom: var(--spacing-m);">Send me a photo, a sketch, or just a description of the problem. I'll tell you whether I can make it and what it would cost &mdash; no obligation.</p>
+                <a href="/#contact" class="btn btn-primary">Request a Quote</a>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">

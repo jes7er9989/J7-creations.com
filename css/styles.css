@@ -574,8 +574,12 @@ body::before {
 
 .tab-btn:hover,
 .tab-btn.active {
-    border-color: var(--color-accent);
-    background: var(--color-accent);
+    /* Filled accent buttons need an explicit foreground. Inheriting the themed
+       text colour gives 3.29:1 in dark and 2.35:1 in light — the same defect
+       that affected .nav-cta and .skip-link. */
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
+    color: #ffffff;
 }
 
 .portfolio-grid {
@@ -1050,8 +1054,8 @@ body::before {
     position: absolute;
     left: -9999px;
     top: 0;
-    background: var(--color-accent);
-    color: #fff;
+    background: var(--color-accent-strong);
+    color: #ffffff;
     padding: var(--spacing-2xs) var(--spacing-sm);
     z-index: 1000;
     border-radius: 0 0 var(--radius-sm) 0;
@@ -1075,3 +1079,104 @@ body::before {
         scroll-behavior: auto !important;
     }
 }
+
+/* ---------------------------------------------------------------------------
+   NAV SUBMENU
+   The three service pages carry all the detailed pricing but were previously
+   unreachable from the nav — "Services" only jumped to a homepage section.
+   --------------------------------------------------------------------------- */
+
+.has-submenu { position: relative; }
+
+.submenu-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    color: var(--color-text-white);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+}
+
+.submenu-toggle .caret {
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
+    transition: transform 0.2s ease;
+}
+
+.submenu-toggle[aria-expanded="true"] .caret { transform: rotate(180deg); }
+.submenu-toggle:hover { color: var(--color-accent); }
+
+.submenu {
+    position: absolute;
+    top: calc(100% + 0.75rem);
+    left: 0;
+    min-width: 250px;
+    background: var(--color-bg-darker);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 0.5rem 0;
+    list-style: none;
+    display: none;
+    z-index: 1001;
+}
+
+.submenu li { margin: 0; }
+
+.submenu a {
+    display: block;
+    padding: 0.6rem 1.1rem;
+    color: var(--color-text-white);
+    white-space: nowrap;
+}
+
+.submenu a:hover,
+.submenu a:focus-visible {
+    background: var(--wash-accent);
+    color: var(--color-accent);
+}
+
+/* Open on hover for pointers, and on click/focus for keyboard and touch */
+.has-submenu:hover .submenu,
+.has-submenu:focus-within .submenu,
+.submenu-toggle[aria-expanded="true"] + .submenu { display: block; }
+
+@media (max-width: 768px) {
+    /* No hover on touch: the submenu becomes a nested list, always open,
+       so every service page is one tap away once the menu is expanded. */
+    .submenu {
+        position: static;
+        display: block;
+        min-width: 0;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        padding: 0 0 0 1rem;
+    }
+    .submenu a { padding: 0.5rem 0; }
+    .submenu-toggle .caret { display: none; }
+    .submenu-toggle { cursor: default; }
+}
+
+/* Cross-links between service pages — there were none, and one page told the
+   reader in plain text to "see the Field Installation page" with no link. */
+.related-services { padding: var(--spacing-lg) 0; }
+
+.related-link {
+    display: block;
+    color: inherit;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.related-link:hover,
+.related-link:focus-visible {
+    transform: translateY(-3px);
+    border-color: var(--color-accent);
+}
+
+.related-link .panel-title { margin-bottom: var(--spacing-2xs); }

@@ -40,8 +40,18 @@
                 <span class="hamburger"></span>
             </button>
             <ul class="nav-menu">
-                <li><a href="../#services" class="nav-link">Services</a></li>
-                <li><a href="../#portfolio" class="nav-link">Portfolio</a></li>
+                <li class="has-submenu">
+                    <button type="button" class="nav-link submenu-toggle" aria-expanded="false" aria-controls="services-submenu">
+                        Services <span class="caret" aria-hidden="true"></span>
+                    </button>
+                    <ul class="submenu" id="services-submenu">
+                        <li><a href="/pages/services-it.html">IT &amp; Networks</a></li>
+                        <li><a href="/pages/services-fabrication.html">3D Printing &amp; Fabrication</a></li>
+                        <li><a href="/pages/services-installation.html">Field Installation</a></li>
+                        <li><a href="/#services">All services</a></li>
+                    </ul>
+                </li>
+                <li><a href="/pages/portfolio.html" class="nav-link">Portfolio</a></li>
                 <li><a href="/pages/about.html" class="nav-link">About</a></li>
                 <li><a href="/#contact" class="nav-link nav-cta">Contact</a></li>
                 <li>
@@ -415,6 +425,24 @@
     </section>
 
     <!-- Footer -->
+
+    <section class="related-services">
+        <div class="container">
+            <h2 class="section-title">Other Services</h2>
+            <p class="text-muted" style="text-align: center; margin-bottom: var(--spacing-md);">Most jobs touch more than one of these. I handle all three, so nothing falls between contractors.</p>
+            <div class="grid grid--auto">
+                <a class="panel related-link" href="/pages/services-it.html">
+                    <h3 class="panel-title">IT &amp; Networks</h3>
+                    <p class="text-muted">See what's included and what it costs &rarr;</p>
+                </a>
+                <a class="panel related-link" href="/pages/services-fabrication.html">
+                    <h3 class="panel-title">3D Printing &amp; Fabrication</h3>
+                    <p class="text-muted">See what's included and what it costs &rarr;</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
     </main>
 
     <footer class="footer">
