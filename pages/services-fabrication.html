@@ -30,6 +30,7 @@
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
@@ -54,13 +55,15 @@
     </nav>
 
     <!-- Breadcrumb -->
-    <nav aria-label="Breadcrumb" style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
+    <nav aria-label="Breadcrumb" class="breadcrumb">
         <div class="container">
-            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
-            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
-            <span style="color: var(--color-text-white);">3D Printing &amp; Fabrication</span>
+            <a href="/">Home</a>
+            <span class="sep" aria-hidden="true">&gt;</span>
+            <span class="current" aria-current="page">3D Printing &amp; Fabrication</span>
         </div>
     </nav>
+
+    <main id="main-content">
 
     <!-- Hero Section -->
     <header class="hero">
@@ -198,26 +201,26 @@
             <h2 class="section-title">Pricing</h2>
             
             <!-- Quote Calculator -->
-            <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">🧮 Quick Price Estimator</h3>
+            <div class="panel panel--roomy panel--accent" style="margin-bottom: var(--spacing-l);">>
+                <h3 class="panel-title">🧮 Quick Price Estimator</h3>
                 <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Get an instant estimate for your 3D print job. Enter your part details below:</p>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Part Weight</label>
+                        <label class="field-label" for="part-weight">Part Weight</label>
                         <div style="display: flex; gap: 0.5rem;">
-                            <input type="number" id="part-weight" placeholder="e.g., 0.33" step="0.01" oninput="convertWeight()" style="flex: 1; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                            <select id="weight-unit" onchange="convertWeight()" style="padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                            <input type="number" id="part-weight" placeholder="e.g., 0.33" step="0.01" oninput="convertWeight()" class="form-control" style="flex: 1;">
+                            <select id="weight-unit" onchange="convertWeight()" aria-label="Weight unit" class="form-control">
                                 <option value="lbs">lbs</option>
                                 <option value="kg">kg</option>
                                 <option value="g">grams</option>
                             </select>
                         </div>
-                        <p id="weight-in-grams" style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;"></p>
+                        <p id="weight-in-grams" class="field-hint"></p>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Material</label>
-                        <select id="material-type" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="material-type">Material</label>
+                        <select id="material-type" class="form-control">
                             <option value="26">PLA / PLA Basic (~$26/kg)</option>
                             <option value="32">PETG (~$32/kg)</option>
                             <option value="35">ABS / ASA (~$35/kg)</option>
@@ -230,29 +233,29 @@
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quality Level</label>
-                        <select id="quality-level" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="quality-level">Quality Level</label>
+                        <select id="quality-level" class="form-control">
                             <option value="0.7">Draft (0.28-0.32mm) - faster, visible layers</option>
                             <option value="1.0" selected>Standard (0.2mm) - most common</option>
                             <option value="1.5">High Quality (0.12mm) - smooth finish</option>
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Quantity</label>
-                        <input type="number" id="part-quantity" value="1" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                        <p style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;">Setup fee charged once per order</p>
+                        <label class="field-label" for="part-quantity">Quantity</label>
+                        <input type="number" id="part-quantity" value="1" min="1" step="1" class="form-control">
+                        <p class="field-hint">Setup fee charged once per order</p>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Supports / Waste</label>
-                        <select id="waste-factor" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="waste-factor">Supports / Waste</label>
+                        <select id="waste-factor" class="form-control">
                             <option value="0.03" selected>Minimal - simple part, no supports (+3%)</option>
                             <option value="0.10">Supports needed - overhangs, brim (+10%)</option>
                             <option value="0.25">Multi-color / AMS - purge waste (+25%)</option>
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Turnaround</label>
-                        <select id="rush-level" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="rush-level">Turnaround</label>
+                        <select id="rush-level" class="form-control">
                             <option value="1.0" selected>Standard - 5-10 business days</option>
                             <option value="1.5">RUSH - 48 hours (+50%)</option>
                             <option value="2.0">URGENT - 24 hours (+100%)</option>
@@ -261,15 +264,15 @@
                 </div>
                 <button onclick="calculatePrice()" class="btn btn-primary" style="margin-bottom: 1.5rem;">Calculate Estimate</button>
                 
-                <div id="price-result" style="padding: 1.5rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.2), rgba(45, 138, 110, 0.2)); border-radius: 8px; border: 1px solid var(--color-accent); display: none;">
-                    <h4 style="color: var(--color-accent); margin-bottom: 1rem;">Estimated Cost Breakdown:</h4>
+                <div id="price-result" class="result-panel" style="display: none;">
+                    <h4 class="panel-title">Estimated Cost Breakdown:</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
                         <div>
-                            <p style="color: var(--color-text-gray); font-size: 0.9rem;">Filament Cost:</p>
+                            <p class="text-fine">Filament Cost:</p>
                             <p id="filament-cost" style="font-size: 1.25rem; font-weight: 700;">$0.00</p>
                         </div>
                         <div>
-                            <p style="color: var(--color-text-gray); font-size: 0.9rem;">Print Service Fee:</p>
+                            <p class="text-fine">Print Service Fee:</p>
                             <p id="service-fee" style="font-size: 1.25rem; font-weight: 700;">$0.00</p>
                         </div>
                         <div>
@@ -278,12 +281,12 @@
                         </div>
                     </div>
                     <p id="price-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem; line-height: 1.7;"></p>
-                    <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*This is an estimate only. Final quote may vary based on complexity, support requirements, and current filament availability. Contact me for a firm quote.</em></p>
+                    <p class="note"><em>*This is an estimate only. Final quote may vary based on complexity, support requirements, and current filament availability. Contact me for a firm quote.</em></p>
                 </div>
             </div>
             
-            <div style="padding: 2rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.15), rgba(45, 138, 110, 0.15)); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">How 3D Printing Pricing Works</h3>
+            <div class="callout">>
+                <h3 class="panel-title">How 3D Printing Pricing Works</h3>
                 <p style="font-size: 1.05rem; margin-bottom: 1rem;"><strong>Two-part pricing: Filament + Print Service Fee</strong></p>
                 <ul style="color: var(--color-text-gray); margin-left: 1.5rem; margin-bottom: 1rem;">
                     <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers material, shipping, and storage. A small allowance is added for supports, brim, and multi-color purge — the plastic that gets used but isn't part of your finished piece.</li>
@@ -302,47 +305,47 @@
                     <div class="advantage-item">
                         <h4>PLA / PLA Basic</h4>
                         <p><strong>~$23-29/kg (~$10-13/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Prototypes, models, test fits. Full color range.</p>
+                        <p class="text-fine">Prototypes, models, test fits. Full color range.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>PETG</h4>
                         <p><strong>~$29-35/kg (~$13-16/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Functional parts, outdoor use. Clear, black, white, colors.</p>
+                        <p class="text-fine">Functional parts, outdoor use. Clear, black, white, colors.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>ABS / ASA</h4>
                         <p><strong>~$29-40/kg (~$13-18/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">High-impact, UV resistant, automotive. Black, white, gray.</p>
+                        <p class="text-fine">High-impact, UV resistant, automotive. Black, white, gray.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>TPU (Flexible)</h4>
                         <p><strong>~$40-46/kg (~$18-21/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Gaskets, bumpers, grips, seals. 95A hardness.</p>
+                        <p class="text-fine">Gaskets, bumpers, grips, seals. 95A hardness.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>PC (Polycarbonate)</h4>
                         <p><strong>~$52-63/kg (~$24-29/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Extreme strength, high-temp (145°C). Clear, black.</p>
+                        <p class="text-fine">Extreme strength, high-temp (145°C). Clear, black.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Nylon PA6</h4>
                         <p><strong>~$63-75/kg (~$29-34/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Wear-resistant, gears, bearings (180°C). Natural, black.</p>
+                        <p class="text-fine">Wear-resistant, gears, bearings (180°C). Natural, black.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Nylon PA12 / PA11</h4>
                         <p><strong>~$80-98/kg (~$36-44/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">End-use parts, excellent detail (175°C). Natural, black, gray.</p>
+                        <p class="text-fine">End-use parts, excellent detail (175°C). Natural, black, gray.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Carbon Fiber (CF)</h4>
                         <p><strong>~$86-104/kg (~$39-47/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Aerospace-grade strength, lightweight. Black (carbon weave visible).</p>
+                        <p class="text-fine">Aerospace-grade strength, lightweight. Black (carbon weave visible).</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Glass Fiber (GF)</h4>
                         <p><strong>~$75-92/kg (~$34-42/lb)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">High strength, rigid, cost-effective CF alternative. Natural, black.</p>
+                        <p class="text-fine">High strength, rigid, cost-effective CF alternative. Natural, black.</p>
                     </div>
                 </div>
                 <p style="margin-top: 1.5rem; color: var(--color-text-gray); font-size: 0.9rem;"><em>*Filament prices based on Bambu Lab retail pricing. Prices vary by color and availability — current price confirmed in quote. Other brands available on request (Polymaker, Prusament, etc.).</em></p>
@@ -387,22 +390,22 @@
                     <div class="advantage-item">
                         <h4>Standard Quality (0.2mm layer)</h4>
                         <p><strong>Base rate (x1.0)</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Most common choice. Good balance of speed and finish. Functional parts, prototypes.</p>
+                        <p class="text-fine">Most common choice. Good balance of speed and finish. Functional parts, prototypes.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>High Quality (0.12mm layer)</h4>
                         <p><strong>1.5x base rate</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Visible surfaces, cosmetic prints, detailed models. Smooth finish, longer print time.</p>
+                        <p class="text-fine">Visible surfaces, cosmetic prints, detailed models. Smooth finish, longer print time.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Draft Quality (0.28-0.32mm layer)</h4>
                         <p><strong>0.7x base rate</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Large parts, test fits, structural components. Fast turnaround, visible layer lines.</p>
+                        <p class="text-fine">Large parts, test fits, structural components. Fast turnaround, visible layer lines.</p>
                     </div>
                     <div class="advantage-item">
                         <h4>Multi-part Orders</h4>
                         <p><strong>Setup charged once</strong></p>
-                        <p style="color: var(--color-text-gray); font-size: 0.9rem;">Batches share one setup fee and reach the volume rate sooner — 20 small parts work out around $2.58 each.</p>
+                        <p class="text-fine">Batches share one setup fee and reach the volume rate sooner — 20 small parts work out around $2.58 each.</p>
                     </div>
                 </div>
                 <p style="margin-top: 1.5rem; color: var(--color-text-gray); font-size: 0.9rem;"><em>*Service fees are separate from filament cost. Total = Filament + Print Service Fee. Quote provided before printing.</em></p>
@@ -433,7 +436,7 @@
             </div>
             
             <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Not Sure What Material You Need?</h3>
+                <h3 class="panel-title">Not Sure What Material You Need?</h3>
                 <p style="margin-bottom: 1.5rem;">I'll help you choose the right material for your application based on temperature, chemical exposure, UV, load requirements, and budget.</p>
                 <a href="/#contact" class="btn btn-primary">Get a Free Quote</a>
             </div>
@@ -447,22 +450,22 @@
             <div style="max-width: 800px; margin: 0 auto;">
                 <ol style="list-style: none; counter-reset: steps;">
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
-                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">1</span>
+                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: var(--color-accent);">1</span>
                         <h3>Send Me Details</h3>
                         <p>Email photos, measurements, or CAD files. Tell me what the part does, where it lives, and what conditions it faces (heat, UV, chemicals, etc.).</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
-                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">2</span>
+                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: var(--color-accent);">2</span>
                         <h3>I Quote</h3>
                         <p>I'll review your request and send a quote with material recommendation, price, and turnaround time. No obligation.</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
-                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">3</span>
+                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: var(--color-accent);">3</span>
                         <h3>I Print</h3>
                         <p>Once approved, I print your part(s) in the specified material. I'll send photos before shipping/pickup.</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
-                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: #6b4c9a;">4</span>
+                        <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: var(--color-accent);">4</span>
                         <h3>You Install</h3>
                         <p>Pick up locally or I ship. If it doesn't fit or work, I'll make it right — that's my guarantee.</p>
                     </li>
@@ -475,6 +478,8 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>

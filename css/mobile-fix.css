@@ -90,7 +90,8 @@
     
     /* Better logo visibility on mobile */
     body::before {
-        opacity: 0.35 !important;
+        /* was 0.35, which put the strongest wash behind the smallest text */
+        opacity: 0.12 !important;
     }
     
     /* Section spacing */

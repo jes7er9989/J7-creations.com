@@ -30,6 +30,7 @@
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
@@ -54,13 +55,15 @@
     </nav>
 
     <!-- Breadcrumb -->
-    <nav aria-label="Breadcrumb" style="padding: 1rem 0; background: rgba(26, 26, 26, 0.5); backdrop-filter: blur(10px); margin-bottom: 2rem;">
+    <nav aria-label="Breadcrumb" class="breadcrumb">
         <div class="container">
-            <a href="/" style="color: var(--color-accent); text-decoration: none;">Home</a>
-            <span style="margin: 0 0.5rem; color: var(--color-text-gray);">&gt;</span>
-            <span style="color: var(--color-text-white);">IT &amp; Network Infrastructure</span>
+            <a href="/">Home</a>
+            <span class="sep" aria-hidden="true">&gt;</span>
+            <span class="current" aria-current="page">IT &amp; Network Infrastructure</span>
         </div>
     </nav>
+
+    <main id="main-content">
 
     <!-- Hero Section -->
     <header class="hero">
@@ -189,14 +192,14 @@
             <h2 class="section-title">Pricing</h2>
             
             <!-- IT Services Calculator -->
-            <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">🧮 Quick Service Estimator</h3>
+            <div class="panel panel--roomy panel--accent" style="margin-bottom: var(--spacing-l);">>
+                <h3 class="panel-title">🧮 Quick Service Estimator</h3>
                 <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Get an instant estimate for IT services. Select your service type and details:</p>
                 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Service Type</label>
-                        <select id="it-service" onchange="updateITOptions()" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="it-service">Service Type</label>
+                        <select id="it-service" onchange="updateITOptions()" class="form-control">
                             <option value="remote">Remote Support</option>
                             <option value="install">On-Site Installation</option>
                             <option value="network-design">Network Design</option>
@@ -205,31 +208,31 @@
                         </select>
                     </div>
                     <div id="hours-div" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Estimated Hours</label>
-                        <input type="number" id="it-hours" placeholder="e.g., 2" min="0.5" step="0.5" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                        <p id="hours-note" style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;"></p>
+                        <label class="field-label" for="it-hours">Estimated Hours</label>
+                        <input type="number" id="it-hours" placeholder="e.g., 2" min="0.5" step="0.5" class="form-control">
+                        <p id="hours-note" class="field-hint"></p>
                     </div>
                     <div id="complexity-div" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Complexity</label>
-                        <select id="it-complexity" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="it-complexity">Complexity</label>
+                        <select id="it-complexity" class="form-control">
                             <option value="simple">Simple (basic setup)</option>
                             <option value="medium">Medium (some configuration)</option>
                             <option value="complex">Complex (multi-room/custom)</option>
                         </select>
                     </div>
                     <div id="devices-div" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Number of Devices</label>
-                        <input type="number" id="it-devices" placeholder="e.g., 10" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                        <p style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;">Per-device rate drops on larger systems</p>
+                        <label class="field-label" for="it-devices">Number of Devices</label>
+                        <input type="number" id="it-devices" placeholder="e.g., 10" min="1" step="1" class="form-control">
+                        <p class="field-hint">Per-device rate drops on larger systems</p>
                     </div>
                     <div id="nodes-div" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Access Points / Switches</label>
-                        <input type="number" id="it-nodes" placeholder="e.g., 4" min="1" step="1" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
-                        <p style="margin-top: 0.5rem; color: var(--color-text-gray); font-size: 0.85rem;">How many devices the design has to cover</p>
+                        <label class="field-label" for="it-nodes">Access Points / Switches</label>
+                        <input type="number" id="it-nodes" placeholder="e.g., 4" min="1" step="1" class="form-control">
+                        <p class="field-hint">How many devices the design has to cover</p>
                     </div>
                     <div id="travel-div" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Distance from Atwood, TN</label>
-                        <select id="it-travel" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="it-travel">Distance from Atwood, TN</label>
+                        <select id="it-travel" class="form-control">
                             <option value="0" selected>Within 25 miles (no fee)</option>
                             <option value="15">25-50 miles (+$15)</option>
                             <option value="30">50-75 miles (+$30)</option>
@@ -237,8 +240,8 @@
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Turnaround</label>
-                        <select id="it-rush" style="width: 100%; padding: 0.75rem; background: var(--color-input-bg); border: 1px solid var(--color-border); border-radius: 4px; color: var(--color-text-white); font-size: 1rem;">
+                        <label class="field-label" for="it-rush">Turnaround</label>
+                        <select id="it-rush" class="form-control">
                             <option value="1.0" selected>Standard scheduling</option>
                             <option value="1.5">RUSH - 48 hours (+50%)</option>
                             <option value="2.0">URGENT - 24 hours (+100%)</option>
@@ -247,16 +250,16 @@
                 </div>
                 <button onclick="calculateITPrice()" class="btn btn-primary" style="margin-bottom: 1.5rem;">Calculate Estimate</button>
                 
-                <div id="it-result" style="padding: 1.5rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.2), rgba(45, 138, 110, 0.2)); border-radius: 8px; border: 1px solid var(--color-accent); display: none;">
-                    <h4 style="color: var(--color-accent); margin-bottom: 1rem;">Estimated Cost:</h4>
+                <div id="it-result" class="result-panel" style="display: none;">
+                    <h4 class="panel-title">Estimated Cost:</h4>
                     <p id="it-total" style="font-size: 2rem; font-weight: 700; color: var(--color-accent);">$0.00</p>
                     <p id="it-breakdown" style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.9rem;"></p>
-                    <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.85rem;"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions and specific requirements.</em></p>
+                    <p class="note"><em>*Equipment quoted separately at actual retail cost. This estimate is for labor only. Final quote may vary based on site conditions and specific requirements.</em></p>
                 </div>
             </div>
             
-            <div style="padding: 2rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.15), rgba(45, 138, 110, 0.15)); border-radius: 8px; border: 2px solid var(--color-accent); margin-bottom: 3rem;">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem; font-size: 1.5rem;">⚠️ Important: Equipment Priced Separately</h3>
+            <div class="callout">>
+                <h3 class="panel-title">⚠️ Important: Equipment Priced Separately</h3>
                 <p style="font-size: 1.1rem; margin-bottom: 1rem;"><strong>All prices below are for LABOR/SERVICES only.</strong></p>
                 <p style="color: var(--color-text-gray); margin-bottom: 1rem;">Equipment (access points, switches, routers, servers, cameras, etc.) is quoted separately at actual retail cost. I'll provide a detailed line-item estimate showing:</p>
                 <ul style="color: var(--color-text-gray); margin-left: 1.5rem; margin-bottom: 1rem;">
@@ -270,7 +273,7 @@
             
             <div class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
                 <div id="remote-support" class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Remote Support</h3>
+                    <h3 class="panel-title">Remote Support</h3>
                     <p><strong><span data-price="labor.remote" data-price-format="hourly">$25/hr</span></strong> (30-minute minimum)</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Phone or screenshare troubleshooting</li>
@@ -279,10 +282,10 @@
                         <li>Software/setup help</li>
                         <li>No travel needed</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Most issues resolved in 30-60 minutes. Payment via check, Venmo, or Cash App.</em></p>
+                    <p class="note"><em>Most issues resolved in 30-60 minutes. Payment via check, Venmo, or Cash App.</em></p>
                 </div>
-                <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Network Design & Planning</h3>
+                <div class="why-item">
+                    <h3 class="panel-title">Network Design & Planning</h3>
                     <p><strong>$200-800</strong> — $150 base plus $50 per access point or switch covered</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Site survey (in-person or remote)</li>
@@ -292,11 +295,11 @@
                         <li>PoE budget calculation</li>
                         <li>Written report & recommendations</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Remote quotes: Free | On-site survey: First hour free, then <span data-price="labor.simple" data-price-format="hourly">$45/hr</span> + travel fee (0-25mi: free, 25-50mi: $15, 50-75mi: $30, 75-100mi: $50)</em></p>
+                    <p class="note"><em>Remote quotes: Free | On-site survey: First hour free, then <span data-price="labor.simple" data-price-format="hourly">$45/hr</span> + travel fee (0-25mi: free, 25-50mi: $15, 50-75mi: $30, 75-100mi: $50)</em></p>
                 </div>
                 
-                <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Installation & Deployment</h3>
+                <div class="why-item">
+                    <h3 class="panel-title">Installation & Deployment</h3>
                     <p><strong>$45-85/hour</strong> depending on complexity</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>AP mounting & positioning</li>
@@ -306,11 +309,11 @@
                         <li>VLAN setup & testing</li>
                         <li>Speed tests & optimization</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Access points are priced per unit — $125 each (1-2), $105 (3-5), $90 (6+), mounting and configuration included. So a typical whole-house job of 4-6 APs runs $420-540. Open-ended work is hourly instead, 2-hour minimum. Full breakdown on the <a href="services-installation.html" style="color: var(--color-accent);">Field Installation page</a>.</em></p>
+                    <p class="note"><em>Access points are priced per unit — $125 each (1-2), $105 (3-5), $90 (6+), mounting and configuration included. So a typical whole-house job of 4-6 APs runs $420-540. Open-ended work is hourly instead, 2-hour minimum. Full breakdown on the <a href="services-installation.html" style="color: var(--color-accent);">Field Installation page</a>.</em></p>
                 </div>
                 
-                <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Home Assistant Automation</h3>
+                <div class="why-item">
+                    <h3 class="panel-title">Home Assistant Automation</h3>
                     <p><strong>$375-1,200+</strong> — $150 base setup plus per-device integration</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Server setup (local, cloud-free)</li>
@@ -320,11 +323,11 @@
                         <li>Mobile app setup</li>
                         <li>Client training & documentation</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Basic setup (5-10 devices): $375-530 | Whole-home (20+ devices): $850+. Per-device rate drops from $45 to $35 as the system grows.</em></p>
+                    <p class="note"><em>Basic setup (5-10 devices): $375-530 | Whole-home (20+ devices): $850+. Per-device rate drops from $45 to $35 as the system grows.</em></p>
                 </div>
                 
-                <div class="why-item" style="padding: 1.5rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Network Audit</h3>
+                <div class="why-item">
+                    <h3 class="panel-title">Network Audit</h3>
                     <p><strong>$150 flat rate</strong></p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Full network assessment</li>
@@ -334,19 +337,19 @@
                         <li>Written report with recommendations</li>
                         <li>Priority-ranked action items</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-text-gray);"><em>Remote or on-site. 3-5 day turnaround.</em></p>
+                    <p class="note"><em>Remote or on-site. 3-5 day turnaround.</em></p>
                 </div>
             </div>
             
             <div style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 2rem;">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Hardware & Equipment</h3>
+                <h3 class="panel-title">Hardware & Equipment</h3>
                 <p style="margin-bottom: 1rem;"><strong>Quoted separately at actual retail cost</strong></p>
                 <p style="color: var(--color-text-gray);">I source enterprise-grade equipment based on your specific needs and budget. You pay actual retail cost — I'll show you the receipts/invoices. No markup, no hidden fees.</p>
                 <p style="margin-top: 1rem; color: var(--color-text-gray); font-size: 0.95rem;"><em>Equipment pricing varies by brand, model, availability, and market conditions. I'll provide a detailed line-item estimate with current pricing before any purchase. You can buy the equipment yourself or I can purchase it on your behalf — your choice.</em></p>
             </div>
             
-            <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(107, 76, 154, 0.1), rgba(45, 138, 110, 0.1)); border-radius: 8px; border: 1px solid var(--color-accent);">
-                <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Not Sure Where to Start?</h3>
+            <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, var(--wash-accent), var(--wash-success)); border-radius: 8px; border: 1px solid var(--color-accent);">
+                <h3 class="panel-title">Not Sure Where to Start?</h3>
                 <p style="margin-bottom: 1.5rem;">I'll help you figure out what you actually need vs. what you think you need. No upselling, no bloated proposals — just honest recommendations based on your property, use case, and budget.</p>
                 <a href="/#contact" class="btn btn-primary">Request a Free Consultation</a>
             </div>
@@ -354,6 +357,8 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>

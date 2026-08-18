@@ -95,6 +95,7 @@
     <link rel="icon" type="image/png" href="assets/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png"></head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -119,8 +120,10 @@
         </div>
     </nav>
 
+    <main id="main-content">
+
     <!-- Remote Tech Support Banner -->
-    <section style="background: linear-gradient(135deg, rgba(123, 92, 184, 0.2), rgba(45, 138, 110, 0.2)); border-bottom: 2px solid var(--color-accent); padding: 2rem 0;">
+    <section style="background: linear-gradient(135deg, var(--wash-accent-strong), var(--wash-success)); border-bottom: 2px solid var(--color-accent); padding: 2rem 0;">
         <div class="container" style="text-align: center;">
             <h2 style="color: var(--color-accent); margin-bottom: 0.5rem; font-size: 1.5rem;">💻 Need Tech Help?</h2>
             <p style="color: var(--color-text-gray); font-size: 1rem; margin-bottom: 0.75rem;">WiFi acting up? Computer running slow? Device won't connect? I can help remotely — <strong>available nationwide</strong>, no travel fee, most issues fixed in under an hour.</p>
@@ -203,7 +206,7 @@
             <p style="text-align: center; margin-bottom: 2rem; color: var(--color-text-gray);">Click any card to learn more about that service.</p>
             <div class="capabilities-table" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
                 <a href="pages/services-it.html" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">IT & Network Infrastructure</h3>
+                    <h3 class="panel-title">IT & Network Infrastructure</h3>
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Enterprise WiFi design & deployment (UniFi, EdgeMax)</li>
                         <li>VLAN segmentation & network isolation</li>
@@ -217,7 +220,7 @@
                     <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
                 </a>
                 <a href="pages/services-fabrication.html" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">3D Printing & Fabrication</h3>
+                    <h3 class="panel-title">3D Printing & Fabrication</h3>
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Multi-material additive manufacturing (FDM)</li>
                         <li>Materials: PLA, PETG, ABS, ASA, Nylon, TPU, PC, CF/GF composites</li>
@@ -231,7 +234,7 @@
                     <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
                 </a>
                 <a href="pages/services-installation.html" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Field Installation</h3>
+                    <h3 class="panel-title">Field Installation</h3>
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>On-site equipment deployment & commissioning</li>
                         <li>Structured cabling (Cat6/Cat6a, fiber)</li>
@@ -245,7 +248,7 @@
                     <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
                 </a>
                 <a href="pages/services-it.html#remote-support" class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); text-decoration: none; color: var(--color-text-white); transition: all 0.3s ease;">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Remote Support</h3>
+                    <h3 class="panel-title">Remote Support</h3>
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Remote troubleshooting & diagnostics</li>
                         <li>WiFi/network analysis & optimization</li>
@@ -258,7 +261,7 @@
                     <p style="margin-top: 1.5rem; color: var(--color-accent); font-weight: 600;">Learn More →</p>
                 </a>
                 <div class="capability-card" style="padding: 2rem; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-accent); margin-bottom: 1rem;">Service Area</h3>
+                    <h3 class="panel-title">Service Area</h3>
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>100-mile radius from Milan/Atwood</li>
                         <li>West Tennessee</li>
@@ -333,14 +336,14 @@
                             Your browser does not support the video tag.
                         </video>
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">DeWalt 20V Battery Holder</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Wall-mounted holder for DeWalt batteries. Printed in ASA.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Wall-mounted holder for DeWalt batteries. Printed in ASA.</p>
                     </div>
                     
                     <!-- Navy Leather Patch -->
                     <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
                         <img src="assets/images/portfolio/navy-veteran-leather-patch.3662f189.jpg" alt="Navy Veteran Leather Patch" style="width: 100%; height: 280px; object-fit: cover; display: block;" loading="lazy" decoding="async" width="747" height="1600">
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Navy Veteran Leather Patch</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Laser-etched leather patch with military insignia.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Laser-etched leather patch with military insignia.</p>
                     </div>
                     
                     <!-- Liquor Display -->
@@ -350,35 +353,35 @@
                             Your browser does not support the video tag.
                         </video>
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Light-Up Liquor Display</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Custom display with integrated LED lighting.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Custom display with integrated LED lighting.</p>
                     </div>
                     
                     <!-- Zombie Chicken Sign -->
                     <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
                         <img src="assets/images/portfolio/zombie-chicken-3d-sign.bd28a637.jpg" alt="Zombie Chicken 3D Sign" style="width: 100%; height: 280px; object-fit: cover; display: block;" loading="lazy" decoding="async" width="1600" height="747">
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Zombie Chicken 3D Sign</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Multi-color layered 3D printed sign.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Multi-color layered 3D printed sign.</p>
                     </div>
                     
                     <!-- Waterproof Box -->
                     <div class="portfolio-item" data-category="fabrication" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
                         <img src="assets/images/portfolio/waterproof-box-view1.7ce79569.jpg" alt="Custom Waterproof Enclosure" style="width: 100%; height: 280px; object-fit: cover; display: block;" loading="lazy" decoding="async" width="1600" height="746">
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Waterproof Enclosure</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Weatherproof box for outdoor electronics.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Weatherproof box for outdoor electronics.</p>
                     </div>
                     
                     <!-- Engraved Business Cards - Front -->
                     <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
                         <img src="assets/images/portfolio/j7-business-card-front.f4ea8cb7.jpg" alt="J7 Creations Engraved Business Card - Front" style="width: 100%; height: 280px; object-fit: cover; display: block;" loading="lazy" decoding="async" width="747" height="1600">
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Engraved Business Cards - Front</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Premium engraved business cards with J7 branding.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Premium engraved business cards with J7 branding.</p>
                     </div>
                     
                     <!-- Engraved Business Cards - Back -->
                     <div class="portfolio-item" data-category="signage" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
                         <img src="assets/images/portfolio/j7-business-card-back.488eb77e.jpg" alt="J7 Creations Engraved Business Card - Back" style="width: 100%; height: 280px; object-fit: cover; display: block;" loading="lazy" decoding="async" width="747" height="1600">
                         <h4 style="padding: 1rem 1rem 0.5rem; color: var(--color-text-white); font-size: 1.1rem;">Engraved Business Cards - Back</h4>
-                        <p style="padding: 0 1rem 1rem; color: #b0b0b0; font-size: 0.85rem;">Custom engraved design with contact details.</p>
+                        <p style="padding: 0 1rem 1rem; color: var(--color-text-gray); font-size: 0.85rem;">Custom engraved design with contact details.</p>
                     </div>
                 </div>
                 
@@ -431,15 +434,15 @@
     </section>
 
     <!-- Service Area Map Section -->
-    <section style="padding: var(--spacing-lg) 0; background: rgba(26, 26, 26, 0.5);">
+    <section style="padding: var(--spacing-lg) 0; background: var(--panel-bg);">
         <div class="container">
             <h2 class="section-title" style="text-align: center; margin-bottom: 1rem;">📍 Service Areas</h2>
             
             <!-- Service Area Grid -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
                 <!-- Nationwide Services -->
-                <div style="padding: 2rem; background: rgba(123, 92, 184, 0.15); border: 2px solid #7b5cb8; border-radius: 8px; text-align: center;">
-                    <h3 style="color: #7b5cb8; margin-bottom: 1rem;">🇺🇸 Nationwide Services</h3>
+                <div style="padding: 2rem; background: var(--wash-accent); border: 2px solid var(--color-accent); border-radius: 8px; text-align: center;">
+                    <h3 class="panel-title">🇺🇸 Nationwide Services</h3>
                     <p style="color: var(--color-text-gray); margin-bottom: 1rem;">Available to clients anywhere in the United States:</p>
                     <ul style="text-align: left; color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
                         <li>✅ Remote Tech Support ($25/hr)</li>
@@ -450,8 +453,8 @@
                 </div>
                 
                 <!-- Local Services -->
-                <div style="padding: 2rem; background: rgba(45, 138, 110, 0.15); border: 2px solid #2d8a6e; border-radius: 8px; text-align: center;">
-                    <h3 style="color: #2d8a6e; margin-bottom: 1rem;">📍 Local Services (100-Mile Radius)</h3>
+                <div style="padding: 2rem; background: var(--wash-success); border: 2px solid var(--color-success); border-radius: 8px; text-align: center;">
+                    <h3 style="color: var(--color-success); margin-bottom: 1rem;">📍 Local Services (100-Mile Radius)</h3>
                     <p style="color: var(--color-text-gray); margin-bottom: 1rem;">On-site installation and deployment within 100 miles of Milan/Atwood, TN:</p>
                     <ul style="text-align: left; color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
                         <li>✅ Network Installation & Deployment</li>
@@ -488,8 +491,8 @@
             <p class="contact-intro">Tell me about your project. I usually reply within 2-4 hours during business hours (9 AM - 6 PM CST), and always within one business day.</p>
             
             <!-- Service Request Checklist -->
-            <div id="service-checklist" style="background: rgba(45, 138, 110, 0.15); border: 2px solid #2d8a6e; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
-                <h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4>
+            <div id="service-checklist" style="background: var(--wash-success); border: 2px solid var(--color-success); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <h4 style="color: var(--color-success); margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4>
                 <div id="checklist-default">
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
                         <li>✅ <strong>Project photos</strong> (if applicable) - helps me understand the scope</li>
@@ -498,13 +501,13 @@
                         <li>✅ <strong>Location</strong> - is it within my 100-mile service area?</li>
                         <li>✅ <strong>Rush service needed?</strong> - 48-hour turnaround available for +50%</li>
                     </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>
                 </div>
             </div>
             
             <form id="contact-form" class="contact-form" action="https://formspree.io/f/xzdypkbz" method="POST" enctype="multipart/form-data">
-                <div id="form-success" style="display: none; padding: 1.5rem; background: rgba(45, 138, 110, 0.2); border: 2px solid #2d8a6e; border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
-                    <h3 style="color: #2d8a6e; margin-bottom: 0.5rem;">✓ Message Sent!</h3>
+                <div id="form-success" style="display: none; padding: 1.5rem; background: var(--wash-success); border: 2px solid var(--color-success); border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
+                    <h3 style="color: var(--color-success); margin-bottom: 0.5rem;">✓ Message Sent!</h3>
                     <p style="color: var(--color-text-gray);">Thanks for reaching out. I usually reply within 2-4 hours during business hours, and always within one business day.</p>
                 </div>
                 <div class="form-group">
@@ -532,7 +535,7 @@
                 </div>
                 
                 <!-- Dynamic Service Info -->
-                <div id="service-info" style="display: none; padding: 1rem; background: rgba(123, 92, 184, 0.15); border: 1px solid #7b5cb8; border-radius: 8px; margin-bottom: 1rem;"></div>
+                <div id="service-info" style="display: none; padding: 1rem; background: var(--wash-accent); border: 1px solid var(--color-accent); border-radius: 8px; margin-bottom: 1rem;"></div>
                 
                 <div class="form-group">
                     <label for="timeline">Timeline</label>
@@ -579,6 +582,8 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 J7 Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>
@@ -640,35 +645,35 @@
                     info: '<p><strong>Perfect for:</strong> WiFi issues, slow computers, device setup, software help, network troubleshooting.</p><p><strong>How it works:</strong> Phone or screenshare session. I\'ll help you fix it remotely - no travel needed!</p><p><strong>Cost:</strong> $25/hour (30-minute minimum). Most issues resolved in 30-60 minutes.</p><p><strong>Payment:</strong> Check, Venmo, or Cash App (due immediately after session).</p>',
                     placeholder: 'Describe your issue: What device/program is giving you trouble? When did it start? What have you already tried?',
                     label: 'Describe Your Tech Issue',
-                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For Remote Support, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Device info</strong> - What computer/phone/tablet is having issues?</li><li>✅ <strong>Problem description</strong> - What\'s happening? Any error messages?</li><li>✅ <strong>When it started</strong> - Did this start suddenly or gradually?</li><li>✅ <strong>What you\'ve tried</strong> - Any troubleshooting steps already?</li><li>✅ <strong>Your availability</strong> - When can you do a phone/screenshare session?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                    checklist: '<h4 style="color: var(--color-success); margin-bottom: 1rem;">📋 For Remote Support, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Device info</strong> - What computer/phone/tablet is having issues?</li><li>✅ <strong>Problem description</strong> - What\'s happening? Any error messages?</li><li>✅ <strong>When it started</strong> - Did this start suddenly or gradually?</li><li>✅ <strong>What you\'ve tried</strong> - Any troubleshooting steps already?</li><li>✅ <strong>Your availability</strong> - When can you do a phone/screenshare session?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
                 },
                 '3d-printing': {
                     title: '🖨️ 3D Printing & Fabrication',
                     info: '<p><strong>Perfect for:</strong> Custom parts, replacement components, prototypes, cosplay props, decorative items.</p><p><strong>Materials:</strong> PLA, PETG, ASA, Nylon, TPU, PC, Carbon/Glass fiber blends.</p><p><strong>Pricing:</strong> Filament cost + service fee (varies by material and print time).</p>',
                     placeholder: 'Describe what you need printed: Dimensions? Material preference? Color? Any photos or CAD files?',
                     label: 'Describe Your Print Project',
-                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For 3D Printing, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Photos or CAD files</strong> - Show me what you need (or describe dimensions)</li><li>✅ <strong>Material preference</strong> - Strength, flexibility, heat resistance, outdoor use?</li><li>✅ <strong>Color preference</strong> - What color filament?</li><li>✅ <strong>Quantity</strong> - How many copies do you need?</li><li>✅ <strong>Timeline</strong> - When do you need it by?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                    checklist: '<h4 style="color: var(--color-success); margin-bottom: 1rem;">📋 For 3D Printing, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Photos or CAD files</strong> - Show me what you need (or describe dimensions)</li><li>✅ <strong>Material preference</strong> - Strength, flexibility, heat resistance, outdoor use?</li><li>✅ <strong>Color preference</strong> - What color filament?</li><li>✅ <strong>Quantity</strong> - How many copies do you need?</li><li>✅ <strong>Timeline</strong> - When do you need it by?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
                 },
                 'network-infrastructure': {
                     title: '🌐 Network Infrastructure',
                     info: '<p><strong>Perfect for:</strong> Whole-home WiFi, network security, smart home setup, VLAN segmentation, Home Assistant.</p><p><strong>Services:</strong> Network design, equipment selection, configuration, optimization.</p><p><strong>Pricing:</strong> Design quotes $200-800 | On-site work $45-85/hr depending on complexity, or per-unit for access points.</p>',
                     placeholder: 'Tell me about your network needs: Property size? Number of devices? Current issues? Goals (better WiFi, security, smart home)?',
                     label: 'Describe Your Network Needs',
-                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For Network Projects, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Property details</strong> - House size, number of floors, construction type?</li><li>✅ <strong>Current setup</strong> - What router/ISP do you have now?</li><li>✅ <strong>Problems</strong> - Dead zones, slow speeds, too many devices?</li><li>✅ <strong>Goals</strong> - Better coverage, security, smart home integration?</li><li>✅ <strong>Budget range</strong> - Equipment + labor (equipment quoted separately at retail cost).</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                    checklist: '<h4 style="color: var(--color-success); margin-bottom: 1rem;">📋 For Network Projects, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Property details</strong> - House size, number of floors, construction type?</li><li>✅ <strong>Current setup</strong> - What router/ISP do you have now?</li><li>✅ <strong>Problems</strong> - Dead zones, slow speeds, too many devices?</li><li>✅ <strong>Goals</strong> - Better coverage, security, smart home integration?</li><li>✅ <strong>Budget range</strong> - Equipment + labor (equipment quoted separately at retail cost).</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
                 },
                 'installation': {
                     title: '🔧 Field Installation',
                     info: '<p><strong>Perfect for:</strong> Mounting equipment, cable runs, rack setup, camera installation, smart home devices.</p><p><strong>Service area:</strong> 100-mile radius from Milan/Atwood, TN.</p><p><strong>Pricing:</strong> Cameras from $75 each, access points from $125 each, or $45-85/hr for open-ended work | Travel: 0-25mi FREE, 25-50mi $15, 50-75mi $30, 75-100mi $50.</p>',
                     placeholder: 'What needs to be installed? Where is it located? Do you have the equipment already or do you need help sourcing it?',
                     label: 'Describe Your Installation Project',
-                    checklist: '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 For Installation, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>What needs installed</strong> - Equipment, cameras, network gear, smart home devices?</li><li>✅ <strong>Location</strong> - Where will it be installed? (indoor/outdoor, height, access)</li><li>✅ <strong>Equipment</strong> - Do you already have it or need help sourcing?</li><li>✅ <strong>Timeline</strong> - When do you need it done?</li><li>✅ <strong>Site access</strong> - Any special requirements (ladder, lift, after-hours)?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
+                    checklist: '<h4 style="color: var(--color-success); margin-bottom: 1rem;">📋 For Installation, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>What needs installed</strong> - Equipment, cameras, network gear, smart home devices?</li><li>✅ <strong>Location</strong> - Where will it be installed? (indoor/outdoor, height, access)</li><li>✅ <strong>Equipment</strong> - Do you already have it or need help sourcing?</li><li>✅ <strong>Timeline</strong> - When do you need it done?</li><li>✅ <strong>Site access</strong> - Any special requirements (ladder, lift, after-hours)?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>'
                 }
             };
             
             // Hide service info if no selection or other
             if (!service || service === 'other') {
                 serviceInfo.style.display = 'none';
-                checklistDiv.innerHTML = '<h4 style="color: #2d8a6e; margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Project photos</strong> (if applicable) - helps me understand the scope</li><li>✅ <strong>Budget range</strong> - so I can suggest appropriate solutions</li><li>✅ <strong>Timeline</strong> - when do you need this completed?</li><li>✅ <strong>Location</strong> - is it within my 100-mile service area?</li><li>✅ <strong>Rush service needed?</strong> - 48-hour turnaround available for +50%</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: #2d8a6e;">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>';
+                checklistDiv.innerHTML = '<h4 style="color: var(--color-success); margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h4><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Project photos</strong> (if applicable) - helps me understand the scope</li><li>✅ <strong>Budget range</strong> - so I can suggest appropriate solutions</li><li>✅ <strong>Timeline</strong> - when do you need this completed?</li><li>✅ <strong>Location</strong> - is it within my 100-mile service area?</li><li>✅ <strong>Rush service needed?</strong> - 48-hour turnaround available for +50%</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (9 AM - 6 PM CST)</p>';
                 messageLabel.textContent = 'Project Details';
                 messageField.placeholder = 'Tell me about your project...';
                 return;
