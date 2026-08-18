@@ -92,13 +92,19 @@ very nearly black. A plain white wash bright enough to carry dark text on that
 therefore has to be almost opaque, which is why simply thinning it makes the
 cards dim instead of clear.
 
-So the light-mode glass filter is `blur() contrast(0.34) brightness(1.72)
-saturate(1.5)`. `contrast()` below 1 is an *additive* transfer — it pulls the
+So the light-mode glass filter is `blur() contrast(0.5) brightness(2)
+saturate(1.8)`. `contrast()` below 1 is an *additive* transfer — it pulls the
 backdrop toward mid-grey — where `brightness()` multiplies and so cannot lift
 black at all. The artwork comes up into view instead of being papered over,
 and a 29% wash lands brighter than the old 60% one did.
 
-Two things to know about it:
+**Keep `contrast()` as high as the text floor allows.** Every step down
+flattens the artwork at the same time as it lifts it. A first attempt used
+0.34 and the cards came out looking identical to the old, thicker wash —
+thinner glass with nothing more visible through it, which defeats the point.
+0.5 leaves roughly 25 levels of the mark showing through; 0.34 left about 14.
+
+Three things to know about it:
 
 - The filter lives in `--glass-filter` / `--glass-filter-dense`, defined
   **only** under `[data-theme="light"]`. `mobile-fix.css` refers to it as
@@ -107,6 +113,21 @@ Two things to know about it:
 - Anything whose surface comes from an inline `background: var(--color-bg-*)`
   needs the filter applied by the `[style*="var(--color-bg-dark)"]` selector
   group, or it is a thin wash straight onto black.
+- **The navbar is deliberately excluded** from the card scope and from the
+  glass rules. It has no surface at all — just a top-to-bottom fade — and
+  keeps the dark treatment in both themes, because it sits over artwork and
+  never over a card. Adding it back to the light scope flips its text to
+  #101010 against the wallpaper at about 1.6:1. The dropdown, by contrast,
+  *does* keep a panel: it opens over scrolling content.
+
+### How dark the accent can go
+
+Light-mode cards carry the Covenant violet `#4c1d95` at about 5.2:1. Dark
+mode cannot: a dark panel is 46% over the wallpaper, so where the artwork is
+brightest behind it the card sits at grey 34, and `#4c1d95` measures 1.6:1
+there. Dark mode's accent is `#9b78f5` — as deep as that surface allows, at
+4.89:1. The estimator result panel carries a brand wash on top of the card
+and sits lighter still, so it keeps its own lighter accent.
 
 This has two further consequences that are easy to trip over:
 
@@ -154,9 +175,15 @@ from the CSS. Two things will give false results:
 Sanity-check the checker itself by re-running it against the previous recipe.
 If it does not light up, it is not measuring what you think it is.
 
-Current state: **10,320 text measurements — six pages × two themes × three
-wallpaper brightnesses × desktop and mobile widths — zero contrast
-failures.**
+One more trap, found the same way: **a gradient is a layer with its own
+alpha.** Substituting an opaque colour for it turned the estimator's
+15%-alpha wash into a solid fill and invented six failures. Average the
+stops and composite them properly. Force dropdowns open and result panels
+expanded before measuring, or you skip them entirely.
+
+Current state: **10,848 text measurements — six pages × two themes × three
+wallpaper brightnesses × desktop and mobile widths, with menus open — zero
+contrast failures.**
 
 ---
 
