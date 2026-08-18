@@ -3,9 +3,9 @@
 
 @media (max-width: 768px) {
     /* Sticky navbar on top */
-    /* styles.css reserves 70px of body padding for a FIXED navbar. Below this
+    /* styles.css reserves 84px of body padding for a FIXED navbar. Below this
        breakpoint the navbar becomes sticky and occupies real space, so that
-       reservation became an empty 70px gap at the top of every mobile page. */
+       reservation became an empty 84px gap at the top of every mobile page. */
     body {
         padding-top: 0 !important;
     }
@@ -32,7 +32,7 @@
     }
     
     [data-theme="light"] .nav-toggle {
-        background: rgba(255, 255, 255, 0.8) !important;
+        background: rgba(255, 255, 255, 0.64) !important;
         border: 1px solid rgba(0, 0, 0, 0.2) !important;
     }
     
@@ -81,7 +81,7 @@
     .capability-card,
     .why-item,
     .advantage-item {
-        background: rgba(26, 26, 26, 0.65) !important;
+        background: rgba(26, 26, 26, 0.52) !important;
         backdrop-filter: blur(12px) !important;
         padding: 1.5rem !important;
         margin-bottom: 1rem !important;
@@ -92,7 +92,7 @@
     [data-theme="light"] .capability-card,
     [data-theme="light"] .why-item,
     [data-theme="light"] .advantage-item {
-        background: rgba(255, 255, 255, 0.8) !important;
+        background: rgba(255, 255, 255, 0.64) !important;
     }
     
     /* Better logo visibility on mobile */

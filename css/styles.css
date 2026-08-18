@@ -43,7 +43,7 @@
 
     /* Panels that sit on the photographic body background. These carry a
        scrim so text on them stays readable over the logo image. */
-    --panel-bg: rgba(26, 26, 26, 0.58);
+    --panel-bg: rgba(26, 26, 26, 0.46);
     --panel-bg-solid: #202020;
     --panel-border: rgba(255, 255, 255, 0.10);
 
@@ -88,10 +88,10 @@
        card surface. Making them glass converts the cards that set
        `background: var(--color-bg-dark)` inline, which a stylesheet rule
        could not override. */
-    --color-bg-dark: rgba(255, 255, 255, 0.60);
-    --color-bg-darker: rgba(255, 255, 255, 0.66);
-    --color-card-bg: rgba(255, 255, 255, 0.60);
-    --color-input-bg: rgba(255, 255, 255, 0.50);
+    --color-bg-dark: rgba(255, 255, 255, 0.48);
+    --color-bg-darker: rgba(255, 255, 255, 0.53);
+    --color-card-bg: rgba(255, 255, 255, 0.48);
+    --color-input-bg: rgba(255, 255, 255, 0.40);
     --color-border: rgba(0, 0, 0, 0.14);
 
     --color-text-white: #ffffff;
@@ -107,8 +107,8 @@
     --wash-success: rgba(111, 216, 180, 0.14);
 
     /* The frosted glass itself */
-    --panel-bg: rgba(255, 255, 255, 0.60);
-    --panel-bg-solid: rgba(255, 255, 255, 0.70);
+    --panel-bg: rgba(255, 255, 255, 0.48);
+    --panel-bg-solid: rgba(255, 255, 255, 0.56);
     --panel-border: rgba(255, 255, 255, 0.55);
 
     --shadow-color: rgba(0, 0, 0, 0.35);
@@ -142,11 +142,11 @@
 [data-theme="light"] [style*="var(--color-bg-dark)"],
 [data-theme="light"] [style*="var(--panel-bg)"] {
     --color-text-white: #101010;
-    --color-text-gray: #33333a;
-    --color-text-muted: #4a4a55;
-    --color-accent: #4c1d95;
+    --color-text-gray: #22222a;
+    --color-text-muted: #2b2b33;
+    --color-accent: #431287;
     --color-accent-strong: #3b1478;
-    --color-success: #14614a;
+    --color-success: #0b3a2c;
     --color-border: rgba(0, 0, 0, 0.16);
     color: var(--color-text-white);
 }
@@ -160,6 +160,10 @@
 
 html {
     scroll-behavior: smooth;
+    /* 17px instead of the 16px default. Type, spacing and radii are all in
+       rem, so one change scales the whole page by ~6% rather than leaving
+       larger text crammed into unchanged boxes. */
+    font-size: 106.25%;
 }
 
 body {
@@ -174,7 +178,10 @@ body {
     background-color: var(--color-bg-dark);
     color: var(--color-text-white);
     line-height: 1.6;
-    padding-top: 70px; /* Space for fixed navbar */
+    font-weight: 600;
+    /* Space for the fixed navbar. Measured at 82px with the 17px root size;
+       84 leaves a hair of clearance rather than clipping the first heading. */
+    padding-top: 84px;
 }
 
 .container {
@@ -185,7 +192,7 @@ body {
 
 /* Typography */
 h1, h2, h3, h4 {
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.2;
     margin-bottom: var(--spacing-sm);
 }
@@ -206,7 +213,7 @@ a {
     transition: color 0.3s ease;
 }
 
-a:hover {
+a:not(.btn):hover {
     color: var(--color-gradient-mid);
 }
 
@@ -215,7 +222,7 @@ a:hover {
     display: inline-block;
     padding: 0.75rem 2rem;
     border-radius: 4px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
@@ -225,7 +232,7 @@ a:hover {
 
 .btn-primary {
     background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-end));
-    color: var(--color-text-white);
+    color: #ffffff;
 }
 
 .btn-primary:hover {
@@ -324,7 +331,7 @@ a:hover {
 
 .nav-link {
     color: var(--color-text-white);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .nav-link:hover {
@@ -479,7 +486,7 @@ body::after {
 }
 
 .service-card {
-    background: rgba(26, 26, 26, 0.6);
+    background: rgba(26, 26, 26, 0.48);
     backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
@@ -488,7 +495,7 @@ body::after {
 }
 
 [data-theme="light"] .service-card {
-    background: rgba(255, 255, 255, 0.60);
+    background: rgba(255, 255, 255, 0.48);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -529,7 +536,7 @@ body::after {
 }
 
 .capability-column {
-    background: rgba(26, 26, 26, 0.6);
+    background: rgba(26, 26, 26, 0.48);
     backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
@@ -537,7 +544,7 @@ body::after {
 }
 
 [data-theme="light"] .capability-column {
-    background: rgba(255, 255, 255, 0.60);
+    background: rgba(255, 255, 255, 0.48);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -588,7 +595,7 @@ body::after {
 }
 
 .advantage-item {
-    background: rgba(26, 26, 26, 0.5);
+    background: rgba(26, 26, 26, 0.40);
     backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
@@ -596,7 +603,7 @@ body::after {
 }
 
 [data-theme="light"] .advantage-item {
-    background: rgba(255, 255, 255, 0.56);
+    background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
     border-left: 4px solid var(--color-accent);
     border: 2px solid rgba(0, 0, 0, 0.3);
@@ -683,7 +690,7 @@ body::after {
 }
 
 .why-item {
-    background: rgba(26, 26, 26, 0.5);
+    background: rgba(26, 26, 26, 0.40);
     backdrop-filter: blur(10px);
     padding: var(--spacing-md);
     border-radius: 8px;
@@ -691,7 +698,7 @@ body::after {
 }
 
 [data-theme="light"] .why-item {
-    background: rgba(255, 255, 255, 0.56);
+    background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -748,7 +755,7 @@ body::after {
     backdrop-filter: blur(5px);
     border: 2px solid rgba(0, 0, 0, 0.3);
     color: #000000;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .form-group input:focus,
@@ -761,14 +768,14 @@ body::after {
 .contact-direct {
     text-align: center;
     padding: var(--spacing-md);
-    background: rgba(26, 26, 26, 0.5);
+    background: rgba(26, 26, 26, 0.40);
     backdrop-filter: blur(10px);
     border-radius: 8px;
     border: 1px solid var(--panel-border);
 }
 
 [data-theme="light"] .contact-direct {
-    background: rgba(255, 255, 255, 0.56);
+    background: rgba(255, 255, 255, 0.45);
     backdrop-filter: blur(10px);
     border: 2px solid rgba(0, 0, 0, 0.3);
 }
@@ -833,7 +840,7 @@ body::after {
     /* Mobile Navigation */
     .nav-menu {
         position: fixed;
-        top: 70px;
+        top: 84px;
         left: 0;
         right: 0;
         background: var(--color-bg-darker);
@@ -1153,7 +1160,7 @@ body::after {
     cursor: pointer;
     font: inherit;
     color: var(--color-text-white);
-    font-weight: 500;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -1328,7 +1335,7 @@ body::after {
 [data-theme="light"] .cta-box,
 [data-theme="light"] .hero-container,
 [data-theme="light"] .portfolio-item {
-    background: rgba(255, 255, 255, 0.60);
+    background: rgba(255, 255, 255, 0.48);
     backdrop-filter: blur(14px) saturate(1.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
     border-color: rgba(255, 255, 255, 0.6);
@@ -1342,13 +1349,13 @@ body::after {
 [data-theme="light"] .navbar,
 [data-theme="light"] .submenu,
 [data-theme="light"] .breadcrumb {
-    background: rgba(255, 255, 255, 0.66);
+    background: rgba(255, 255, 255, 0.53);
     backdrop-filter: blur(16px) saturate(1.1);
     -webkit-backdrop-filter: blur(16px) saturate(1.1);
 }
 
 [data-theme="light"] .form-control {
-    background: rgba(255, 255, 255, 0.56);
+    background: rgba(255, 255, 255, 0.45);
     border-color: rgba(0, 0, 0, 0.18);
     color: #101010;
 }
@@ -1356,7 +1363,7 @@ body::after {
 /* Callouts keep their brand tint but on a light base so they still read */
 [data-theme="light"] .callout,
 [data-theme="light"] .result-panel {
-    background: rgba(255, 255, 255, 0.50);
+    background: rgba(255, 255, 255, 0.40);
     backdrop-filter: blur(14px) saturate(1.1);
     -webkit-backdrop-filter: blur(14px) saturate(1.1);
 }
