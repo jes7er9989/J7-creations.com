@@ -1113,7 +1113,10 @@ body::before {
 
 .submenu {
     position: absolute;
-    top: calc(100% + 0.75rem);
+    /* Flush to the trigger on purpose. An offset here leaves a dead zone the
+       mouse has to cross, hover is lost on the way down, and the menu closes
+       before you can click anything in it. Spacing lives inside the panel. */
+    top: 100%;
     left: 0;
     min-width: 250px;
     background: var(--color-bg-darker);
@@ -1121,6 +1124,10 @@ body::before {
     border-radius: var(--radius);
     box-shadow: var(--shadow-card);
     padding: 0.5rem 0;
+    /* Transparent border, not margin: it reads as a gap but is still part of
+       the element, so the pointer never leaves the menu on the way in. */
+    border-top: 0.5rem solid transparent;
+    background-clip: padding-box;
     list-style: none;
     display: none;
     z-index: 1001;
@@ -1145,6 +1152,7 @@ body::before {
 .has-submenu:hover .submenu,
 .has-submenu:focus-within .submenu,
 .submenu-toggle[aria-expanded="true"] + .submenu { display: block; }
+
 
 @media (max-width: 768px) {
     /* No hover on touch: the submenu becomes a nested list, always open,
