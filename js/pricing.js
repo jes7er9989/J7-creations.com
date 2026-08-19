@@ -286,6 +286,7 @@ const J7_INFILL = [
     { value: 0.15, label: '15% — light duty, general purpose' },
     { value: 0.25, label: '25% — everyday functional part', preset: true },
     { value: 0.50, label: '50% — takes real load or impact' },
+    { value: 0.75, label: '75% — heavy duty, close to solid' },
     { value: 1.00, label: '100% — solid, maximum strength' }
 ];
 
@@ -308,13 +309,13 @@ const J7_PART_SHAPES = [
 // Everyday objects, as a bounding box in cm, for people who will not reach for
 // a tape measure.
 const J7_SIZE_REFS = [
-    { label: 'About a golf ball',      dims: [4.3, 4.3, 4.3] },
-    { label: 'About a deck of cards',  dims: [9, 6.5, 2] },
-    { label: 'About a baseball',       dims: [7.5, 7.5, 7.5] },
-    { label: 'About a coffee mug',     dims: [12, 9, 10] },
-    { label: 'About a house brick',    dims: [20, 10, 6.5] },
-    { label: 'About a loaf of bread',  dims: [25, 12, 12] },
-    { label: 'About a shoebox',        dims: [33, 20, 12] }
+    { label: 'About the size of a golf ball',      dims: [4.3, 4.3, 4.3] },
+    { label: 'About the size of a deck of cards',  dims: [9, 6.5, 2] },
+    { label: 'About the size of a baseball',       dims: [7.5, 7.5, 7.5] },
+    { label: 'About the size of a coffee mug',     dims: [12, 9, 10] },
+    { label: 'About the size of a house brick',    dims: [20, 10, 6.5] },
+    { label: 'About the size of a loaf of bread',  dims: [25, 12, 12] },
+    { label: 'About the size of a shoebox',        dims: [33, 20, 12] }
 ];
 
 // 3 perimeters at 0.4 mm, in cm.
