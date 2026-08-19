@@ -98,6 +98,30 @@ console.log('\nOLD vs NEW');
 function oldPrint(g, perKg, feePerGram) {
     const filament = (perKg / 1000) * g;
     let service = feePerGram * g;
+// --- nozzle -----------------------------------------------------------------
+// Machine time must fall as the nozzle widens: a 0.8 lays material about twice
+// as fast as a 0.4, so the same gram of plastic takes half the machine time.
+{
+  const N = J7_PRICING.print.nozzleTime;
+  const sizes = ['0.2', '0.4', '0.6', '0.8'];
+  sizes.forEach(k => {
+    check('nozzle ' + k + ' mm has a time factor', N[k] !== undefined);
+  });
+  check('0.4 mm is the reference at 1.0 (prices unchanged)', N['0.4'] === 1.0);
+  for (let i = 1; i < sizes.length; i++) {
+    check('a wider nozzle is quicker per gram: ' + sizes[i] + ' < ' + sizes[i - 1],
+          N[sizes[i]] < N[sizes[i - 1]]);
+  }
+  // And the whole point: a job must not get cheaper by asking for FINER work.
+  const grams = 200;
+  const base = j7TieredCost(grams, J7_PRICING.print.tiers);
+  check('a 0.2 mm job costs more machine time than the same grams at 0.4 mm',
+        base * N['0.2'] > base * N['0.4']);
+  check('a 0.8 mm job costs less machine time than the same grams at 0.4 mm',
+        base * N['0.8'] < base * N['0.4']);
+}
+
+
     if (g < 50) service = 5 + 0.05 * g;
     return filament + service;
 }

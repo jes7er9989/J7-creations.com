@@ -25,6 +25,17 @@ const J7_PRICING = {
             { upTo: Infinity, rate: 0.012 }
         ],
         quality: { draft: 0.7, standard: 1.0, high: 1.5 },
+
+        // Machine time was charged purely per gram, which assumes grams and
+        // hours track each other. Nozzle size breaks that badly: volumetric
+        // flow is proportional to extrusion width, so a 0.8 lays material
+        // about twice as fast as a 0.4. Left uncorrected, a big-nozzle job
+        // billed MORE (more plastic in the walls) while taking HALF the time,
+        // and a 0.2 job billed less while taking far longer.
+        //
+        // Calibrated so 0.4 is 1.0 — the common case is priced exactly as it
+        // was before.
+        nozzleTime: { '0.2': 2.0, '0.4': 1.0, '0.6': 0.67, '0.8': 0.5 },
         waste: { minimal: 0.03, supports: 0.10, multicolor: 0.25 },
         filamentPerKg: {
             pla: 26, petg: 32, abs: 35, tpu: 43,

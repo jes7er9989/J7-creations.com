@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sizeSel  = el('wh-size');
         const shapeSel = el('wh-shape');
         const infillSel = el('wh-infill');
-        const nozzleSel = el('wh-nozzle');
+        const nozzleSel = el('nozzle-size');   // lives in the main form now
         const dimsWrap = el('wh-dims-wrap');
         const result   = el('wh-result');
         const meshOut  = el('wh-mesh');
@@ -268,10 +268,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (f.preset) infillSel.value = String(f.value);
         });
 
-        J7_NOZZLES.forEach(n => {
-            nozzleSel.add(new Option(n.label, String(n.mm)));
-            if (n.preset) nozzleSel.value = String(n.mm);
-        });
+        // The select is in the estimator form rather than in this panel, so
+        // fill it only if nothing has already.
+        if (nozzleSel && !nozzleSel.options.length) {
+            J7_NOZZLES.forEach(n => {
+                nozzleSel.add(new Option(n.label, String(n.mm)));
+                if (n.preset) nozzleSel.value = String(n.mm);
+            });
+        }
 
         const density = () => J7_FILAMENT_DENSITY[materialSel && materialSel.value] || 1.24;
 
@@ -295,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function recalc() {
             if (mode === 'manual') { result.hidden = true; return; }
             const infill = parseFloat(infillSel.value);
-            const nozzle = parseFloat(nozzleSel.value);
+            const nozzle = nozzleSel ? parseFloat(nozzleSel.value) : 0.4;
 
             if (mode === 'file') {
                 if (!mesh) { result.hidden = true; return; }

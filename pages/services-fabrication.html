@@ -329,11 +329,6 @@
                             <select id="wh-infill" class="form-control"></select>
                             <p class="field-hint">More infill means more plastic. On thin parts it makes almost no difference &mdash; they are all wall.</p>
                         </div>
-                        <div>
-                            <label class="field-label" for="wh-nozzle">How much detail does it need?</label>
-                            <select id="wh-nozzle" class="form-control"></select>
-                            <p class="field-hint">A finer nozzle holds small features but takes longer. A coarser one lays thicker walls, so it is stronger and faster but softer on detail.</p>
-                        </div>
                     </div>
 
                     <p class="wh-result" id="wh-result" role="status" hidden></p>
@@ -365,6 +360,11 @@
                             <option value="95">Carbon Fiber CF (~$95/kg)</option>
                             <option value="84">Glass Fiber GF (~$84/kg)</option>
                         </select>
+                    </div>
+                    <div>
+                        <label class="field-label" for="nozzle-size">Nozzle / detail</label>
+                        <select id="nozzle-size" class="form-control"></select>
+                        <p class="field-hint">Finer holds small features but takes longer. Coarser lays thicker walls &mdash; stronger and faster, softer on detail.</p>
                     </div>
                     <div>
                         <label class="field-label" for="quality-level">Quality Level</label>
@@ -648,8 +648,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=4e3bf84b"></script>
-    <script src="../js/app.js?v=b54751af"></script>
+    <script src="../js/pricing.js?v=3555f37a"></script>
+    <script src="../js/app.js?v=cefc767c"></script>
     <script>
         function convertWeight() {
             const weight = parseFloat(document.getElementById('part-weight').value);
@@ -670,7 +670,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=4e3bf84b so they cannot drift from the
+        // All rates come from js/pricing.js?v=3555f37a so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
@@ -707,8 +707,14 @@
             const filamentWeight = partWeight * (1 + wasteFactor);
             const filamentCost = (filamentPricePerKg / 1000) * filamentWeight;
 
-            // Machine time scales on the tiered rate; setup is once per order
-            const machineCost = j7TieredCost(partWeight, PRINT.tiers) * qualityMultiplier;
+            // Machine time scales on the tiered rate, then on how long the job
+            // actually takes: finer layers are slower, and a wider nozzle lays
+            // material faster. Without the nozzle term a big-nozzle job billed
+            // more while printing in half the time.
+            const nozzleMm = (document.getElementById('nozzle-size') || {}).value || '0.4';
+            const nozzleFactor = PRINT.nozzleTime[nozzleMm] || 1;
+            const machineCost = j7TieredCost(partWeight, PRINT.tiers)
+                              * qualityMultiplier * nozzleFactor;
             const serviceFee = SETUP_FEE + machineCost;
 
             // Apply order minimum before rush, so rush multiplies a real price
