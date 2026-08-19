@@ -318,8 +318,26 @@ const J7_SIZE_REFS = [
     { label: 'About the size of a shoebox',        dims: [33, 20, 12] }
 ];
 
-// 3 perimeters at 0.4 mm, in cm.
-const J7_WALL_CM = 0.12;
+// Nozzles on hand. Extrusion width runs about 1.125x the nozzle diameter at
+// default settings, and 3 perimeters is typical — so the nozzle sets how thick
+// the wall is, which on anything chunky is most of the material.
+// Labelled by what the customer gets, not by the number.
+const J7_NOZZLES = [
+    { mm: 0.2, label: '0.2 mm — fine detail: small parts, lettering' },
+    { mm: 0.4, label: '0.4 mm — standard: most parts', preset: true },
+    { mm: 0.6, label: '0.6 mm — chunky: larger parts, thicker walls' },
+    { mm: 0.8, label: '0.8 mm — coarse: big simple parts, fastest' }
+];
+
+const J7_PERIMETERS = 3;
+
+// Wall thickness in cm for a given nozzle.
+function j7WallCm(nozzleMm) {
+    return (nozzleMm || 0.4) * 1.125 * J7_PERIMETERS / 10;
+}
+
+// Kept as the 0.4 mm default so existing callers behave unchanged.
+const J7_WALL_CM = j7WallCm(0.4);
 
 // Usable build volume in mm. One place, so changing printers is a one-line
 // edit rather than a hunt through the UI code.
@@ -338,24 +356,27 @@ function j7FitsBuildPlate(dimsMm) {
 // What actually comes off the printer: the shell, plus whatever fraction of
 // the interior the infill fills. Capped, because on a thin part the shell is
 // the entire part and there is no interior left to fill.
-function j7PrintedVolume(solidCm3, areaCm2, infill) {
-    const shell = Math.min(areaCm2 * J7_WALL_CM, solidCm3);
+function j7PrintedVolume(solidCm3, areaCm2, infill, wallCm) {
+    const shell = Math.min(areaCm2 * (wallCm || J7_WALL_CM), solidCm3);
     return shell + (solidCm3 - shell) * infill;
 }
 
 // Path 1: a real mesh. Volume and surface area are both measured, so this is
 // as close as anything gets without running the slicer itself.
-function j7GramsFromMesh(volumeCm3, areaCm2, infill, density) {
-    return j7PrintedVolume(volumeCm3, areaCm2, infill) * density;
+function j7GramsFromMesh(volumeCm3, areaCm2, infill, density, nozzleMm) {
+    return j7PrintedVolume(volumeCm3, areaCm2, infill, j7WallCm(nozzleMm)) * density;
 }
 
 // Path 2: no mesh, so occupancy and shell fraction come from the shape the
 // customer picked.
-function j7GramsFromDescription(l, w, h, shapeId, infill, density) {
+function j7GramsFromDescription(l, w, h, shapeId, infill, density, nozzleMm) {
     const s = J7_PART_SHAPES.find(x => x.id === shapeId);
     if (!s) return null;
     const solid = l * w * h * s.occ;
-    return solid * (s.shell + (1 - s.shell) * infill) * density;
+    // Shell fractions were calibrated at 0.4 mm; scale them with the wall and
+    // cap at 1, since a part cannot be more than entirely wall.
+    const shell = Math.min(1, s.shell * (j7WallCm(nozzleMm) / J7_WALL_CM));
+    return solid * (shell + (1 - shell) * infill) * density;
 }
 
 // --- STL --------------------------------------------------------------------
@@ -467,5 +488,6 @@ if (typeof module !== 'undefined' && module.exports) {
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,
-                       J7_BUILD_PLATE_MM, j7FitsBuildPlate };
+                       J7_BUILD_PLATE_MM, j7FitsBuildPlate,
+                       J7_NOZZLES, j7WallCm };
 }

@@ -240,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sizeSel  = el('wh-size');
         const shapeSel = el('wh-shape');
         const infillSel = el('wh-infill');
+        const nozzleSel = el('wh-nozzle');
         const dimsWrap = el('wh-dims-wrap');
         const result   = el('wh-result');
         const meshOut  = el('wh-mesh');
@@ -263,9 +264,13 @@ document.addEventListener('DOMContentLoaded', () => {
         shapeSel.value = 'normal';
 
         J7_INFILL.forEach(f => {
-            const o = new Option(f.label, String(f.value));
-            infillSel.add(o);
+            infillSel.add(new Option(f.label, String(f.value)));
             if (f.preset) infillSel.value = String(f.value);
+        });
+
+        J7_NOZZLES.forEach(n => {
+            nozzleSel.add(new Option(n.label, String(n.mm)));
+            if (n.preset) nozzleSel.value = String(n.mm);
         });
 
         const density = () => J7_FILAMENT_DENSITY[materialSel && materialSel.value] || 1.24;
@@ -290,10 +295,11 @@ document.addEventListener('DOMContentLoaded', () => {
         function recalc() {
             if (mode === 'manual') { result.hidden = true; return; }
             const infill = parseFloat(infillSel.value);
+            const nozzle = parseFloat(nozzleSel.value);
 
             if (mode === 'file') {
                 if (!mesh) { result.hidden = true; return; }
-                apply(j7GramsFromMesh(mesh.volumeCm3, mesh.areaCm2, infill, density()),
+                apply(j7GramsFromMesh(mesh.volumeCm3, mesh.areaCm2, infill, density(), nozzle),
                       'Measured from your file.');
                 return;
             }
@@ -307,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dims = J7_SIZE_REFS[+sizeSel.value].dims;
             }
             apply(j7GramsFromDescription(dims[0], dims[1], dims[2],
-                                         shapeSel.value, infill, density()),
+                                         shapeSel.value, infill, density(), nozzle),
                   'A rough estimate from the size and shape.');
         }
 
@@ -335,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
             recalc();
         });
 
-        [shapeSel, infillSel, materialSel].forEach(s => {
+        [shapeSel, infillSel, nozzleSel, materialSel].forEach(s => {
             if (s) s.addEventListener('change', recalc);
         });
         ['wh-l', 'wh-w', 'wh-h'].forEach(id => el(id).addEventListener('input', recalc));
