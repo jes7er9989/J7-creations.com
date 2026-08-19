@@ -1693,3 +1693,12 @@ button[onclick^="scrollPortfolio"] {
     flex: 0 0 auto;
     width: auto;
 }
+
+/* Intake questions on the contact form. Two columns on anything wide enough,
+   one on a phone — a five-field grid that reflows to a single column is much
+   less daunting than five full-width rows. */
+.intake-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: var(--spacing-sm);
+}

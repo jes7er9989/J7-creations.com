@@ -488,6 +488,141 @@ function j7MeshStats(tris) {
     };
 }
 
+// ===========================================================================
+// INTAKE QUESTIONS
+//
+// The form used to show a checklist telling people what to have ready, then
+// give them one free-text box. Most did not fill it in, so every enquiry cost
+// an email asking the same five questions. These are those questions, as
+// fields, and several of them are enough to price the job on the spot.
+//
+// Every field is optional. A blank one costs an email; a form too long to
+// finish costs the whole enquiry.
+// ===========================================================================
+
+const J7_INTAKE = {
+    'remote-support': {
+        note: 'Answer these and I can usually tell you what it will cost before we speak.',
+        fields: [
+            { id: 'device', label: 'What is giving you trouble?', options: [
+                'Windows PC or laptop', 'Mac', 'Phone or tablet', 'Printer',
+                'Router / WiFi', 'Smart home device', 'Something else'] },
+            { id: 'started', label: 'When did it start?', options: [
+                'Today', 'This week', 'It has got worse gradually', 'It has always done this'] },
+            // The one that decides whether remote support is even possible.
+            { id: 'online', label: 'Can you still get online another way?',
+              hint: 'A phone on mobile data counts. If nothing in the house can reach the internet, remote support will not work and we should book a visit instead.',
+              options: ['Yes', 'No', 'Not sure'] }
+        ]
+    },
+
+    'network-infrastructure': {
+        note: 'These four give me enough to size the job and put a real number on it.',
+        fields: [
+            { id: 'property', label: 'Roughly how big is the property?', options: [
+                'Under 1,500 sq ft', '1,500 - 3,000 sq ft', '3,000 - 5,000 sq ft',
+                'Over 5,000 sq ft', 'A business or multiple buildings'] },
+            { id: 'construction', label: 'What are the walls made of?',
+              hint: 'Plaster, brick and metal stop WiFi far more than drywall, and that changes how many access points it takes.',
+              options: ['Drywall / timber frame', 'Brick or block', 'Plaster and lath',
+                        'Metal building', 'Not sure'] },
+            { id: 'devices', label: 'Roughly how many devices connect?', options: [
+                'Under 10', '10 - 25', '25 - 50', 'More than 50'] },
+            { id: 'current', label: 'What equipment are you on now?', options: [
+                'My own router', 'Whatever the provider supplied', 'A mesh system', 'Not sure'] },
+            { id: 'goal', label: 'What are you trying to fix?', options: [
+                'Dead zones / coverage', 'Speed', 'Security or isolating devices',
+                'Smart home or automation', 'Several of these'] }
+        ]
+    },
+
+    'installation': {
+        note: 'Tell me what and how many, and the estimate below is a real one.',
+        fields: [
+            { id: 'install_what', label: 'What needs installing?', options: [
+                'Security cameras', 'WiFi access points', 'Smart home devices',
+                'TV or display', 'Network rack or cabling', 'Something else'] },
+            { id: 'install_qty', label: 'How many?', type: 'number', min: 1, placeholder: 'e.g. 4' },
+            { id: 'where', label: 'Indoor or outdoor?', options: ['Indoor', 'Outdoor', 'Both'] },
+            { id: 'surface', label: 'What is it mounting to?',
+              hint: 'Brick, block and metal take longer than drywall and need different fixings.',
+              options: ['Drywall', 'Wood', 'Brick or block', 'Vinyl siding', 'Metal', 'Not sure'] },
+            { id: 'power', label: 'Is there power where it is going?',
+              options: ['Yes', 'No', 'Not sure'] },
+            { id: 'height', label: 'How high up?', options: [
+                'Ground level', 'Above ground level', 'Roof or very high'] }
+        ]
+    },
+
+    '3d-printing': {
+        note: 'For a figure to the penny, use the estimator on the 3D printing page — it takes a file or a description. These help me pick the right material.',
+        fields: [
+            { id: 'have_file', label: 'What have you got?', options: [
+                'A 3D file I can attach', 'The broken part itself', 'Photos or a sketch',
+                'Just an idea in my head'] },
+            { id: 'environment', label: 'What does it have to survive?',
+              hint: 'This picks the material. Sun and heat rule out PLA entirely.',
+              options: ['Indoors, no stress', 'Outdoors / sunlight', 'Heat', 'Weight or load',
+                        'It needs to flex', 'Not sure'] },
+            { id: 'must_fit', label: 'Does it have to fit something existing?',
+              options: ['Yes, and I can measure it', 'Yes, but I cannot measure it', 'No'] },
+            { id: 'print_qty', label: 'How many do you need?', type: 'number', min: 1, placeholder: 'e.g. 1' }
+        ]
+    }
+};
+
+// --- ballparks --------------------------------------------------------------
+// Deliberately ranges, not prices. Enough to tell someone whether they are in
+// the right shop; never enough to hold Thomas to a number he has not seen.
+
+// Access points needed, from floor area, nudged up by walls that block signal.
+function j7EstimateAPs(property, construction) {
+    const base = { 'Under 1,500 sq ft': 1, '1,500 - 3,000 sq ft': 2,
+                   '3,000 - 5,000 sq ft': 3, 'Over 5,000 sq ft': 4 }[property];
+    if (!base) return null;                       // business: needs a survey
+    const hard = ['Brick or block', 'Plaster and lath', 'Metal building'];
+    return base + (hard.indexOf(construction) !== -1 ? 1 : 0);
+}
+
+function j7BallparkNetwork(answers) {
+    const aps = j7EstimateAPs(answers.property, answers.construction);
+    if (!aps) return null;
+    const design = J7_PRICING.networkDesign.base + J7_PRICING.networkDesign.perNode * aps;
+    const install = j7UnitCost(aps, J7_PRICING.perUnit.accessPoint);
+    return {
+        headline: '$' + Math.round(design + install) + ' - $' + Math.round((design + install) * 1.4),
+        detail: 'Roughly ' + aps + ' access point' + (aps === 1 ? '' : 's') +
+                ' for that size and construction. Design $' + design +
+                ', fitting about $' + Math.round(install) +
+                '. Equipment is separate, at cost.'
+    };
+}
+
+function j7BallparkInstall(answers, travelFee) {
+    const map = { 'Security cameras': 'camera', 'WiFi access points': 'accessPoint',
+                  'Smart home devices': 'smartDevice' };
+    const key = map[answers.install_what];
+    const qty = parseInt(answers.install_qty, 10);
+    if (!key || !qty || qty < 1) return null;
+    const labour = j7UnitCost(qty, J7_PRICING.perUnit[key]);
+    const fee = travelFee || 0;
+    return {
+        headline: '$' + Math.round(labour + fee),
+        detail: qty + ' x ' + answers.install_what.toLowerCase() +
+                ' at $' + Math.round(j7UnitRate(qty, J7_PRICING.perUnit[key])) + ' each' +
+                (fee ? ', plus $' + fee + ' travel' : ', no travel fee') +
+                '. Equipment is separate, at cost.'
+    };
+}
+
+function j7BallparkRemote() {
+    return {
+        headline: '$25 - $50',
+        detail: '$25 an hour with a 30-minute minimum. Most issues are done inside an hour, ' +
+                'and if it turns out to need someone on site I will say so rather than run the clock.'
+    };
+}
+
 // Guarded so scripts/verify-pricing.js can require this file under Node.
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', j7SyncPricingLabels);
@@ -500,5 +635,7 @@ if (typeof module !== 'undefined' && module.exports) {
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,
                        J7_BUILD_PLATE_MM, j7FitsBuildPlate,
-                       J7_NOZZLES, j7WallCm };
+                       J7_NOZZLES, j7WallCm,
+                       J7_INTAKE, j7EstimateAPs, j7BallparkNetwork,
+                       j7BallparkInstall, j7BallparkRemote };
 }

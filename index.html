@@ -18,7 +18,7 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Local Business Schema -->
-    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=847c3b8a.
+    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=a2d4d189.
          Crawlers do not run the JavaScript that fills the visible number, so
          this one is a literal on purpose. -->
     <script type="application/ld+json">
@@ -99,7 +99,7 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="css/styles.css?v=a8fe23a5">
+    <link rel="stylesheet" href="css/styles.css?v=cb54559b">
     <link rel="stylesheet" href="css/mobile-fix.css?v=499ac820">
     <link rel="icon" type="image/png" href="assets/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png"></head>
@@ -454,20 +454,6 @@
             <h2 class="section-title">Ready to Get Started?</h2>
             <p class="contact-intro">Tell me about your project. I usually reply within 2-4 hours during business hours (Mon–Fri 9–6, Sat 10–4 CST), and always within one business day.</p>
             
-            <!-- Service Request Checklist -->
-            <div id="service-checklist" style="background: var(--wash-success); border: 2px solid var(--color-success); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
-                <h3 style="color: var(--color-success); margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h3>
-                <div id="checklist-default">
-                    <ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
-                        <li>✅ <strong>Project photos</strong> (if applicable) - helps me understand the scope</li>
-                        <li>✅ <strong>Budget range</strong> - so I can suggest appropriate solutions</li>
-                        <li>✅ <strong>Timeline</strong> - when do you need this completed?</li>
-                        <li>✅ <strong>Location</strong> - is it within my 100-mile service area?</li>
-                        <li>✅ <strong>Rush service needed?</strong> - 48-hour turnaround available for +50%</li>
-                    </ul>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (Mon–Fri 9–6, Sat 10–4 CST)</p>
-                </div>
-            </div>
             
             <div id="estimate-loaded" class="callout callout--success" style="display: none; margin-bottom: var(--spacing-m);" role="status">
                 <p><strong>Your estimate has been added below.</strong> Edit anything that is not quite right, then send it over &mdash; I will confirm the final figure before any work starts.</p>
@@ -505,7 +491,10 @@
                         <option value="other">📝 Other / Not Sure</option>
                     </select>
                 </div>
-                
+
+                <!-- Service-specific intake questions, rendered by j7Intake -->
+                <div id="service-checklist" class="panel" style="border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;" hidden></div>
+
                 <!-- Dynamic Service Info -->
                 <div id="service-info" style="display: none; padding: 1rem; background: var(--wash-accent); border: 1px solid var(--color-accent); border-radius: 8px; margin-bottom: 1rem;"></div>
                 
@@ -570,8 +559,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="js/pricing.js?v=504b612c"></script>
-    <script src="js/app.js?v=847c3b8a"></script>
+    <script src="js/pricing.js?v=fa5644fc"></script>
+    <script src="js/app.js?v=a2d4d189"></script>
     
     <!-- Portfolio Carousel Script -->
     <script>
@@ -647,7 +636,7 @@
             // Hide service info if no selection or other
             if (!service || service === 'other') {
                 serviceInfo.style.display = 'none';
-                checklistDiv.innerHTML = '<h3 style="color: var(--color-success); margin-bottom: 1rem;">📋 Before Submitting, Have Ready:</h3><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li>✅ <strong>Project photos</strong> (if applicable) - helps me understand the scope</li><li>✅ <strong>Budget range</strong> - so I can suggest appropriate solutions</li><li>✅ <strong>Timeline</strong> - when do you need this completed?</li><li>✅ <strong>Location</strong> - is it within my 100-mile service area?</li><li>✅ <strong>Rush service needed?</strong> - 48-hour turnaround available for +50%</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (Mon–Fri 9–6, Sat 10–4 CST)</p>';
+                // The checklist is real fields now - see j7Intake in js/app.js?v=a2d4d189.
                 messageLabel.textContent = 'Project Details';
                 messageField.placeholder = 'Tell me about your project...';
                 return;
@@ -662,7 +651,7 @@
                 messageField.placeholder = data.placeholder;
                 
                 // Update checklist
-                checklistDiv.innerHTML = data.checklist;
+                // The checklist is real fields now - see j7Intake in js/app.js?v=a2d4d189.
             }
         }
     </script>

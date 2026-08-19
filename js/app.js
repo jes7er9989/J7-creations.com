@@ -229,6 +229,112 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // ========== Service intake questions, and a live ballpark ==========
+    // The checklist told people what to have ready and then handed them one
+    // text box. These are the same questions as fields, so the answers arrive
+    // with the enquiry instead of costing an email each — and where they are
+    // enough to price the job, the visitor sees the number straight away.
+    (function j7Intake() {
+        const serviceSel = document.getElementById('service');
+        const host = document.getElementById('service-checklist');
+        if (!serviceSel || !host || typeof J7_INTAKE === 'undefined') return;
+
+        const locationField = document.getElementById('location');
+
+        function travelFee() {
+            if (!locationField || !locationField.value.trim()) return null;
+            const hit = typeof j7LookupTown === 'function'
+                ? j7LookupTown(locationField.value) : null;
+            return hit && hit.fee >= 0 ? hit.fee : null;
+        }
+
+        function answers() {
+            const out = {};
+            host.querySelectorAll('[data-intake]').forEach(el => {
+                if (el.value) out[el.dataset.intake] = el.value;
+            });
+            return out;
+        }
+
+        function ballpark(service, a) {
+            if (service === 'remote-support') return j7BallparkRemote();
+            if (service === 'installation') return j7BallparkInstall(a, travelFee());
+            if (service === 'network-infrastructure') return j7BallparkNetwork(a);
+            return null;
+        }
+
+        function renderBallpark() {
+            const box = document.getElementById('intake-ballpark');
+            if (!box) return;
+            const b = ballpark(serviceSel.value, answers());
+            if (!b) { box.hidden = true; return; }
+            box.hidden = false;
+            box.innerHTML =
+                '<p style="margin-bottom:0.35rem;"><strong style="font-size:var(--text-2xl);">'
+                + b.headline + '</strong> &mdash; ballpark</p>'
+                + '<p class="text-muted" style="margin-bottom:0.5rem;">' + b.detail + '</p>'
+                + '<p class="text-muted" style="font-size:var(--text-sm);">Not a quote. '
+                + 'I confirm everything in writing before any work starts, and you approve it first.</p>';
+        }
+
+        function render() {
+            const spec = J7_INTAKE[serviceSel.value];
+            if (!spec) { host.hidden = true; host.innerHTML = ''; return; }
+            host.hidden = false;
+
+            const rows = spec.fields.map(f => {
+                const id = 'intake-' + f.id;
+                const hint = f.hint
+                    ? '<p class="field-hint">' + f.hint + '</p>' : '';
+                const control = f.type === 'number'
+                    ? '<input type="number" class="form-control" id="' + id + '" name="' + f.id
+                      + '" data-intake="' + f.id + '" min="' + (f.min || 1)
+                      + '" placeholder="' + (f.placeholder || '') + '">'
+                    : '<select class="form-control" id="' + id + '" name="' + f.id
+                      + '" data-intake="' + f.id + '"><option value="">Select…</option>'
+                      + f.options.map(o => '<option>' + o + '</option>').join('') + '</select>';
+                return '<div><label class="field-label" for="' + id + '">' + f.label + '</label>'
+                     + control + hint + '</div>';
+            }).join('');
+
+            host.innerHTML =
+                '<h3 style="margin-bottom:0.35rem;">A few details, so I can quote without a follow-up</h3>'
+                + '<p class="text-muted" style="margin-bottom:1rem;">' + spec.note
+                + ' Every one is optional &mdash; skip anything you do not know.</p>'
+                + '<div class="intake-grid">' + rows + '</div>'
+                + '<div id="intake-ballpark" class="callout callout--success" hidden style="margin-top:1rem;"></div>';
+
+            host.querySelectorAll('[data-intake]').forEach(el => {
+                el.addEventListener('change', renderBallpark);
+                el.addEventListener('input', renderBallpark);
+            });
+            renderBallpark();
+        }
+
+        serviceSel.addEventListener('change', render);
+        if (locationField) locationField.addEventListener('input', renderBallpark);
+        render();
+
+        // Fold the answers into the message on submit. Formspree already
+        // delivers each named field, but repeating them in the body means the
+        // email reads as a brief rather than as a form dump.
+        const form = document.getElementById('contact-form');
+        if (form) {
+            form.addEventListener('submit', () => {
+                const spec = J7_INTAKE[serviceSel.value];
+                const msg = document.getElementById('message');
+                if (!spec || !msg) return;
+                const a = answers();
+                const lines = spec.fields
+                    .filter(f => a[f.id])
+                    .map(f => '- ' + f.label + ' ' + a[f.id]);
+                if (!lines.length) return;
+                if (msg.value.indexOf('What they told me:') !== -1) return;
+                msg.value = msg.value.trim() + '\n\nWhat they told me:\n' + lines.join('\n') + '\n';
+            });
+        }
+    })();
+
     // ========== Print weight helper ==========
     // Three routes to a gram figure, all of them ending in the estimator's own
     // weight field. See js/pricing.js for the model.
