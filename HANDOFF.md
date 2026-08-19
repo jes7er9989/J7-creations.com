@@ -1,6 +1,11 @@
 # J7 Creations — Handoff
 
-**Last updated:** 18 August 2026
+> **State as of 19 Aug 2026.** Everything described here is deployed and live.
+> `main` and `site-overhaul` point at the same commit. The only work in flight
+> is the chatbot, which is a design conversation with nothing built — see
+> *Open: the chatbot* near the end.
+
+**Last updated:** 19 August 2026
 **Live:** https://j7creations.com · **Repo:** https://github.com/jes7er9989/J7-creations.com
 
 Static site — plain HTML/CSS/JS, no build step, no framework. Pushing to `main`
@@ -67,7 +72,7 @@ that the advertised ranges still match what the calculators produce.
 
 ---
 
-## Two things that will bite you
+## Four things that will bite you
 
 ### Internal links must not end in `.html`
 
@@ -88,6 +93,32 @@ edge to y=0, which is *underneath* it — `#remote-support` used to put its
 heading at y=27, invisible. `--nav-offset` plus a `[id] { scroll-margin-top }`
 rule handles this for every id, including ones added later, and also keeps an
 invalid form field from landing under the bar on submit.
+
+### Your browser will lie to you about whether a deploy worked
+
+Twice this session a production check returned the *old* prices from a page
+whose asset stamp had already updated — the browser was holding cached
+JavaScript, and once a registered service worker was serving it. Clearing
+service workers and caches and reloading gave the right numbers.
+
+**Verify a deploy by fetching the HTML with `curl` and grepping for the new
+stamp**, not by looking at a page you already had open. When checking in a
+browser, unregister the service worker first:
+
+```js
+navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+caches.keys().then(ks => ks.forEach(k => caches.delete(k)));
+```
+
+### A test file that crashes is not a test file that fails
+
+`check()` in `verify-pricing.js` takes **`(label, condition)`**. New assertions
+written with the arguments reversed *passed* — on a truthy string — while
+testing nothing. And a block pasted at the wrong indent landed inside another
+function's scope and threw a `ReferenceError` instead of reporting a failure.
+
+Both look like success at a glance. After adding checks, deliberately break one
+and confirm it reports FAIL.
 
 ---
 
@@ -216,6 +247,106 @@ contrast failures.**
 
 ---
 
+## Estimators: the customer never supplies expertise
+
+The governing rule, learned the hard way twice. **Never ask a customer for a
+number that is the reason they are hiring you.** They cannot answer it, so they
+guess or leave, and either way the estimate is worthless.
+
+Two fields broke this and both are gone:
+
+- **"Part Weight" in grams.** Someone holding a broken bracket owns no scale
+  and has never sliced anything. Replaced with three routes — describe the part
+  (everyday-object size + shape), upload an STL/OBJ (parsed in the browser, no
+  upload), or type a weight if you genuinely know it.
+- **"Estimated hours"** on both the IT and installation calculators. Knowing
+  how long a job takes *is the service*. Replaced with scope pickers for remote
+  support, and with what/how-many/surface/height on site.
+
+Ask what the customer can see. Derive the rest.
+
+### The print weight model
+
+`printed = min(area × wall, solid) + (solid − shell) × infill`
+
+One formula, both behaviours: a 3 mm bracket is entirely wall so infill barely
+moves it (85 g at 5%, 94 g at 100%), while a solid part swings 289 g → 1004 g.
+A 20 mm cube reads 8.00 cm³ / 24.0 cm² exactly and 9.9 g at 100% infill, which
+is its true solid weight.
+
+Wall thickness comes from the nozzle (`nozzle × 1.125 × 3 perimeters`), so the
+four nozzles give 0.68 / 1.35 / 2.02 / 2.70 mm of wall. That matters: it was
+fixed at 1.35 mm, silently wrong for three of the four.
+
+Build plate is **350 × 350 × 350**, in one constant, checked with sorted axes
+so a part that can be *turned* to fit counts as fitting.
+
+### The on-site hours model
+
+Base hours per task × quantity, times surface and height factors — because
+brick, height and awkward access are what actually make a job overrun. The
+multipliers are printed in the breakdown ("0.75 hr each × 4, Brick or block
+adds 40%") so a customer can argue with the arithmetic instead of trusting it.
+
+A rack is one job with a per-unit tail, not N racks. Fault-finding says plainly
+that it is open-ended.
+
+### Machine time is not proportional to weight
+
+Print machine time carries a **nozzle factor** (2.0 / 1.0 / 0.67 / 0.5 across
+0.2–0.8 mm), calibrated so 0.4 mm is exactly 1.0 and existing quotes did not
+move. Without it a 0.8 mm job billed *more* while printing in *half* the time,
+and a 0.2 mm job billed less while taking far longer. Charging per gram assumes
+grams and hours track each other; nozzle size breaks that in both directions.
+
+---
+
+## The cable run that was priced nowhere
+
+Worth its own heading because it was invisible for so long. **"Cable run"
+appeared in the site copy and in no calculator and nowhere in `pricing.js`** —
+despite being the biggest labour item on a network job. The per-AP price
+quietly looked like it covered one, which made a fresh install underpriced and
+a job with existing cable overpriced.
+
+Now a priced line in three places (IT calculator, installation calculator as a
+job in its own right, homepage ballpark), banded by how hard the pull is:
+**$80 easy / $125 standard / $205 difficult**.
+
+Derived from 2026 market data ($125–300 per drop typical, $500–850 hard
+retrofits, materials $20–25, labour 60–70% of the total) against the $60/hr
+network rate. They sit at or under the market low, which is where a rural solo
+operator belongs.
+
+**Network design was rebased** from `$150 + $50/AP` to `$60 + $35/AP`. The old
+formula was reverse-engineered to fit an advertised "$200–800" rather than
+built from hours, and charged 2.7 hours of design for a single-AP plan.
+
+---
+
+## Calibrated from market data, not from Thomas
+
+These are the numbers most likely to be wrong. All were derived from research
+because Thomas did not have the figures to hand. **Ask him to check them
+against a real job before treating them as settled.**
+
+| Number | Current | Basis |
+|---|---|---|
+| Cable run, easy / standard / difficult | $80 / $125 / $205 | 1.0 / 1.75 / 3.0 hr + materials |
+| Mount a bracket | 0.75 hr each | estimate |
+| Fit network equipment | 1.0 hr each | estimate |
+| Rack build | 3 hr + 0.5/unit | estimate |
+| Fault-finding | 1.5 hr | open-ended by nature |
+| Surface factors | brick +40%, metal +30%, siding +15% | estimate |
+| Height factors | above ground +25%, roof +50% | estimate |
+| Print shape occupancy | thin 7%, hollow 14%, normal 40%, solid 75% | validated against 6 reference parts |
+
+The print shape factors were checked against real parts including two from the
+portfolio and land inside a sane range; the labour hours have had no such
+check.
+
+---
+
 ## Where things are
 
 | Thing | File |
@@ -261,11 +392,67 @@ Do not silently reverse these.
   the weakest thing on the site and only new photos can fix it.
 - Two of the portfolio entries are J7's own business cards, i.e. marketing
   collateral rather than client work.
-- `about.html` and `portfolio.html` have no structured data.
+- ~~`about.html` and `portfolio.html` have no structured data.~~ Done —
+  all seven pages now carry JSON-LD.
 - Roughly 350 inline `style` attributes remain, mostly layout one-offs.
 - **Cloudflare Browser Cache TTL** should be set to *Respect Existing Headers*
   in the dashboard. The stamp script works around the override, but that
   setting removes the problem at source.
+
+---
+
+## Open: the chatbot (mid-conversation, nothing built)
+
+Thomas wants a scoped assistant. **Agreed scope:** pricing questions, general
+questions about him and how the business works, site navigation, and helping
+someone reach a quote by asking questions. **Explicitly out of scope:** tech
+support answers and product recommendations.
+
+### What was established
+
+- **It needs a backend.** The site is static; an API key cannot go in browser
+  JavaScript. One file — `functions/api/chat.js` — using Cloudflare Pages
+  Functions, which the project already has free. The CSP already allows
+  same-origin, so no header change is needed.
+- **Cost, six-exchange conversation with prompt caching:** Claude Opus 5
+  ≈ $0.044 ($4.40 per 100, $44 per 1,000); Claude Haiku 4.5 ≈ $0.009 ($0.90 per
+  100, $9 per 1,000). Model choice is Thomas's call — do not downgrade for cost
+  without asking. Rate limiting and a spend cap in the Anthropic console are
+  both mandatory, not optional.
+- **The key design decision: generate the system prompt from `pricing.js` and
+  the FAQ at build time**, the way `stamp-assets.py` works. Then the bot cannot
+  quote a price that differs from the site, and it updates when the rates do. A
+  hand-written prompt drifts the first time anything changes, and a bot quoting
+  last month's prices is worse than no bot. Everything needed is already in one
+  place: rates, minimums, cable bands, travel tiers, 46 towns, 24 FAQ answers.
+- **Scope enforcement is a prompt, not a fence.** Models follow it well, not
+  perfectly. A short `max_tokens` helps — it cannot write a tutorial if it
+  cannot write at length.
+
+### Three questions still unanswered
+
+1. **Where does a quote conversation end?** The useful version asks a few
+   questions then hands off — pre-fills the contact form, or texts a summary.
+   Otherwise it is a chat log neither party keeps.
+2. **May it state a price?** Proposed: yes, always as "the calculator says
+   roughly $X, Thomas confirms before any work" — never a commitment.
+3. **Opus 5 or Haiku 4.5 to start?**
+
+The next step offered was **drafting the system prompt first**, before any
+code, since it is the part worth arguing about and costs nothing to iterate on.
+
+### Also raised and not yet actioned
+
+- A **case study** template was drafted for the waterproof enclosure (problem →
+  approach → cost → result) using existing photos. Thomas liked the idea; the
+  real job details were never supplied, so nothing was written. The draft
+  invented every specific and was flagged as such.
+- The **AI-crawler block** in `robots.txt` is still on — Cloudflare injects
+  rules disallowing GPTBot, ClaudeBot, CCBot and Google-Extended. Normal search
+  is unaffected. Thomas's call whether to turn it off.
+- **www.j7creations.com** now resolves (he fixed it) but *serves* the site
+  rather than redirecting to the apex. Canonicals point at the apex so search
+  consolidates correctly; a redirect would be tidier but nothing is broken.
 
 ## The highest-value thing left is not code
 
