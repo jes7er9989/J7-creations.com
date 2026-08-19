@@ -82,8 +82,29 @@ const J7_PRICING = {
 
     // ---------- Project pricing ----------
     homeAssistantBase: 150,              // hub, config, dashboards, handover
-    networkDesign: { base: 150, perNode: 50 },  // 1 node = $200 ... 13 = $800
+    // Rebased from hours rather than reverse-engineered to hit an advertised
+    // $200-800 range. The old base charged $200 for a single-AP plan — 2.7
+    // hours at the $75 design rate, for a job that is a look round and a
+    // diagram. The shape was wrong at the small end, not just the number.
+    //   1 AP $95 (1.3h) | 4 AP $200 (2.7h) | 8 AP $340 (4.5h) | 13 AP $515 (6.9h)
+    networkDesign: { base: 60, perNode: 35 },
     networkAudit: 150,
+
+    // Running the cable is the biggest labour item on a network job, and it
+    // was priced nowhere — mentioned in the copy, absent from pricing.js and
+    // from every calculator. The per-AP fitting price quietly looked like it
+    // covered it, which made a fresh install underpriced and a job with
+    // existing cable overpriced.
+    //
+    // Market (2026) is $125-300 a drop typical, $500-850 for hard retrofits,
+    // with materials about $20-25 and labour 60-70% of the total. These are
+    // that shape at the $60/hr network rate, sitting at or under the low end
+    // of the range, which is where a rural solo operator should be.
+    cableDrop: {
+        easy:      { price: 80,  hours: 1.0,  label: 'Easy — open attic, basement or unfinished space' },
+        standard:  { price: 125, hours: 1.75, label: 'Standard — finished wall, reasonable access' },
+        difficult: { price: 205, hours: 3.0,  label: 'Difficult — two storey, no attic, or conduit' }
+    },
 
     // ---------- Other fabrication services ----------
     // These were quoted only in page copy with no entry here, which is how
@@ -528,6 +549,10 @@ const J7_INTAKE = {
                         'Metal building', 'Not sure'] },
             { id: 'devices', label: 'Roughly how many devices connect?', options: [
                 'Under 10', '10 - 25', '25 - 50', 'More than 50'] },
+            { id: 'cabling', label: 'Is there network cable in the walls already?',
+              hint: 'This is the biggest single swing on the price. Running new cable is most of the labour; reusing what is there costs nothing.',
+              options: ['Yes, there are network points already', 'No, it is all wireless now',
+                        'Some, but not where I need it', 'Not sure'] },
             { id: 'current', label: 'What equipment are you on now?', options: [
                 'My own router', 'Whatever the provider supplied', 'A mesh system', 'Not sure'] },
             { id: 'goal', label: 'What are you trying to fix?', options: [
@@ -589,11 +614,23 @@ function j7BallparkNetwork(answers) {
     if (!aps) return null;
     const design = J7_PRICING.networkDesign.base + J7_PRICING.networkDesign.perNode * aps;
     const install = j7UnitCost(aps, J7_PRICING.perUnit.accessPoint);
+
+    // Whether cable already exists is the single biggest swing on a network
+    // job, so the ballpark says so instead of hiding it inside a range.
+    const cabled = answers.cabling === 'Yes, there are network points already';
+    const drops = cabled ? 0 : aps;
+    const dropCost = drops * J7_PRICING.cableDrop.standard.price;
+
+    const low = design + install + dropCost;
     return {
-        headline: '$' + Math.round(design + install) + ' - $' + Math.round((design + install) * 1.4),
+        headline: '$' + Math.round(low) + ' - $' + Math.round(low * 1.35),
         detail: 'Roughly ' + aps + ' access point' + (aps === 1 ? '' : 's') +
                 ' for that size and construction. Design $' + design +
                 ', fitting about $' + Math.round(install) +
+                (drops
+                    ? ', plus ' + drops + ' cable run' + (drops === 1 ? '' : 's') +
+                      ' at about $' + J7_PRICING.cableDrop.standard.price + ' each'
+                    : '. No cable runs, since you already have points') +
                 '. Equipment is separate, at cost.'
     };
 }

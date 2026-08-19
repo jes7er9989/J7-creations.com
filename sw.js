@@ -13,7 +13,7 @@ const urlsToCache = [
     '/css/styles.css?v=cb54559b',
     '/css/mobile-fix.css?v=499ac820',
     '/js/app.js?v=a2d4d189',
-    '/js/pricing.js?v=fa5644fc',
+    '/js/pricing.js?v=507b6175',
     '/manifest.json',
     '/assets/images/j7-mark-nav.379b77f9.png',
     '/assets/images/j7-wall.fd59da6c.jpg',

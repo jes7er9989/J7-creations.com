@@ -286,6 +286,7 @@
                             <option value="smartDevice">Smart Home Devices (per device)</option>
                             <option value="mounting">Simple Mounting (hourly)</option>
                             <option value="network">Network Equipment (hourly)</option>
+                            <option value="cableDrop">Network cable runs (per drop)</option>
                             <option value="complex">Complex Install (hourly)</option>
                         </select>
                     </div>
@@ -295,6 +296,14 @@
                         <p id="install-qty-note" class="field-hint"></p>
                     </div>
                     <div id="travel-div">
+                        <div id="install-drop-difficulty-wrap" style="display: none;">
+                            <label class="field-label" for="install-drop-difficulty">How hard are the runs?</label>
+                            <select id="install-drop-difficulty" class="form-control">
+                                <option value="easy">Easy &mdash; open attic, basement or unfinished space</option>
+                                <option value="standard" selected>Standard &mdash; finished wall, reasonable access</option>
+                                <option value="difficult">Difficult &mdash; two storey, no attic, or conduit</option>
+                            </select>
+                        </div>
                         <label class="field-label" for="install-distance">Distance from Atwood, TN</label>
                         <select id="install-distance" class="form-control">
                             <option value="0">0-25 miles (No fee)</option>
@@ -525,10 +534,10 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=fa5644fc"></script>
+    <script src="../js/pricing.js?v=507b6175"></script>
     <script src="../js/app.js?v=a2d4d189"></script>
     <script>
-        // Rates come from js/pricing.js?v=fa5644fc — see that file to change any price.
+        // Rates come from js/pricing.js?v=507b6175 — see that file to change any price.
         // Per-unit types quote by the piece, which is how customers compare
         // installers. Hourly types are open-ended work where a unit count
         // would be meaningless.
@@ -538,11 +547,14 @@
             smartDevice: { mode: 'unit', bands: 'smartDevice', label: 'How many devices?',       noun: 'device' },
             mounting:    { mode: 'hourly', rate: 'simple',  label: 'Estimated hours' },
             network:     { mode: 'hourly', rate: 'network', label: 'Estimated hours' },
-            complex:     { mode: 'hourly', rate: 'complex', label: 'Estimated hours' }
+            complex:     { mode: 'hourly', rate: 'complex', label: 'Estimated hours' },
+                cableDrop:   { mode: 'drop',   label: 'How many cable runs?', noun: 'cable run' }
         };
 
         function updateInstallOptions() {
             const config = INSTALL_TYPES[document.getElementById('install-type').value];
+            const dd = document.getElementById('install-drop-difficulty-wrap');
+            if (dd) dd.style.display = config.mode === 'drop' ? 'block' : 'none';
             const input = document.getElementById('install-qty');
 
             document.getElementById('install-qty-label').textContent = config.label;
@@ -584,7 +596,16 @@
             let labor = 0;
             const notes = [];
 
-            if (config.mode === 'unit') {
+            if (config.mode === 'drop') {
+                // Cable runs are their own job — people ring up about a couple of
+                // drops with none of the rest of it — and are banded by how hard the
+                // pull is rather than billed by the hour.
+                const band = J7_PRICING.cableDrop[
+                    (document.getElementById('install-drop-difficulty') || {}).value || 'standard'
+                ] || J7_PRICING.cableDrop.standard;
+                labor = qty * band.price;
+                notes.push(`${qty} cable run${qty === 1 ? '' : 's'} @ $${band.price} each`);
+            } else if (config.mode === 'unit') {
                 const bands = J7_PRICING.perUnit[config.bands];
                 const each = j7UnitRate(qty, bands);
                 labor = j7UnitCost(qty, bands);

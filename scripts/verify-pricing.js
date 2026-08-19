@@ -67,8 +67,34 @@ console.log('\nNETWORK DESIGN');
 const ND = J7_PRICING.networkDesign;
 const designCost = nodes => ND.base + ND.perNode * nodes;
 sweep('network design', designCost, 1, 40);
-check('1 node matches the advertised $200 floor', designCost(1) === 200);
-check('13 nodes matches the advertised $800 ceiling', designCost(13) === 800);
+check('1 node matches the advertised $95 floor', designCost(1) === 95);
+check('13 nodes matches the advertised $515 ceiling', designCost(13) === 515);
+// The old fee was reverse-engineered to fit a range and implied 2.7 hours of
+// design for a single-AP plan. Assert the hours instead of the endpoints, so
+// the next rate change has to stay defensible rather than merely tidy.
+{
+  const hrs = n => designCost(n) / J7_PRICING.cadPerHour;
+  check('a 1-AP design is under 2 hours of work', hrs(1) < 2);
+  check('a 13-AP design is between 5 and 9 hours', hrs(13) > 5 && hrs(13) < 9);
+}
+
+// --- cable runs -------------------------------------------------------------
+// Market in 2026 is $125-300 a drop typical; a rural solo operator should sit
+// at or under the low end. Bands must also stay in order.
+{
+  const D = J7_PRICING.cableDrop;
+  ['easy','standard','difficult'].forEach(k => check('cable drop band ' + k + ' exists', !!D[k]));
+  check('easy is cheaper than standard', D.easy.price < D.standard.price);
+  check('standard is cheaper than difficult', D.standard.price < D.difficult.price);
+  check('standard drop sits at or under the $125 market low', D.standard.price <= 125);
+  check('difficult drop stays under the $300 market typical ceiling', D.difficult.price < 300);
+  // Each band should pay for its own labour at the network rate plus materials.
+  ['easy','standard','difficult'].forEach(k => {
+    const labourOnly = D[k].hours * J7_PRICING.labor.network;
+    check(k + ' drop covers its labour ($' + D[k].price + ' vs $' + labourOnly.toFixed(0) + ')',
+          D[k].price > labourOnly);
+  });
+}
 
 // ---------- Labour ----------
 console.log('\nLABOUR');

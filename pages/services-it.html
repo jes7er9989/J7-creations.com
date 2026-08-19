@@ -304,6 +304,20 @@
                         <input type="number" id="it-nodes" placeholder="e.g., 4" min="1" step="1" class="form-control">
                         <p class="field-hint">How many devices the design has to cover</p>
                     </div>
+                    <div id="drops-div" style="display: none;">
+                        <label class="field-label" for="it-drops">New cable runs needed</label>
+                        <input type="number" id="it-drops" placeholder="e.g., 4" min="0" step="1" value="0" class="form-control">
+                        <p class="field-hint">Leave at 0 if there are already network points where the gear is going. Pulling cable is most of the labour on a network job.</p>
+                    </div>
+                    <div id="drop-difficulty-div" style="display: none;">
+                        <label class="field-label" for="it-drop-difficulty">How hard are those runs?</label>
+                        <select id="it-drop-difficulty" class="form-control">
+                            <option value="easy">Easy &mdash; open attic, basement or unfinished space</option>
+                            <option value="standard" selected>Standard &mdash; finished wall, reasonable access</option>
+                            <option value="difficult">Difficult &mdash; two storey, no attic, or conduit</option>
+                        </select>
+                        <p class="field-hint">Not sure? Leave it on standard and I will confirm on site.</p>
+                    </div>
                     <div id="travel-div" style="display: none;">
                         <label class="field-label" for="it-travel">Distance from Atwood, TN</label>
                         <select id="it-travel" class="form-control">
@@ -368,7 +382,7 @@
                 </div>
                 <div class="why-item">
                     <h3 class="panel-title">Network Design & Planning</h3>
-                    <p><strong>$200-800</strong> — $150 base plus $50 per access point or switch covered</p>
+                    <p><strong>$95-515</strong> — $60 base plus $35 per access point or switch covered</p>
                     <ul style="margin-top: 1rem; color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>Site survey (in-person or remote)</li>
                         <li>Equipment selection & sourcing</li>
@@ -472,18 +486,18 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=fa5644fc"></script>
+    <script src="../js/pricing.js?v=507b6175"></script>
     <script src="../js/app.js?v=a2d4d189"></script>
     <script>
-        // Rates come from js/pricing.js?v=fa5644fc — see that file to change any price.
+        // Rates come from js/pricing.js?v=507b6175 — see that file to change any price.
         const LABOR = J7_PRICING.labor;
         const MINS = J7_PRICING.minimums;
 
         // Which inputs each service needs. Travel only applies on site.
         const IT_FIELDS = {
             'remote':         { hours: true,  complexity: false, devices: false, nodes: false, travel: false },
-            'install':        { hours: true,  complexity: true,  devices: false, nodes: false, travel: true },
-            'network-design': { hours: false, complexity: false, devices: false, nodes: true,  travel: false },
+            'install':        { hours: true,  complexity: true,  devices: false, nodes: false, travel: true,  drops: true },
+            'network-design': { hours: false, complexity: false, devices: false, nodes: true,  travel: false, drops: true },
             'home-assistant': { hours: false, complexity: false, devices: true,  nodes: false, travel: true },
             'audit':          { hours: false, complexity: false, devices: false, nodes: false, travel: true }
         };
@@ -495,6 +509,8 @@
             document.getElementById('complexity-div').style.display = fields.complexity ? 'block' : 'none';
             document.getElementById('devices-div').style.display = fields.devices ? 'block' : 'none';
             document.getElementById('nodes-div').style.display = fields.nodes ? 'block' : 'none';
+            document.getElementById('drops-div').style.display = fields.drops ? 'block' : 'none';
+            document.getElementById('drop-difficulty-div').style.display = fields.drops ? 'block' : 'none';
             document.getElementById('travel-div').style.display = fields.travel ? 'block' : 'none';
 
             document.getElementById('hours-note').textContent = service === 'remote'
@@ -513,6 +529,9 @@
             const rawHours = parseFloat(document.getElementById('it-hours').value);
             const devices = parseInt(document.getElementById('it-devices').value, 10);
             const nodes = parseInt(document.getElementById('it-nodes').value, 10);
+            const drops = fields.drops
+                ? Math.max(0, parseInt(document.getElementById('it-drops').value, 10) || 0) : 0;
+            const dropBand = document.getElementById('it-drop-difficulty').value;
 
             // Validate only the fields this service actually uses, and say so
             // rather than silently charging a minimum against a blank box.
@@ -570,6 +589,15 @@
                     notes.push(`Network audit: $${J7_PRICING.networkAudit} flat rate`);
                     break;
                 }
+            }
+
+            // Running cable is the biggest labour item on a network job and was
+            // priced nowhere. It applies whether the visit is a design or an
+            // install, so it sits outside the switch.
+            if (drops > 0) {
+                const band = J7_PRICING.cableDrop[dropBand] || J7_PRICING.cableDrop.standard;
+                labor += drops * band.price;
+                notes.push(`${drops} cable run${drops === 1 ? '' : 's'} @ $${band.price} each (${dropBand})`);
             }
 
             // Travel is a pass-through cost, so rush does not multiply it
