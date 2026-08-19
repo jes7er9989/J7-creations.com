@@ -280,6 +280,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const density = () => J7_FILAMENT_DENSITY[materialSel && materialSel.value] || 1.24;
 
         // --- write the answer into the estimator ----------------------------
+        // Thomas needs to know how much to trust the figure. A weight measured
+        // from a real mesh and a weight guessed from "about a coffee mug" are
+        // very different things to quote against, and without this he has to
+        // ask — which is the round trip the estimator exists to remove.
+        function basis() {
+            if (mode === 'manual') return 'typed in by the customer';
+            if (mode === 'file') {
+                if (!mesh) return 'unknown';
+                return 'measured from an uploaded file — '
+                     + mesh.dimsMm.map(x => Math.round(x)).join(' x ') + ' mm, '
+                     + mesh.volumeCm3.toFixed(1) + ' cm3 solid';
+            }
+            const size = sizeSel.value === 'custom'
+                ? ['wh-l', 'wh-w', 'wh-h'].map(id => el(id).value).join(' x ') + ' in (given)'
+                : sizeSel.selectedOptions[0].text;
+            return 'estimated from a description — ' + size + ', '
+                 + shapeSel.selectedOptions[0].text;
+        }
+
         function apply(grams, note) {
             if (!isFinite(grams) || grams <= 0) { result.hidden = true; return; }
             const g = grams < 10 ? grams.toFixed(1) : String(Math.round(grams));
@@ -291,6 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // working if the page changes how it is wired.
             weightField.dispatchEvent(new Event('input', { bubbles: true }));
             if (unitField) unitField.dispatchEvent(new Event('change', { bubbles: true }));
+            weightField.dataset.j7Basis = basis();
             result.hidden = false;
             result.innerHTML = '<strong>About ' + g + ' g</strong> &mdash; filled into the weight field below. '
                 + (note || '') + ' Adjust it if you know better; either way I confirm the real figure before printing.';

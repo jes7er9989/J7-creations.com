@@ -89,7 +89,7 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="../css/styles.css?v=d6660fb8">
+    <link rel="stylesheet" href="../css/styles.css?v=a8fe23a5">
     <link rel="stylesheet" href="../css/mobile-fix.css?v=499ac820">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
@@ -648,8 +648,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=3555f37a"></script>
-    <script src="../js/app.js?v=cefc767c"></script>
+    <script src="../js/pricing.js?v=504b612c"></script>
+    <script src="../js/app.js?v=847c3b8a"></script>
     <script>
         function convertWeight() {
             const weight = parseFloat(document.getElementById('part-weight').value);
@@ -670,7 +670,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=3555f37a so they cannot drift from the
+        // All rates come from js/pricing.js?v=504b612c so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
@@ -756,7 +756,10 @@
                     document.getElementById('price-breakdown').innerText,
                     'Material: ' + document.getElementById('material-type').selectedOptions[0].text,
                     'Quality: ' + document.getElementById('quality-level').selectedOptions[0].text,
-                    'Turnaround: ' + document.getElementById('rush-level').selectedOptions[0].text
+                    'Nozzle: ' + document.getElementById('nozzle-size').selectedOptions[0].text,
+                    'Turnaround: ' + document.getElementById('rush-level').selectedOptions[0].text,
+                    'Weight basis: ' + (document.getElementById('part-weight').dataset.j7Basis
+                                        || 'typed in by the customer')
                 ]
             );
         });
