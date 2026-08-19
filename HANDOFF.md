@@ -32,6 +32,11 @@ A *fixed* version string does not help. The site previously carried
 `app.js?v=2026042802`, which never changed, so browsers pinned that file
 indefinitely.
 
+The same script also refreshes the "Site last updated" line in every footer
+and the `<lastmod>` dates in `sitemap.xml`. Those were typed by hand on six
+pages, which meant they were right the day they were written and wrong from
+the next edit onward. Do not edit them directly.
+
 ### 2. Changing an image means changing its filename
 
 `_headers` caches images and video as `immutable, max-age=1yr`. That is only
@@ -59,6 +64,30 @@ node scripts/verify-pricing.js
 It enforces the rule that a bigger job must never cost less than a smaller one
 — a rule the original estimators broke in three separate places — and checks
 that the advertised ranges still match what the calculators produce.
+
+---
+
+## Two things that will bite you
+
+### Internal links must not end in `.html`
+
+Cloudflare Pages serves `/pages/about`, and **308-redirects** `/pages/about.html`
+to it. Fifty-four links, every canonical, every `og:url`, the sitemap and the
+service worker's precache list all pointed at the redirecting form, so every
+navigation on the site cost an extra round trip and search engines were handed
+a canonical that redirects.
+
+The local preview does the opposite: `python -m http.server` has no clean-URL
+rewriting, so `/pages/about` **404s locally while working correctly in
+production**. Verify navigation against the live site, not the preview.
+
+### Anchor targets need `scroll-margin-top`
+
+The navbar is fixed and 90px tall. A fragment jump scrolls the target's top
+edge to y=0, which is *underneath* it — `#remote-support` used to put its
+heading at y=27, invisible. `--nav-offset` plus a `[id] { scroll-margin-top }`
+rule handles this for every id, including ones added later, and also keeps an
+invalid form field from landing under the bar on submit.
 
 ---
 
