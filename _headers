@@ -14,14 +14,21 @@
   # Referrer policy - only send origin for cross-origin requests
   Referrer-Policy: strict-origin-when-cross-origin
   
-  # Content Security Policy - restrict resource loading
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://analytics.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; media-src 'self' blob:; connect-src 'self' https://formspree.io https://analytics.google.com https://www.google-analytics.com; frame-src 'self' https://www.google.com https://maps.google.com;
+  # Content Security Policy - restrict resource loading.
+  # static.cloudflareinsights.com is here because Cloudflare injects its Web
+  # Analytics beacon into every page. Without it the script is blocked, which
+  # logged a CSP violation on every page load and meant the analytics feature
+  # was switched on in the dashboard while collecting nothing.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://analytics.google.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; media-src 'self' blob:; connect-src 'self' https://formspree.io https://analytics.google.com https://www.google-analytics.com https://cloudflareinsights.com; frame-src 'self' https://www.google.com https://maps.google.com;
   
   # Permissions Policy - disable unnecessary browser features
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
   
-  # Cache control for HTML files - prevent stale content
-  Cache-Control: public, max-age=0, must-revalidate
+  # NO Cache-Control here. This block matches EVERY file, and Cloudflare Pages
+  # merges matching rules instead of overriding, so anything set here is
+  # concatenated onto the per-type rules below — leaving images and video with
+  # two conflicting max-age values in a single header. HTML gets its own
+  # revalidation rules at the bottom of this file instead.
 
 # Cache static assets aggressively.
 #
@@ -89,3 +96,14 @@
 # year. One typo in an image path becomes a year-long broken image.
 /404.html
   Cache-Control: no-store
+
+# HTML must always revalidate, and with clean URLs it has no extension to match
+# on — so the routes are listed explicitly rather than caught by /*.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/pages/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
