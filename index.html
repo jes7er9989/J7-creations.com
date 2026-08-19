@@ -18,7 +18,7 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Local Business Schema -->
-    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=2b21e75b.
+    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=49a832a0.
          Crawlers do not run the JavaScript that fills the visible number, so
          this one is a literal on purpose. -->
     <script type="application/ld+json">
@@ -99,7 +99,7 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="css/styles.css?v=b4ccf1af">
+    <link rel="stylesheet" href="css/styles.css?v=7e5d2c84">
     <link rel="stylesheet" href="css/mobile-fix.css?v=499ac820">
     <link rel="icon" type="image/png" href="assets/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png"></head>
@@ -174,9 +174,12 @@
     <!-- Services Overview -->
     <section id="services" class="services">
         <div class="container">
-            <h2 class="section-title">Services</h2>
+            <h2 class="section-title">Not sure which one you need?</h2>
+            <p class="text-muted" style="text-align: center; max-width: 620px; margin: 0 auto var(--spacing-md);">Find the line that sounds like your situation. None of them commit you to anything.</p>
             <div class="services-grid">
                 <div class="service-card" style="border: 2px solid var(--color-accent);">
+                    <p class="service-question">&ldquo;Something stopped working.&rdquo;</p>
+                    <p class="service-symptom">WiFi dropping, a slow computer, a printer that will not print, a device that will not connect.</p>
                     <h3>Remote Tech Support</h3>
                     <p class="service-desc">Fast, affordable help without the travel fee. Phone or screenshare troubleshooting from anywhere in the US. <strong>Nationwide service</strong></p>
                     <ul style="color: var(--color-text-gray); margin: 1rem 0 1rem 1.5rem; font-size: 0.95rem;">
@@ -189,6 +192,8 @@
                     <a href="pages/services-it#remote-support" class="service-link">Learn More →</a>
                 </div>
                 <div class="service-card">
+                    <p class="service-question">&ldquo;I want it done properly.&rdquo;</p>
+                    <p class="service-symptom">Cameras, WiFi that reaches the whole property, a network designed rather than accumulated.</p>
                     <h3>IT & Network Infrastructure</h3>
                     <p class="service-desc">Better WiFi, smarter homes, secure networks. UniFi enterprise gear, Home Assistant automation, self-hosted AI.</p>
                     <ul style="color: var(--color-text-gray); margin: 1rem 0 1rem 1.5rem; font-size: 0.95rem;">
@@ -200,6 +205,8 @@
                     <a href="pages/services-it" class="service-link">Learn More →</a>
                 </div>
                 <div class="service-card">
+                    <p class="service-question">&ldquo;It broke and nobody sells one.&rdquo;</p>
+                    <p class="service-symptom">A discontinued part, a bracket that never existed, an enclosure nothing off-the-shelf fits.</p>
                     <h3>3D Printing & Fabrication</h3>
                     <p class="service-desc">PLA, PETG, ABS, ASA, TPU, PC, Carbon/Glass blends — I print in whatever material fits the job. <strong>📦 Shipping available nationwide</strong></p>
                     <ul style="color: var(--color-text-gray); margin: 1rem 0 1rem 1.5rem; font-size: 0.95rem;">
@@ -211,6 +218,8 @@
                     <a href="pages/services-fabrication" class="service-link">Learn More →</a>
                 </div>
                 <div class="service-card">
+                    <p class="service-question">&ldquo;It needs mounting or wiring.&rdquo;</p>
+                    <p class="service-symptom">Equipment on a wall, cable run where it should not be visible, a job somebody needs to physically do.</p>
                     <h3>Field Installation</h3>
                     <p class="service-desc">On-site deployment within 100 miles of Milan/Atwood. <strong>📍 Local service only</strong></p>
                     <ul style="color: var(--color-text-gray); margin: 1rem 0 1rem 1.5rem; font-size: 0.95rem;">
@@ -222,7 +231,8 @@
                     <a href="pages/services-installation" class="service-link">Learn More →</a>
                 </div>
             </div>
-        </div>
+            <p style="text-align: center; margin-top: var(--spacing-md);" data-j7-phone-block>Still not sure? <a href="#" data-j7-phone style="color: var(--color-text-white); font-weight: 700; text-decoration: underline;"></a> or <a href="#" data-j7-sms style="color: var(--color-text-white); font-weight: 700; text-decoration: underline;">text me</a> &mdash; there is no charge for a question.</p>
+            </div>
     </section>
 
     <!-- What It Costs -->
@@ -559,8 +569,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="js/pricing.js?v=c1a59bc1"></script>
-    <script src="js/app.js?v=2b21e75b"></script>
+    <script src="js/pricing.js?v=cc52cada"></script>
+    <script src="js/app.js?v=49a832a0"></script>
     
     <!-- Portfolio Carousel Script -->
     <script>
