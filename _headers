@@ -8,6 +8,15 @@
   # Prevent MIME type sniffing
   X-Content-Type-Options: nosniff
   
+  # HTTP already 301s to HTTPS, but only after a request has been made in the
+  # clear. HSTS means the browser upgrades before sending anything at all.
+  # No `preload` on purpose: that ships the domain to a hardcoded browser list
+  # and is painful to undo. No `includeSubDomains` while www is unresolved.
+  Strict-Transport-Security: max-age=31536000
+  
+  # Isolate the browsing context from anything a link opens.
+  Cross-Origin-Opener-Policy: same-origin
+  
   # Enable XSS filter in browsers
   X-XSS-Protection: 1; mode=block
   
@@ -107,3 +116,15 @@
 
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+# The repo deploys wholesale, so working files are reachable over HTTP. They
+# hold no secrets, but there is no reason for a maintenance document or a build
+# script to sit in search results.
+/HANDOFF.md
+  X-Robots-Tag: noindex, nofollow
+
+/scripts/*
+  X-Robots-Tag: noindex, nofollow
+
+/README.md
+  X-Robots-Tag: noindex, nofollow
