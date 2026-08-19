@@ -321,6 +321,20 @@ const J7_SIZE_REFS = [
 // 3 perimeters at 0.4 mm, in cm.
 const J7_WALL_CM = 0.12;
 
+// Usable build volume in mm. One place, so changing printers is a one-line
+// edit rather than a hunt through the UI code.
+const J7_BUILD_PLATE_MM = [350, 350, 350];
+
+// A part fits if it can be TURNED to fit, so compare sorted axes rather than
+// checking each dimension against a single number. On a cubic plate the sort
+// changes nothing; on a rectangular one it is the difference between a
+// correct answer and a wrong one.
+function j7FitsBuildPlate(dimsMm) {
+    const part  = dimsMm.slice().sort((a, b) => a - b);
+    const plate = J7_BUILD_PLATE_MM.slice().sort((a, b) => a - b);
+    return part.every((d, i) => d <= plate[i] + 0.5);
+}
+
 // What actually comes off the printer: the shell, plus whatever fraction of
 // the interior the infill fills. Capped, because on a thin part the shell is
 // the entire part and there is no interior left to fill.
@@ -452,5 +466,6 @@ if (typeof module !== 'undefined' && module.exports) {
                        J7_SERVICE_AREA, j7LookupTown,
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
-                       j7ParseSTL, j7ParseOBJ, j7MeshStats };
+                       j7ParseSTL, j7ParseOBJ, j7MeshStats,
+                       J7_BUILD_PLATE_MM, j7FitsBuildPlate };
 }

@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 const d = mesh.dimsMm.map(x => Math.round(x));
-                const tooBig = Math.max.apply(null, d) > 250;
+                const tooBig = !j7FitsBuildPlate(mesh.dimsMm);
                 meshOut.innerHTML = d.join(' &times; ') + ' mm &middot; '
                     + mesh.volumeCm3.toFixed(1) + ' cm&sup3; of solid model &middot; '
                     + mesh.triangles.toLocaleString() + ' triangles'
