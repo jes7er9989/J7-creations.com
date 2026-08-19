@@ -282,8 +282,9 @@
                         </select>
                     </div>
                     <div id="hours-div" style="display: none;">
-                        <label class="field-label" for="it-hours">Estimated Hours</label>
-                        <input type="number" id="it-hours" placeholder="e.g., 2" min="0.5" step="0.5" class="form-control">
+                        <label class="field-label" for="it-scope">How big is the problem?</label>
+                        <select id="it-scope" class="form-control"></select>
+                        <input type="hidden" id="it-hours" value="1">
                         <p id="hours-note" class="field-hint"></p>
                     </div>
                     <div id="complexity-div" style="display: none;">
@@ -486,10 +487,10 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=507b6175"></script>
+    <script src="../js/pricing.js?v=3e0b4c04"></script>
     <script src="../js/app.js?v=a2d4d189"></script>
     <script>
-        // Rates come from js/pricing.js?v=507b6175 — see that file to change any price.
+        // Rates come from js/pricing.js?v=3e0b4c04 — see that file to change any price.
         const LABOR = J7_PRICING.labor;
         const MINS = J7_PRICING.minimums;
 
@@ -502,6 +503,22 @@
             'audit':          { hours: false, complexity: false, devices: false, nodes: false, travel: true }
         };
 
+        // Fill the scope picker once. The customer picks how big the problem
+        // feels; the hours come from that, because they are not in a position
+        // to estimate hours and should not be asked to.
+        (function fillScopes() {
+            const sel = document.getElementById('it-scope');
+            if (!sel || sel.options.length) return;
+            J7_REMOTE_SCOPES.forEach(sc => {
+                sel.add(new Option(sc.label, String(sc.hours)));
+                if (sc.preset) sel.value = String(sc.hours);
+            });
+            sel.addEventListener('change', () => {
+                document.getElementById('it-hours').value = sel.value;
+            });
+            document.getElementById('it-hours').value = sel.value;
+        })();
+
         function updateITOptions() {
             const service = document.getElementById('it-service').value;
             const fields = IT_FIELDS[service];
@@ -510,6 +527,12 @@
             document.getElementById('devices-div').style.display = fields.devices ? 'block' : 'none';
             document.getElementById('nodes-div').style.display = fields.nodes ? 'block' : 'none';
             document.getElementById('drops-div').style.display = fields.drops ? 'block' : 'none';
+            const scopeLabel = document.querySelector('label[for="it-scope"]');
+            if (scopeLabel) {
+                scopeLabel.textContent = service === 'remote'
+                    ? 'How big is the problem?'
+                    : 'Roughly how much work is it?';
+            }
             document.getElementById('drop-difficulty-div').style.display = fields.drops ? 'block' : 'none';
             document.getElementById('travel-div').style.display = fields.travel ? 'block' : 'none';
 
@@ -526,7 +549,9 @@
             const travelFee = fields.travel
                 ? parseFloat(document.getElementById('it-travel').value) : 0;
 
-            const rawHours = parseFloat(document.getElementById('it-hours').value);
+            // Derived from the scope picker, not typed by the customer.
+            const rawHours = parseFloat(document.getElementById('it-scope').value)
+                          || parseFloat(document.getElementById('it-hours').value);
             const devices = parseInt(document.getElementById('it-devices').value, 10);
             const nodes = parseInt(document.getElementById('it-nodes').value, 10);
             const drops = fields.drops

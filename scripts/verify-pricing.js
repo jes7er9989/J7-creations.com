@@ -4,7 +4,8 @@
 // smaller one. The original estimators broke that rule in three separate
 // places, and it is invisible until a customer finds it.
 
-const { J7_PRICING, j7TieredCost, j7UnitCost } = require('../js/pricing.js');
+const { J7_PRICING, j7TieredCost, j7UnitCost,
+        j7OnsiteHours, J7_ONSITE_TASKS, J7_REMOTE_SCOPES } = require('../js/pricing.js');
 
 let failures = 0;
 function check(label, condition, detail) {
@@ -148,6 +149,8 @@ function oldPrint(g, perKg, feePerGram) {
 }
 
 
+
+
     if (g < 50) service = 5 + 0.05 * g;
     return filament + service;
 }
@@ -168,6 +171,30 @@ for (const n of [1, 2, 4, 6, 10]) {
     const o = oldInstall(n, 35);
     const nu = j7UnitCost(n, J7_PRICING.perUnit.camera);
     console.log(`  ${String(n).padStart(2)} cameras   $${o.toFixed(2).padStart(7)} -> $${nu.toFixed(2).padStart(7)}`);
+}
+
+// --- derived hours ----------------------------------------------------------
+// Customers were being asked to estimate hours, which is the one thing they
+// cannot know. Hours now come from the job; these guard that the arithmetic
+// stays sane and never rewards a harder job with a cheaper price.
+{
+  const easy = j7OnsiteHours('mount', 4, 'Drywall', 'Ground level');
+  const hard = j7OnsiteHours('mount', 4, 'Brick or block', 'Roof or very high');
+  check('mounting on drywall at ground level is the cheapest case', easy.hours < hard.hours);
+  check('brick and height raise the hours, not lower them', hard.hours > easy.hours * 1.5);
+  check('more pieces means more hours',
+        j7OnsiteHours('mount', 8, 'Drywall', 'Ground level').hours >
+        j7OnsiteHours('mount', 4, 'Drywall', 'Ground level').hours);
+  // A rack is one job with a tail, not N separate racks.
+  const r1 = j7OnsiteHours('rack', 1, 'Drywall', 'Ground level').hours;
+  const r3 = j7OnsiteHours('rack', 3, 'Drywall', 'Ground level').hours;
+  check('a second rack unit costs less than the first', (r3 - r1) / 2 < r1);
+  check('every on-site task maps to a real labour rate',
+        J7_ONSITE_TASKS.every(t => typeof J7_PRICING.labor[t.rate] === 'number'));
+  check('remote scopes are ordered smallest to largest',
+        J7_REMOTE_SCOPES.every((s, i, a) => i === 0 || s.hours > a[i-1].hours));
+  check('the shortest remote scope still meets the 30-minute minimum',
+        J7_REMOTE_SCOPES[0].hours >= J7_PRICING.minimums.remoteHours);
 }
 
 console.log(`\n${failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED'}\n`);

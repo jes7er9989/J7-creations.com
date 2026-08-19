@@ -296,6 +296,24 @@
                         <p id="install-qty-note" class="field-hint"></p>
                     </div>
                     <div id="travel-div">
+                        <div id="install-jobshape-wrap" style="display: none;">
+                            <label class="field-label" for="install-surface">What is it mounting to?</label>
+                            <select id="install-surface" class="form-control">
+                                <option>Drywall</option>
+                                <option>Wood</option>
+                                <option>Vinyl siding</option>
+                                <option>Brick or block</option>
+                                <option>Metal</option>
+                                <option>Not sure</option>
+                            </select>
+                            <label class="field-label" for="install-height" style="margin-top: 0.75rem;">How high up?</label>
+                            <select id="install-height" class="form-control">
+                                <option>Ground level</option>
+                                <option>Above ground level</option>
+                                <option>Roof or very high</option>
+                            </select>
+                            <p class="field-hint">Brick, height and awkward access are what actually make a job take longer, so they set the hours rather than a guess.</p>
+                        </div>
                         <div id="install-drop-difficulty-wrap" style="display: none;">
                             <label class="field-label" for="install-drop-difficulty">How hard are the runs?</label>
                             <select id="install-drop-difficulty" class="form-control">
@@ -534,10 +552,10 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=507b6175"></script>
+    <script src="../js/pricing.js?v=3e0b4c04"></script>
     <script src="../js/app.js?v=a2d4d189"></script>
     <script>
-        // Rates come from js/pricing.js?v=507b6175 — see that file to change any price.
+        // Rates come from js/pricing.js?v=3e0b4c04 — see that file to change any price.
         // Per-unit types quote by the piece, which is how customers compare
         // installers. Hourly types are open-ended work where a unit count
         // would be meaningless.
@@ -545,9 +563,9 @@
             camera:      { mode: 'unit', bands: 'camera',      label: 'How many cameras?',       noun: 'camera' },
             accessPoint: { mode: 'unit', bands: 'accessPoint', label: 'How many access points?', noun: 'access point' },
             smartDevice: { mode: 'unit', bands: 'smartDevice', label: 'How many devices?',       noun: 'device' },
-            mounting:    { mode: 'hourly', rate: 'simple',  label: 'Estimated hours' },
-            network:     { mode: 'hourly', rate: 'network', label: 'Estimated hours' },
-            complex:     { mode: 'hourly', rate: 'complex', label: 'Estimated hours' },
+            mounting:    { mode: 'task', task: 'mount',        label: 'How many pieces?', noun: 'piece' },
+            network:     { mode: 'task', task: 'netgear',      label: 'How many pieces?', noun: 'piece' },
+            complex:     { mode: 'task', task: 'troubleshoot', label: 'How many areas or systems?', noun: 'area' },
                 cableDrop:   { mode: 'drop',   label: 'How many cable runs?', noun: 'cable run' }
         };
 
@@ -555,6 +573,8 @@
             const config = INSTALL_TYPES[document.getElementById('install-type').value];
             const dd = document.getElementById('install-drop-difficulty-wrap');
             if (dd) dd.style.display = config.mode === 'drop' ? 'block' : 'none';
+            const js = document.getElementById('install-jobshape-wrap');
+            if (js) js.style.display = config.mode === 'task' ? 'block' : 'none';
             const input = document.getElementById('install-qty');
 
             document.getElementById('install-qty-label').textContent = config.label;
@@ -584,7 +604,7 @@
             if (!qty || qty <= 0) {
                 alert(config.mode === 'unit'
                     ? 'Please enter how many units you need installed.'
-                    : 'Please enter roughly how many hours the job will take.');
+                    : 'Please enter how many pieces of equipment are involved.');
                 return;
             }
 
@@ -596,7 +616,22 @@
             let labor = 0;
             const notes = [];
 
-            if (config.mode === 'drop') {
+            if (config.mode === 'task') {
+                // Hours come from the job, not from the customer's guess.
+                const surface = (document.getElementById('install-surface') || {}).value;
+                const height  = (document.getElementById('install-height') || {}).value;
+                const j = j7OnsiteHours(config.task, qty, surface, height);
+                const rate = J7_PRICING.labor[j.rate];
+                const billable = Math.max(j.hours, J7_PRICING.minimums.onsiteHours);
+                labor = rate * billable;
+                notes.push(`${billable} hr @ $${rate}/hr — ${j.why.join(', ')}`);
+                if (billable > j.hours) {
+                    notes.push(`${J7_PRICING.minimums.onsiteHours}-hour site visit minimum applied`);
+                }
+                if (j.openEnded) {
+                    notes.push('Fault-finding is open-ended by nature — this is a starting point, and I stop and talk before running past it.');
+                }
+            } else if (config.mode === 'drop') {
                 // Cable runs are their own job — people ring up about a couple of
                 // drops with none of the rest of it — and are banded by how hard the
                 // pull is rather than billed by the hour.

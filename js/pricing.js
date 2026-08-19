@@ -660,6 +660,81 @@ function j7BallparkRemote() {
     };
 }
 
+// ===========================================================================
+// HOURS ARE DERIVED, NOT ASKED
+//
+// Both calculators used to ask "estimated hours". A customer has no idea how
+// long their job takes — knowing that is the thing they are hiring for — so
+// the field was either guessed at or left blank, and either way the estimate
+// was worthless. Same failure as asking for a part weight in grams.
+//
+// These describe the job in terms a customer can answer, and the hours fall
+// out of it. Everything is visible in the breakdown so the arithmetic can be
+// argued with rather than taken on faith.
+// ===========================================================================
+
+// Remote support. The scope a customer CAN judge is how big the problem feels,
+// and that maps to time closely enough at this rate.
+const J7_REMOTE_SCOPES = [
+    { id: 'quick',  hours: 0.5, label: 'A quick question, or one setting to change' },
+    { id: 'single', hours: 1.0, label: 'One device not behaving', preset: true },
+    { id: 'multi',  hours: 1.5, label: 'Several devices, or it has been going on a while' },
+    { id: 'setup',  hours: 2.0, label: 'Setting something up from scratch' }
+];
+
+// On-site work priced by the hour. Base hours are per item; the multipliers
+// are what actually makes a job take longer than it looks.
+const J7_ONSITE_TASKS = [
+    { id: 'mount',       hours: 0.75, rate: 'simple',
+      label: 'Mounting equipment — brackets, displays, enclosures' },
+    { id: 'netgear',     hours: 1.0,  rate: 'network',
+      label: 'Fitting network equipment — switch, router, patch panel' },
+    { id: 'rack',        hours: 3.0,  rate: 'complex', perExtra: 0.5,
+      label: 'Building or tidying a rack' },
+    { id: 'troubleshoot', hours: 1.5, rate: 'complex', openEnded: true,
+      label: 'Tracking down a fault' }
+];
+
+const J7_SURFACE_FACTOR = {
+    'Drywall': 1.0, 'Wood': 1.0, 'Vinyl siding': 1.15,
+    'Metal': 1.3, 'Brick or block': 1.4, 'Not sure': 1.0
+};
+
+const J7_HEIGHT_FACTOR = {
+    'Ground level': 1.0, 'Above ground level': 1.25, 'Roof or very high': 1.5
+};
+
+/**
+ * Hours for an on-site job, from what it is rather than from a guess.
+ * Returns the hours and the factors that produced them, so the breakdown can
+ * show its working.
+ */
+function j7OnsiteHours(taskId, qty, surface, height) {
+    const task = J7_ONSITE_TASKS.find(t => t.id === taskId);
+    if (!task) return null;
+    const n = Math.max(1, parseInt(qty, 10) || 1);
+
+    // A rack is one job with a per-unit tail, not N racks.
+    const base = task.perExtra ? task.hours + task.perExtra * (n - 1) : task.hours * n;
+
+    const sf = J7_SURFACE_FACTOR[surface] || 1;
+    const hf = J7_HEIGHT_FACTOR[height] || 1;
+    const raw = base * sf * hf;
+
+    return {
+        hours: Math.round(raw * 4) / 4,          // quarter-hour granularity
+        rate: task.rate,
+        openEnded: !!task.openEnded,
+        why: [
+            task.perExtra
+                ? task.hours + ' hr for the first, ' + task.perExtra + ' hr each after'
+                : task.hours + ' hr each x ' + n,
+            sf !== 1 ? surface + ' adds ' + Math.round((sf - 1) * 100) + '%' : null,
+            hf !== 1 ? height + ' adds ' + Math.round((hf - 1) * 100) + '%' : null
+        ].filter(Boolean)
+    };
+}
+
 // Guarded so scripts/verify-pricing.js can require this file under Node.
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', j7SyncPricingLabels);
@@ -673,6 +748,8 @@ if (typeof module !== 'undefined' && module.exports) {
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,
                        J7_BUILD_PLATE_MM, j7FitsBuildPlate,
                        J7_NOZZLES, j7WallCm,
+                       J7_REMOTE_SCOPES, J7_ONSITE_TASKS, j7OnsiteHours,
+                       J7_SURFACE_FACTOR, J7_HEIGHT_FACTOR,
                        J7_INTAKE, j7EstimateAPs, j7BallparkNetwork,
                        j7BallparkInstall, j7BallparkRemote };
 }
