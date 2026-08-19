@@ -249,6 +249,198 @@ function j7LookupTown(query) {
         || null;
 }
 
+// ===========================================================================
+// PRINT WEIGHT ESTIMATION
+//
+// The calculator used to open with "Part Weight" and nothing else. A customer
+// holding a broken bracket does not know what it weighs, has no scale, and has
+// never sliced anything — so the first field was a dead end on the service
+// that most needs the enquiry.
+//
+// Three ways in, in descending order of accuracy:
+//   1. a 3D file      — exact mesh volume, what every real print service does
+//   2. describe it    — bounding box x how solid that kind of part is
+//   3. type the grams — for anyone who already sliced
+//
+// All three end in the same place: grams in the existing field.
+// ===========================================================================
+
+// Filament densities, g/cm3, keyed by the price-per-kg values the material
+// dropdown already uses so the two never drift apart.
+const J7_FILAMENT_DENSITY = {
+    26: 1.24,  // PLA
+    32: 1.27,  // PETG
+    35: 1.05,  // ABS / ASA
+    43: 1.21,  // TPU
+    58: 1.20,  // PC
+    69: 1.14,  // Nylon PA6
+    89: 1.01,  // Nylon PA12 / PA11
+    95: 1.15,  // Carbon fibre blend
+    84: 1.30   // Glass fibre blend
+};
+
+// Five steps, described by what the part has to survive rather than by a
+// number nobody outside the hobby recognises.
+const J7_INFILL = [
+    { value: 0.05, label: '5% — display piece, no load at all' },
+    { value: 0.15, label: '15% — light duty, general purpose' },
+    { value: 0.25, label: '25% — everyday functional part', preset: true },
+    { value: 0.50, label: '50% — takes real load or impact' },
+    { value: 1.00, label: '100% — solid, maximum strength' }
+];
+
+// occ   = how much of the bounding box is actually part
+// shell = how much of THAT is perimeter wall rather than interior
+// The split is what makes infill behave correctly: a 3 mm bracket is nearly
+// all shell, so infill barely moves it; a solid block is nearly all interior,
+// so infill dominates.
+const J7_PART_SHAPES = [
+    { id: 'thin',   occ: 0.07, shell: 0.90,
+      label: 'Thin or open — bracket, clip, mount, stand' },
+    { id: 'hollow', occ: 0.14, shell: 0.85,
+      label: 'Hollow — box, case, cover, enclosure' },
+    { id: 'normal', occ: 0.40, shell: 0.45,
+      label: 'Normal — housing, knob, handle, body' },
+    { id: 'solid',  occ: 0.75, shell: 0.25,
+      label: 'Solid — gear, block, anything load-bearing' }
+];
+
+// Everyday objects, as a bounding box in cm, for people who will not reach for
+// a tape measure.
+const J7_SIZE_REFS = [
+    { label: 'About a golf ball',      dims: [4.3, 4.3, 4.3] },
+    { label: 'About a deck of cards',  dims: [9, 6.5, 2] },
+    { label: 'About a baseball',       dims: [7.5, 7.5, 7.5] },
+    { label: 'About a coffee mug',     dims: [12, 9, 10] },
+    { label: 'About a house brick',    dims: [20, 10, 6.5] },
+    { label: 'About a loaf of bread',  dims: [25, 12, 12] },
+    { label: 'About a shoebox',        dims: [33, 20, 12] }
+];
+
+// 3 perimeters at 0.4 mm, in cm.
+const J7_WALL_CM = 0.12;
+
+// What actually comes off the printer: the shell, plus whatever fraction of
+// the interior the infill fills. Capped, because on a thin part the shell is
+// the entire part and there is no interior left to fill.
+function j7PrintedVolume(solidCm3, areaCm2, infill) {
+    const shell = Math.min(areaCm2 * J7_WALL_CM, solidCm3);
+    return shell + (solidCm3 - shell) * infill;
+}
+
+// Path 1: a real mesh. Volume and surface area are both measured, so this is
+// as close as anything gets without running the slicer itself.
+function j7GramsFromMesh(volumeCm3, areaCm2, infill, density) {
+    return j7PrintedVolume(volumeCm3, areaCm2, infill) * density;
+}
+
+// Path 2: no mesh, so occupancy and shell fraction come from the shape the
+// customer picked.
+function j7GramsFromDescription(l, w, h, shapeId, infill, density) {
+    const s = J7_PART_SHAPES.find(x => x.id === shapeId);
+    if (!s) return null;
+    const solid = l * w * h * s.occ;
+    return solid * (s.shell + (1 - s.shell) * infill) * density;
+}
+
+// --- STL --------------------------------------------------------------------
+// Signed tetrahedron sum for volume, triangle areas for surface. Runs on the
+// visitor's machine; the file is never uploaded anywhere.
+function j7ParseSTL(buffer) {
+    const view = new DataView(buffer);
+    let tris = [];
+
+    // A binary STL is exactly 84 + 50n bytes. Checking the length is more
+    // reliable than sniffing for the word "solid", which binary files can
+    // legitimately start with.
+    const nBinary = buffer.byteLength >= 84 ? view.getUint32(80, true) : 0;
+    if (buffer.byteLength === 84 + nBinary * 50 && nBinary > 0) {
+        for (let i = 0; i < nBinary; i++) {
+            const o = 84 + i * 50;
+            const v = [];
+            for (let k = 0; k < 3; k++) {
+                const p = o + 12 + k * 12;
+                v.push([view.getFloat32(p, true),
+                        view.getFloat32(p + 4, true),
+                        view.getFloat32(p + 8, true)]);
+            }
+            tris.push(v);
+        }
+    } else {
+        const text = new TextDecoder().decode(buffer);
+        if (text.indexOf('facet') === -1) return null;
+        const nums = text.match(/vertex\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)\s+(-?[\d.eE+-]+)/g) || [];
+        const verts = nums.map(l => l.trim().split(/\s+/).slice(1).map(Number));
+        for (let i = 0; i + 2 < verts.length; i += 3) {
+            tris.push([verts[i], verts[i + 1], verts[i + 2]]);
+        }
+    }
+    return tris.length ? j7MeshStats(tris) : null;
+}
+
+// --- OBJ --------------------------------------------------------------------
+function j7ParseOBJ(text) {
+    const verts = [];
+    const tris = [];
+    text.split('\n').forEach(line => {
+        const p = line.trim().split(/\s+/);
+        if (p[0] === 'v') {
+            verts.push([+p[1], +p[2], +p[3]]);
+        } else if (p[0] === 'f' && p.length >= 4) {
+            // Faces may be quads or n-gons; fan-triangulate them.
+            const idx = p.slice(1).map(t => {
+                const i = parseInt(t.split('/')[0], 10);
+                return i < 0 ? verts.length + i : i - 1;
+            });
+            for (let i = 1; i + 1 < idx.length; i++) {
+                if (verts[idx[0]] && verts[idx[i]] && verts[idx[i + 1]]) {
+                    tris.push([verts[idx[0]], verts[idx[i]], verts[idx[i + 1]]]);
+                }
+            }
+        }
+    });
+    return tris.length ? j7MeshStats(tris) : null;
+}
+
+// Volume, surface area and bounding box from a triangle soup. Units in the
+// file are assumed to be mm, which is the convention for both formats.
+function j7MeshStats(tris) {
+    let vol = 0, area = 0;
+    const lo = [Infinity, Infinity, Infinity];
+    const hi = [-Infinity, -Infinity, -Infinity];
+
+    for (const t of tris) {
+        const [a, b, c] = t;
+        // Signed volume of the tetrahedron from the origin to this face.
+        vol += (a[0] * (b[1] * c[2] - b[2] * c[1])
+              - a[1] * (b[0] * c[2] - b[2] * c[0])
+              + a[2] * (b[0] * c[1] - b[1] * c[0])) / 6;
+
+        const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+        const v = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+        const cr = [u[1] * v[2] - u[2] * v[1],
+                    u[2] * v[0] - u[0] * v[2],
+                    u[0] * v[1] - u[1] * v[0]];
+        area += Math.hypot(cr[0], cr[1], cr[2]) / 2;
+
+        for (const p of t) {
+            for (let k = 0; k < 3; k++) {
+                if (p[k] < lo[k]) lo[k] = p[k];
+                if (p[k] > hi[k]) hi[k] = p[k];
+            }
+        }
+    }
+
+    // A mesh wound inside-out gives a negative volume; the magnitude is still
+    // right, so take it rather than rejecting the file.
+    return {
+        volumeCm3: Math.abs(vol) / 1000,
+        areaCm2: area / 100,
+        dimsMm: [hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]],
+        triangles: tris.length
+    };
+}
+
 // Guarded so scripts/verify-pricing.js can require this file under Node.
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', j7SyncPricingLabels);
@@ -256,5 +448,8 @@ if (typeof document !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate,
-                       J7_SERVICE_AREA, j7LookupTown };
+                       J7_SERVICE_AREA, j7LookupTown,
+                       J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
+                       j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
+                       j7ParseSTL, j7ParseOBJ, j7MeshStats };
 }

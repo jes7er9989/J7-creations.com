@@ -229,6 +229,155 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // ========== Print weight helper ==========
+    // Three routes to a gram figure, all of them ending in the estimator's own
+    // weight field. See js/pricing.js for the model.
+    (function j7WeightHelper() {
+        const root = document.getElementById('weight-helper');
+        if (!root || typeof j7GramsFromDescription !== 'function') return;
+
+        const el = id => document.getElementById(id);
+        const sizeSel  = el('wh-size');
+        const shapeSel = el('wh-shape');
+        const infillSel = el('wh-infill');
+        const dimsWrap = el('wh-dims-wrap');
+        const result   = el('wh-result');
+        const meshOut  = el('wh-mesh');
+        const fileIn   = el('wh-file');
+        const infillWrap = el('wh-infill-wrap');
+        const weightField = el('part-weight');
+        const unitField   = el('weight-unit');
+        const materialSel = el('material-type');
+
+        let mesh = null;   // set once a file has been read
+        let mode = 'describe';
+
+        // --- populate the selects from the single source of truth -----------
+        J7_SIZE_REFS.forEach((r, i) => {
+            sizeSel.add(new Option(r.label, String(i)));
+        });
+        sizeSel.add(new Option('I would rather give measurements', 'custom'));
+        sizeSel.value = '3';
+
+        J7_PART_SHAPES.forEach(s => shapeSel.add(new Option(s.label, s.id)));
+        shapeSel.value = 'normal';
+
+        J7_INFILL.forEach(f => {
+            const o = new Option(f.label, String(f.value));
+            infillSel.add(o);
+            if (f.preset) infillSel.value = String(f.value);
+        });
+
+        const density = () => J7_FILAMENT_DENSITY[materialSel && materialSel.value] || 1.24;
+
+        // --- write the answer into the estimator ----------------------------
+        function apply(grams, note) {
+            if (!isFinite(grams) || grams <= 0) { result.hidden = true; return; }
+            const g = grams < 10 ? grams.toFixed(1) : String(Math.round(grams));
+            // The option's value is 'g'; only its label reads "grams".
+            if (unitField) unitField.value = 'g';
+            weightField.value = g;
+            // convertWeight() is the page's own handler; fire the events it
+            // listens for rather than calling it directly, so this keeps
+            // working if the page changes how it is wired.
+            weightField.dispatchEvent(new Event('input', { bubbles: true }));
+            if (unitField) unitField.dispatchEvent(new Event('change', { bubbles: true }));
+            result.hidden = false;
+            result.innerHTML = '<strong>About ' + g + ' g</strong> &mdash; filled into the weight field below. '
+                + (note || '') + ' Adjust it if you know better; either way I confirm the real figure before printing.';
+        }
+
+        function recalc() {
+            if (mode === 'manual') { result.hidden = true; return; }
+            const infill = parseFloat(infillSel.value);
+
+            if (mode === 'file') {
+                if (!mesh) { result.hidden = true; return; }
+                apply(j7GramsFromMesh(mesh.volumeCm3, mesh.areaCm2, infill, density()),
+                      'Measured from your file.');
+                return;
+            }
+
+            let dims;
+            if (sizeSel.value === 'custom') {
+                const v = ['wh-l', 'wh-w', 'wh-h'].map(id => parseFloat(el(id).value));
+                if (v.some(x => !isFinite(x) || x <= 0)) { result.hidden = true; return; }
+                dims = v.map(x => x * 2.54);          // inches in, cm out
+            } else {
+                dims = J7_SIZE_REFS[+sizeSel.value].dims;
+            }
+            apply(j7GramsFromDescription(dims[0], dims[1], dims[2],
+                                         shapeSel.value, infill, density()),
+                  'A rough estimate from the size and shape.');
+        }
+
+        // --- tabs ------------------------------------------------------------
+        root.querySelectorAll('.wh-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                mode = tab.dataset.mode;
+                root.querySelectorAll('.wh-tab').forEach(t => {
+                    const on = t === tab;
+                    t.classList.toggle('active', on);
+                    t.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                ['describe', 'file', 'manual'].forEach(m => {
+                    el('wh-panel-' + m).hidden = (m !== mode);
+                });
+                // Infill is meaningless when someone types a weight they have
+                // already measured — that number is the printed part.
+                infillWrap.hidden = (mode === 'manual');
+                recalc();
+            });
+        });
+
+        sizeSel.addEventListener('change', () => {
+            dimsWrap.hidden = (sizeSel.value !== 'custom');
+            recalc();
+        });
+
+        [shapeSel, infillSel, materialSel].forEach(s => {
+            if (s) s.addEventListener('change', recalc);
+        });
+        ['wh-l', 'wh-w', 'wh-h'].forEach(id => el(id).addEventListener('input', recalc));
+
+        // --- file ------------------------------------------------------------
+        fileIn.addEventListener('change', () => {
+            const f = fileIn.files && fileIn.files[0];
+            if (!f) return;
+            meshOut.hidden = false;
+            meshOut.textContent = 'Reading ' + f.name + '…';
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    mesh = /\.obj$/i.test(f.name)
+                        ? j7ParseOBJ(new TextDecoder().decode(reader.result))
+                        : j7ParseSTL(reader.result);
+                } catch (e) {
+                    mesh = null;
+                }
+                if (!mesh) {
+                    meshOut.textContent = 'I could not read that one. Send it with your enquiry and I will quote it by hand.';
+                    result.hidden = true;
+                    return;
+                }
+                const d = mesh.dimsMm.map(x => Math.round(x));
+                const tooBig = Math.max.apply(null, d) > 250;
+                meshOut.innerHTML = d.join(' &times; ') + ' mm &middot; '
+                    + mesh.volumeCm3.toFixed(1) + ' cm&sup3; of solid model &middot; '
+                    + mesh.triangles.toLocaleString() + ' triangles'
+                    + (tooBig ? '<br><strong>Larger than my build plate</strong> &mdash; I would print this in sections and join them, which adds time. Worth a conversation.' : '');
+                recalc();
+            };
+            reader.onerror = () => {
+                meshOut.textContent = 'That file could not be read.';
+            };
+            if (/\.obj$/i.test(f.name)) reader.readAsArrayBuffer(f);
+            else reader.readAsArrayBuffer(f);
+        });
+
+        recalc();
+    })();
+
     // ========== "Do you come to my town?" ==========
     // The travel tiers were already in pricing.js and read by nothing, so a
     // customer in Bells had to work out their own mileage to know what the

@@ -1625,3 +1625,71 @@ button[onclick^="scrollPortfolio"] {
 .service-card h3 {
     font-size: var(--text-xl);
 }
+
+/* ---------------------------------------------------------------------------
+   PRINT WEIGHT HELPER
+   --------------------------------------------------------------------------- */
+.weight-helper {
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius);
+    padding: var(--spacing-m);
+    margin-bottom: var(--spacing-m);
+    background: var(--wash-accent);
+}
+
+.wh-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: var(--spacing-m);
+}
+
+.wh-tab {
+    flex: 1 1 auto;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-white);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.wh-tab.active {
+    background: var(--color-control-fill);
+    border-color: var(--color-control-fill);
+    color: #ffffff;
+}
+
+.wh-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+}
+
+.wh-dims {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.wh-mesh,
+.wh-result {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background: var(--wash-success);
+    border: 1px solid var(--color-border);
+}
+
+.wh-result strong { font-size: var(--text-lg); }
+
+/* .form-control sets width:100%, which in a flex row makes the unit dropdown
+   claim the whole line and squeeze the number beside it down to 28px. The
+   dropdown only needs to be as wide as the word "grams". */
+#weight-unit {
+    flex: 0 0 auto;
+    width: auto;
+}

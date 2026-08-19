@@ -89,7 +89,7 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="../css/styles.css?v=08ba0a56">
+    <link rel="stylesheet" href="../css/styles.css?v=d6660fb8">
     <link rel="stylesheet" href="../css/mobile-fix.css?v=499ac820">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
@@ -275,13 +275,68 @@
             <h2 class="section-title">Pricing</h2>
             
             <!-- Quote Calculator -->
-            <div class="panel panel--roomy panel--accent" style="margin-bottom: var(--spacing-l);">>
+            <div class="panel panel--roomy panel--accent" style="margin-bottom: var(--spacing-l);">
                 <h3 class="panel-title">🧮 Quick Price Estimator</h3>
                 <p style="margin-bottom: 1.5rem; color: var(--color-text-gray);">Get an instant estimate for your 3D print job. Enter your part details below:</p>
                 
+                <!-- Three ways to reach a weight. The field below used to be the
+                     first thing anyone saw, and a customer holding a broken part
+                     has no idea what it weighs. -->
+                <div class="weight-helper" id="weight-helper">
+                    <div class="wh-tabs" role="tablist" aria-label="How to work out the weight">
+                        <button type="button" class="wh-tab active" role="tab" aria-selected="true" data-mode="describe" id="wh-tab-describe" aria-controls="wh-panel-describe">Describe the part</button>
+                        <button type="button" class="wh-tab" role="tab" aria-selected="false" data-mode="file" id="wh-tab-file" aria-controls="wh-panel-file">I have a 3D file</button>
+                        <button type="button" class="wh-tab" role="tab" aria-selected="false" data-mode="manual" id="wh-tab-manual" aria-controls="wh-panel-manual">I know the weight</button>
+                    </div>
+
+                    <div class="wh-panel" id="wh-panel-describe" role="tabpanel" aria-labelledby="wh-tab-describe">
+                        <div class="wh-row">
+                            <div>
+                                <label class="field-label" for="wh-size">Roughly how big is it?</label>
+                                <select id="wh-size" class="form-control"></select>
+                            </div>
+                            <div id="wh-dims-wrap" hidden>
+                                <label class="field-label" for="wh-l">Size in inches (L &times; W &times; H)</label>
+                                <div class="wh-dims">
+                                    <input type="number" id="wh-l" class="form-control" placeholder="L" step="0.1" min="0" aria-label="Length in inches">
+                                    <input type="number" id="wh-w" class="form-control" placeholder="W" step="0.1" min="0" aria-label="Width in inches">
+                                    <input type="number" id="wh-h" class="form-control" placeholder="H" step="0.1" min="0" aria-label="Height in inches">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="wh-row">
+                            <div>
+                                <label class="field-label" for="wh-shape">What kind of part is it?</label>
+                                <select id="wh-shape" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="wh-panel" id="wh-panel-file" role="tabpanel" aria-labelledby="wh-tab-file" hidden>
+                        <label class="field-label" for="wh-file">STL or OBJ file</label>
+                        <input type="file" id="wh-file" class="form-control" accept=".stl,.obj">
+                        <p class="field-hint">Read on your own device &mdash; the file is never uploaded anywhere.</p>
+                        <p class="wh-mesh" id="wh-mesh" hidden></p>
+                    </div>
+
+                    <div class="wh-panel" id="wh-panel-manual" role="tabpanel" aria-labelledby="wh-tab-manual" hidden>
+                        <p class="field-hint">Type it straight into the weight field below.</p>
+                    </div>
+
+                    <div class="wh-row" id="wh-infill-wrap">
+                        <div>
+                            <label class="field-label" for="wh-infill">How strong does it need to be?</label>
+                            <select id="wh-infill" class="form-control"></select>
+                            <p class="field-hint">More infill means more plastic. On thin parts it makes almost no difference &mdash; they are all wall.</p>
+                        </div>
+                    </div>
+
+                    <p class="wh-result" id="wh-result" role="status" hidden></p>
+                </div>
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
                     <div>
-                        <label class="field-label" for="part-weight">Part Weight</label>
+                        <label class="field-label" for="part-weight">Part weight <span class="text-muted" style="font-weight: 400;">(filled in above, or type it)</span></label>
                         <div style="display: flex; gap: 0.5rem;">
                             <input type="number" id="part-weight" placeholder="e.g., 0.33" step="0.01" oninput="convertWeight()" class="form-control" style="flex: 1;">
                             <select id="weight-unit" onchange="convertWeight()" aria-label="Weight unit" class="form-control">
@@ -362,7 +417,7 @@
                 </div>
             </div>
             
-            <div class="callout">>
+            <div class="callout">
                 <h3 class="panel-title">How 3D Printing Pricing Works</h3>
                 <p style="font-size: 1.05rem; margin-bottom: 1rem;"><strong>Two-part pricing: Filament + Print Service Fee</strong></p>
                 <ul style="color: var(--color-text-gray); margin-left: 1.5rem; margin-bottom: 1rem;">
@@ -588,8 +643,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=cc52cada"></script>
-    <script src="../js/app.js?v=49a832a0"></script>
+    <script src="../js/pricing.js?v=f4764a58"></script>
+    <script src="../js/app.js?v=1f37a3a2"></script>
     <script>
         function convertWeight() {
             const weight = parseFloat(document.getElementById('part-weight').value);
@@ -610,7 +665,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=cc52cada so they cannot drift from the
+        // All rates come from js/pricing.js?v=f4764a58 so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
