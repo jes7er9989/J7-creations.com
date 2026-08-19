@@ -179,11 +179,82 @@ function j7SendEstimate(serviceValue, headline, lines) {
     window.location.href = '/#contact';
 }
 
+// Towns inside (and just outside) the 100-mile service radius, with the road
+// distance from Milan and the travel fee that falls out of the tiers above.
+//
+// Distances are road miles, not straight-line. Four were checked against real
+// driving distances (Jackson 27, Dyersburg 40, Union City 46, Paris 38); the
+// rest are great-circle scaled by 1.30, which is above the worst ratio those
+// four showed (1.27). The bias is deliberate: over-stating a travel fee and
+// then charging less is a good surprise, while quoting "free" and then adding
+// $15 is exactly the hidden fee this business advertises against.
+//
+// fee: -1 means beyond the radius — quote individually.
+const J7_SERVICE_AREA = [
+        { town: "Milan",         miles:   0, fee: 0 },
+        { town: "Atwood",        miles:   8, fee: 0 },
+        { town: "Medina",        miles:  10, fee: 0 },
+        { town: "Bradford",      miles:  14, fee: 0 },
+        { town: "Humboldt",      miles:  14, fee: 0 },
+        { town: "Trenton",       miles:  14, fee: 0 },
+        { town: "Greenfield",    miles:  21, fee: 0 },
+        { town: "Dyer",          miles:  22, fee: 0 },
+        { town: "Huntingdon",    miles:  25, fee: 0 },
+        { town: "Rutherford",    miles:  25, fee: 0 },
+        { town: "Jackson",       miles:  27, fee: 15 },
+        { town: "McKenzie",      miles:  27, fee: 15 },
+        { town: "Alamo",         miles:  29, fee: 15 },
+        { town: "Gleason",       miles:  29, fee: 15 },
+        { town: "Sharon",        miles:  29, fee: 15 },
+        { town: "Bells",         miles:  30, fee: 15 },
+        { town: "Kenton",        miles:  31, fee: 15 },
+        { town: "Dresden",       miles:  33, fee: 15 },
+        { town: "Maury City",    miles:  35, fee: 15 },
+        { town: "Lexington",     miles:  36, fee: 15 },
+        { town: "Paris",         miles:  38, fee: 15 },
+        { town: "Martin",        miles:  39, fee: 15 },
+        { town: "Dyersburg",     miles:  40, fee: 15 },
+        { town: "Newbern",       miles:  41, fee: 15 },
+        { town: "Henderson",     miles:  44, fee: 15 },
+        { town: "Obion",         miles:  44, fee: 15 },
+        { town: "Halls",         miles:  46, fee: 15 },
+        { town: "Union City",    miles:  46, fee: 15 },
+        { town: "Brownsville",   miles:  47, fee: 15 },
+        { town: "Troy",          miles:  48, fee: 15 },
+        { town: "Camden",        miles:  50, fee: 15 },
+        { town: "Parsons",       miles:  52, fee: 30 },
+        { town: "Fulton, KY",    miles:  53, fee: 30 },
+        { town: "Ripley",        miles:  58, fee: 30 },
+        { town: "Bolivar",       miles:  62, fee: 30 },
+        { town: "Tiptonville",   miles:  67, fee: 30 },
+        { town: "Selmer",        miles:  68, fee: 30 },
+        { town: "Murray, KY",    miles:  70, fee: 30 },
+        { town: "Covington",     miles:  72, fee: 30 },
+        { town: "Waverly",       miles:  72, fee: 30 },
+        { town: "Savannah",      miles:  73, fee: 30 },
+        { town: "Dickson",       miles: 101, fee: -1 },
+        { town: "Paducah, KY",   miles: 105, fee: -1 },
+        { town: "Clarksville",   miles: 115, fee: -1 },
+        { town: "Memphis",       miles: 117, fee: -1 },
+        { town: "Nashville",     miles: 145, fee: -1 }
+];
+
+function j7LookupTown(query) {
+    const q = String(query || '').toLowerCase().replace(/[^a-z ]/g, '').trim();
+    if (!q) return null;
+    const norm = t => t.town.toLowerCase().replace(/[^a-z ]/g, '');
+    return J7_SERVICE_AREA.find(t => norm(t) === q)
+        || J7_SERVICE_AREA.find(t => norm(t).startsWith(q))
+        || J7_SERVICE_AREA.find(t => norm(t).indexOf(q) !== -1)
+        || null;
+}
+
 // Guarded so scripts/verify-pricing.js can require this file under Node.
 if (typeof document !== 'undefined') {
     document.addEventListener('DOMContentLoaded', j7SyncPricingLabels);
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate };
+    module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate,
+                       J7_SERVICE_AREA, j7LookupTown };
 }

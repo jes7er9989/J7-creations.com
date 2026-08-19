@@ -229,6 +229,52 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // ========== "Do you come to my town?" ==========
+    // The travel tiers were already in pricing.js and read by nothing, so a
+    // customer in Bells had to work out their own mileage to know what the
+    // call-out costs. This answers it directly.
+    (function j7AreaCheck() {
+        const form   = document.getElementById('area-check-form');
+        const input  = document.getElementById('area-town');
+        const result = document.getElementById('area-result');
+        if (!form || !input || !result || typeof j7LookupTown !== 'function') return;
+
+        // Populate the datalist so the field autocompletes without a library.
+        const list = document.getElementById('area-town-list');
+        if (list && !list.children.length) {
+            J7_SERVICE_AREA.forEach(t => {
+                const o = document.createElement('option');
+                o.value = t.town;
+                list.appendChild(o);
+            });
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const q = input.value.trim();
+            if (!q) { result.textContent = ''; return; }
+            const hit = j7LookupTown(q);
+            result.hidden = false;
+            if (!hit) {
+                result.className = 'callout';
+                result.innerHTML = '<strong>' + q.replace(/[<>&]/g, '') + ' is not on my list.</strong> ' +
+                    'That does not mean no — it just means I have not measured it. ' +
+                    'Call or text and I will tell you straight away.';
+            } else if (hit.fee < 0) {
+                result.className = 'callout';
+                result.innerHTML = '<strong>' + hit.town + ' is about ' + hit.miles +
+                    ' miles out</strong>, past my 100-mile on-site radius. ' +
+                    'Remote support is still available nationwide, and I will quote longer trips case by case.';
+            } else {
+                result.className = 'callout callout--success';
+                result.innerHTML = '<strong>Yes — I cover ' + hit.town + '.</strong> ' +
+                    'About ' + hit.miles + ' miles, so the travel fee is ' +
+                    (hit.fee === 0 ? '<strong>nothing</strong>.' : '<strong>$' + hit.fee + '</strong>.') +
+                    ' Confirmed in your written quote before any work starts.';
+            }
+        });
+    })();
+
     // ========== Estimate handoff from the calculators ==========
     // The three estimators used to produce a full breakdown and then discard
     // it, leaving the visitor to retype it. If one handed us an estimate,
