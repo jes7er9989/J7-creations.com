@@ -377,6 +377,14 @@ a:not(.btn):hover {
     white-space: nowrap;
 }
 
+/* The theme toggle is a sibling of the menu, not a child of it, because on
+   mobile .nav-menu collapses to max-height:0 with overflow:hidden and nothing
+   inside it can sit beside the hamburger. Ordering keeps the desktop row
+   looking the same: menu first, toggle last. */
+.nav-menu     { order: 1; }
+.theme-toggle { order: 2; }
+.nav-toggle   { order: 3; }
+
 .nav-menu {
     display: flex;
     list-style: none;

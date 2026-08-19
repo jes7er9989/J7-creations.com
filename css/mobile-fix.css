@@ -82,30 +82,18 @@
     }
     
     /* Cards more transparent on mobile */
+    /* Spacing only. The surfaces come from styles.css so phones and desktop
+       show the same glass — the denser mobile values existed to compensate for
+       the dimmed wallpaper above, which is no longer dimmed. */
     .service-card,
     .capability-column,
     .capability-card,
     .why-item,
     .advantage-item {
-        background: rgba(26, 26, 26, 0.52) !important;
-        backdrop-filter: var(--glass-filter, blur(12px)) !important;
         padding: 1.5rem !important;
         margin-bottom: 1rem !important;
     }
     
-    [data-theme="light"] .service-card,
-    [data-theme="light"] .capability-column,
-    [data-theme="light"] .capability-card,
-    [data-theme="light"] .why-item,
-    [data-theme="light"] .advantage-item {
-        background: rgba(255, 255, 255, 0.38) !important;
-    }
-    
-    /* Better logo visibility on mobile */
-    body::before {
-        /* was 0.35, which put the strongest wash behind the smallest text */
-        opacity: 0.12 !important;
-    }
     
     /* Section spacing */
     .services,
@@ -180,5 +168,15 @@
         padding-top: 1.5rem !important;
         padding-bottom: 1.5rem !important;
         overflow-y: auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Beside the hamburger, not after it — DOM order is what we want here, so
+       the desktop ordering is cleared. */
+    .theme-toggle {
+        order: 0;
+        margin-left: 0;
+        margin-right: 0.75rem;
     }
 }
