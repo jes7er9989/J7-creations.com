@@ -1583,6 +1583,20 @@ button[onclick^="scrollPortfolio"] {
     padding-top: 0.35rem;
 }
 
+/* The question sits under the section heading rather than replacing it: the
+   section is still Services, and the question is how you find your way into it.
+   A styled paragraph, not a heading — it introduces the cards, it does not
+   contain them, and making it an h3 would misdescribe the structure.
+   It sits on bare wallpaper, so it takes the page-level text colour, which is
+   light in both themes. */
+.section-question {
+    text-align: center;
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-text-white);
+    margin-bottom: var(--spacing-2xs);
+}
+
 /* ---------------------------------------------------------------------------
    SERVICE CARDS: QUESTION FIRST
    Each card opens with the problem in the customer's words, then answers it
