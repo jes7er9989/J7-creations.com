@@ -196,13 +196,17 @@ function j7SyncPricingLabels() {
  * throw it away — the visitor retyped it into a textarea from memory, or
  * gave up. This stashes it for the contact page to pick up.
  */
-function j7SendEstimate(serviceValue, headline, lines) {
+function j7SendEstimate(serviceValue, headline, lines, source) {
     try {
         sessionStorage.setItem('j7Estimate', JSON.stringify({
             service: serviceValue,
             headline: headline,
             lines: lines,
             page: document.title,
+            // 'assistant' when the chat widget worked it out, absent when a
+            // calculator did. The contact form says which, because "from the
+            // FAQ page calculator" describes a page that has no calculator.
+            source: source || 'calculator',
             at: Date.now()
         }));
     } catch (e) {

@@ -1702,3 +1702,195 @@ button[onclick^="scrollPortfolio"] {
     grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: var(--spacing-sm);
 }
+
+/* ---------------------------------------------------------------------------
+   The site assistant
+   ---------------------------------------------------------------------------
+   Built by js/chat.js, so there is no markup for it in any page. It uses the
+   frosted .panel treatment, which is what carries the design in both themes:
+   the wallpaper stays dark, the card floats over it.
+
+   The launcher owns the bottom-right corner, so .back-to-top stacks above it
+   rather than underneath. */
+
+.chat-root {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-2xs);
+}
+
+.chat-launcher {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    background: linear-gradient(135deg, var(--color-gradient-start), var(--color-gradient-mid));
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chat-launcher:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--shadow-color);
+}
+
+.chat-launcher__icon { font-size: var(--text-lg); line-height: 1; }
+
+/* [hidden] is a UA rule at element specificity, so a class that sets display
+   silently beats it and the panel is open from the first paint. */
+.chat-panel[hidden] { display: none; }
+
+.chat-panel {
+    width: min(23rem, calc(100vw - 2rem));
+    max-height: min(32rem, calc(100vh - 8rem));
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    background: var(--panel-bg-solid);
+    box-shadow: 0 12px 32px var(--shadow-color);
+}
+
+.chat-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-2xs);
+    padding: var(--spacing-s) var(--spacing-sm);
+    border-bottom: 1px solid var(--panel-border);
+}
+
+.chat-note {
+    margin: var(--spacing-3xs) 0 0;
+    font-size: var(--text-xs);
+    /* --color-text-muted is the faintest token, and this is the smallest type
+       in the widget. Over frosted glass that pairing is the first thing to
+       fail a contrast check, so the note takes the stronger grey. */
+    color: var(--color-text-gray);
+}
+
+.chat-close {
+    background: none;
+    border: none;
+    color: var(--color-text-gray);
+    font-size: var(--text-xl);
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 var(--spacing-3xs);
+}
+
+.chat-close:hover { color: var(--color-text-white); }
+
+.chat-log {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--spacing-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+}
+
+.chat-msg { display: flex; flex-direction: column; max-width: 90%; }
+.chat-msg--user { align-self: flex-end; align-items: flex-end; }
+.chat-msg--assistant { align-self: flex-start; }
+
+.chat-bubble {
+    padding: var(--spacing-2xs) var(--spacing-s);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    background: var(--color-input-bg);
+    color: var(--color-text-gray);
+}
+
+.chat-msg--user .chat-bubble {
+    background: var(--wash-accent-strong);
+    color: var(--color-text-white);
+}
+
+.chat-bubble--error {
+    background: var(--wash-accent);
+    border: 1px solid var(--color-accent);
+}
+
+.chat-handoff {
+    margin-top: var(--spacing-2xs);
+    align-self: flex-start;
+    font-size: var(--text-sm);
+}
+
+/* Three dots while the answer is on its way. Reduced-motion visitors get a
+   static row rather than nothing, so the wait is still visible. */
+.chat-bubble--typing { display: flex; gap: 0.25rem; align-items: center; }
+
+.chat-bubble--typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    animation: chat-blink 1.2s infinite ease-in-out;
+}
+
+.chat-bubble--typing span:nth-child(2) { animation-delay: 0.2s; }
+.chat-bubble--typing span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes chat-blink {
+    0%, 80%, 100% { opacity: 0.3; }
+    40% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-bubble--typing span { animation: none; opacity: 0.6; }
+    .chat-launcher { transition: none; }
+}
+
+.chat-form {
+    display: flex;
+    gap: var(--spacing-2xs);
+    padding: var(--spacing-2xs) var(--spacing-sm) var(--spacing-sm);
+}
+
+.chat-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: var(--spacing-2xs) var(--spacing-s);
+    background: var(--color-input-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-text-white);
+    font-size: var(--text-sm);
+}
+
+.chat-input:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+
+.chat-send { flex: 0 0 auto; font-size: var(--text-sm); }
+
+/* On a phone the panel is the screen, not a card floating in the corner. */
+@media (max-width: 600px) {
+    .chat-root { bottom: 1rem; right: 1rem; left: 1rem; align-items: stretch; }
+    .chat-launcher { align-self: flex-end; }
+    .chat-panel { width: 100%; max-height: calc(100vh - 6rem); }
+}
+
+/* The launcher sits where back-to-top used to. Move it up rather than let the
+   two overlap — the launcher is always visible, back-to-top only sometimes. */
+.back-to-top { bottom: 6rem; }
+
+@media (max-width: 600px) {
+    .back-to-top { bottom: 5rem; }
+}

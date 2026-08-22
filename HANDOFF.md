@@ -1,9 +1,9 @@
 # J7 Creations — Handoff
 
-> **State as of 19 Aug 2026.** Everything described here is deployed and live.
-> `main` and `site-overhaul` point at the same commit. The only work in flight
-> is the chatbot, which is a design conversation with nothing built — see
-> *Open: the chatbot* near the end.
+> **State as of 19 Aug 2026.** Everything on the live site is deployed.
+> The **chatbot is built but not deployed** — it lives on the `chatbot`
+> branch and needs two things set in the Cloudflare dashboard before it can
+> work. See *The chatbot* near the end. Nothing else is in flight.
 
 **Last updated:** 19 August 2026
 **Live:** https://j7creations.com · **Repo:** https://github.com/jes7er9989/J7-creations.com
@@ -69,6 +69,15 @@ node scripts/verify-pricing.js
 It enforces the rule that a bigger job must never cost less than a smaller one
 — a rule the original estimators broke in three separate places — and checks
 that the advertised ranges still match what the calculators produce.
+
+**A price change is not finished until the assistant's prompt is rebuilt.**
+The chatbot quotes from a prompt compiled out of this file, so an un-rebuilt
+prompt means the bot quotes last month's rates while the calculators quote
+this month's:
+
+```bash
+node scripts/build-chat-prompt.js
+```
 
 ---
 
@@ -357,6 +366,9 @@ check.
 | Light-mode card rules | `css/styles.css`, the `[data-theme="light"]` blocks |
 | Cache stamping | `scripts/stamp-assets.py` |
 | Pricing tests | `scripts/verify-pricing.js` |
+| Chat widget | `js/chat.js` (built in JS — no markup in any page) |
+| Chat backend | `functions/api/chat.js` |
+| Chat prompt | generated — `scripts/build-chat-prompt.js` → `functions/api/_prompt.js` |
 
 The phone number appears in two places on purpose: crawlers do not run the
 JavaScript that fills the visible copies, so the structured data carries a
@@ -401,58 +413,119 @@ Do not silently reverse these.
 
 ---
 
-## Open: the chatbot (mid-conversation, nothing built)
+## The chatbot
 
-Thomas wants a scoped assistant. **Agreed scope:** pricing questions, general
-questions about him and how the business works, site navigation, and helping
-someone reach a quote by asking questions. **Explicitly out of scope:** tech
-support answers and product recommendations.
+Built, tested locally, **not deployed**. It lives on the `chatbot` branch and
+does nothing until the two Cloudflare settings below exist.
 
-### What was established
+**Scope:** pricing, questions about Thomas and how the business works, site
+navigation, and walking someone to a quote. **Out of scope, on purpose:** tech
+support answers and product recommendations — the first is the paid service,
+the second is how people buy the wrong thing.
 
-- **It needs a backend.** The site is static; an API key cannot go in browser
-  JavaScript. One file — `functions/api/chat.js` — using Cloudflare Pages
-  Functions, which the project already has free. The CSP already allows
-  same-origin, so no header change is needed.
-- **Cost, six-exchange conversation with prompt caching:** Claude Opus 5
-  ≈ $0.044 ($4.40 per 100, $44 per 1,000); Claude Haiku 4.5 ≈ $0.009 ($0.90 per
-  100, $9 per 1,000). Model choice is Thomas's call — do not downgrade for cost
-  without asking. Rate limiting and a spend cap in the Anthropic console are
-  both mandatory, not optional.
-- **The key design decision: generate the system prompt from `pricing.js` and
-  the FAQ at build time**, the way `stamp-assets.py` works. Then the bot cannot
-  quote a price that differs from the site, and it updates when the rates do. A
-  hand-written prompt drifts the first time anything changes, and a bot quoting
-  last month's prices is worse than no bot. Everything needed is already in one
-  place: rates, minimums, cable bands, travel tiers, 46 towns, 24 FAQ answers.
-- **Scope enforcement is a prompt, not a fence.** Models follow it well, not
-  perfectly. A short `max_tokens` helps — it cannot write a tutorial if it
-  cannot write at length.
+### How it fits together
 
-### Three questions still unanswered
+```
+js/chat.js  →  POST /api/chat  →  functions/api/chat.js  →  Anthropic API
+                                        ↑
+                              functions/api/_prompt.js
+                              (generated from pricing.js + the FAQ)
+```
 
-1. **Where does a quote conversation end?** The useful version asks a few
-   questions then hands off — pre-fills the contact form, or texts a summary.
-   Otherwise it is a chat log neither party keeps.
-2. **May it state a price?** Proposed: yes, always as "the calculator says
-   roughly $X, Thomas confirms before any work" — never a commitment.
-3. **Opus 5 or Haiku 4.5 to start?**
+The widget is built in JavaScript and appended to `<body>`, so there is no
+chat markup in any of the seven pages and nothing to keep in sync. It styles
+itself with the existing `.panel` treatment, which is what makes it work in
+both themes for free.
 
-The next step offered was **drafting the system prompt first**, before any
-code, since it is the part worth arguing about and costs nothing to iterate on.
+### The prompt is generated, and that is the point
 
-### Also raised and not yet actioned
+`scripts/build-chat-prompt.js` compiles the system prompt from `js/pricing.js`
+and the `FAQPage` JSON-LD already in `pages/faq.html` — every rate, band,
+travel tier, town and approved answer, about 3,200 tokens of it. **No number
+is typed by hand anywhere in that script.**
 
-- A **case study** template was drafted for the waterproof enclosure (problem →
-  approach → cost → result) using existing photos. Thomas liked the idea; the
-  real job details were never supplied, so nothing was written. The draft
+A hand-written prompt drifts the first time a rate changes, and a bot quoting
+last month's price is worse than no bot. Rebuild it after any pricing or FAQ
+edit, and commit the result: Pages has no build step, so the generated file is
+what ships.
+
+The behaviour half — scope, voice, what it may promise — is hand-written in
+`BEHAVIOUR` at the bottom of that script. That is the part worth arguing with.
+
+### Decisions Thomas made (19 Aug 2026)
+
+- **A quote conversation ends at the contact form.** The bot offers to send
+  the estimate; the customer says yes; it fills in the form. It reuses the
+  same `sessionStorage` handoff the three calculators already use, so the
+  enquiry arrives with the breakdown in it.
+- **It may state a price**, always as *"the calculator says roughly $X —
+  Thomas confirms before any work starts."* Never a commitment, never a
+  number that did not come from `pricing.js`.
+- **Haiku 4.5 to start**, in one constant (`MODEL` in `functions/api/chat.js`),
+  to be swapped for Opus 5 if it disappoints. Cost per six-exchange
+  conversation with the prompt cached: Haiku about \$0.009, Opus about \$0.044.
+
+### Before it can go live
+
+1. **Set the API key.** Cloudflare Pages → the project → Settings →
+   Environment variables → add `ANTHROPIC_API_KEY` **as a secret**, on
+   Production and Preview. Never in the repo.
+2. **Bind a KV namespace called `CHAT_RATE_LIMIT`.** Pages → Settings →
+   Functions → KV namespace bindings. The function *refuses to answer at all*
+   without it, deliberately — an uncapped endpoint holding an API key is the
+   one mistake that costs real money.
+3. **Set a spend cap in the Anthropic console.** The caps in the code (30
+   requests per IP per hour, 24 turns, 2,000 characters a message, 500 output
+   tokens) bound the damage; only the console cap stops it.
+
+Until step 1 and 2 exist the widget shows *"The assistant is not configured
+yet"* rather than failing silently.
+
+### How it was tested
+
+Locally against a static server, which has no `/api/chat` — so the failure
+path, the estimate handoff, both themes and mobile were all verified, and the
+model conversation was not. **The first real conversation is still untested.**
+
+Verified: the widget renders and opens on every page; the conversation
+survives a page load (it is in `sessionStorage`, and every link here is a full
+page load); a failed send rolls the message back into the box instead of
+leaving two user turns in a row, which the API rejects; the estimate block
+becomes a button and never reaches the screen as JSON; and the handoff fills
+in the contact form from a page with `pricing.js` loaded and from one without.
+
+To test it properly, with the function running:
+
+```bash
+npx wrangler pages dev . --binding ANTHROPIC_API_KEY=sk-... --kv CHAT_RATE_LIMIT
+```
+
+### What is worth watching once it is live
+
+- **Scope holding.** Scope is a prompt, not a fence. Models follow it well,
+  not perfectly. The short `max_tokens` helps — it cannot write a tutorial if
+  it cannot write at length — but read the first few real conversations.
+- **Whether it quotes correctly.** Every figure should be traceable to
+  `pricing.js`. One that is not means the prompt needs tightening, not the
+  rates.
+- **The contrast run.** The widget was added after the last full audit and
+  has not been through one. Its text sits on the same frosted `.panel` as
+  every audited card, but include it in the next sweep.
+
+### Still open, and not blocked on code
+
+- A **case study** template was drafted for the waterproof enclosure (problem
+  → approach → cost → result) using existing photos. Thomas liked the idea;
+  the real job details were never supplied, so nothing was written. The draft
   invented every specific and was flagged as such.
 - The **AI-crawler block** in `robots.txt` is still on — Cloudflare injects
-  rules disallowing GPTBot, ClaudeBot, CCBot and Google-Extended. Normal search
-  is unaffected. Thomas's call whether to turn it off.
+  rules disallowing GPTBot, ClaudeBot, CCBot and Google-Extended. Normal
+  search is unaffected. Thomas's call whether to turn it off.
 - **www.j7creations.com** now resolves (he fixed it) but *serves* the site
   rather than redirecting to the apex. Canonicals point at the apex so search
   consolidates correctly; a redirect would be tidier but nothing is broken.
+
+---
 
 ## The highest-value thing left is not code
 

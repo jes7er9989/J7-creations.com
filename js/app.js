@@ -596,10 +596,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const lines = (data.lines || []).filter(Boolean).join('\n');
-        const preamble = 'Estimate from the ' + (data.page || 'website') +
-                         ' calculator:\n\n' +
+        // The chat widget hands over the same payload, but "from the FAQ page
+        // calculator" describes a page that has no calculator — so the source
+        // says which of the two worked the figure out.
+        const fromChat = data.source === 'assistant';
+        const preamble = (fromChat
+                            ? 'Estimate from the site assistant:'
+                            : 'Estimate from the ' + (data.page || 'website') + ' calculator:') +
+                         '\n\n' +
                          (data.headline ? data.headline + '\n' : '') + lines +
-                         '\n\n(Figures from your online estimator - happy to adjust.)\n\n';
+                         (fromChat
+                            ? '\n\n(Worked out in chat from the online rates - happy to adjust.)\n\n'
+                            : '\n\n(Figures from your online estimator - happy to adjust.)\n\n');
         message.value = preamble + message.value;
 
         const note = document.getElementById('estimate-loaded');
