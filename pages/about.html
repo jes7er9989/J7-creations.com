@@ -73,9 +73,17 @@
     <script>
       // Applied before first paint: reading the theme in DOMContentLoaded
       // makes light-mode users see a flash of dark on every navigation.
+      //
+      // A saved choice always wins. Failing that, follow the visitor's own
+      // OS setting rather than forcing dark on someone whose phone is in
+      // light mode - which on a bright job site is a real readability cost.
+      // Dark stays the fallback where no preference is expressed at all.
       try {
+        var saved = localStorage.getItem('theme');
+        var prefersLight = window.matchMedia
+          && window.matchMedia('(prefers-color-scheme: light)').matches;
         document.documentElement.setAttribute(
-          'data-theme', localStorage.getItem('theme') || 'dark');
+          'data-theme', saved || (prefersLight ? 'light' : 'dark'));
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }

@@ -7,8 +7,12 @@
     <title>Page Not Found | J7 Creations</title>
     <script>
       try {
+        // Saved choice wins; otherwise follow the visitor's OS setting.
+        var saved = localStorage.getItem('theme');
+        var prefersLight = window.matchMedia
+          && window.matchMedia('(prefers-color-scheme: light)').matches;
         document.documentElement.setAttribute(
-          'data-theme', localStorage.getItem('theme') || 'dark');
+          'data-theme', saved || (prefersLight ? 'light' : 'dark'));
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
