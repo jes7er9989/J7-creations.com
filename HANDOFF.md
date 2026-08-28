@@ -454,8 +454,21 @@ code, since it is the part worth arguing about and costs nothing to iterate on.
   rather than redirecting to the apex. Canonicals point at the apex so search
   consolidates correctly; a redirect would be tidier but nothing is broken.
 
-## The highest-value thing left is not code
+## Local search: the profile exists, the site does not point at it
 
-A **Google Business Profile**. The site now has the phone number, service
-radius and structured data that local search ranks on. For a business defined
-by a 100-mile radius, that listing will do more than any further work here.
+**Thomas already has a Google Business Profile** (confirmed 22 Aug 2026).
+Earlier versions of this file told the reader to go and create one. He does not
+need one. Do not suggest it again.
+
+Two things are worth checking instead, and both are small:
+
+- **The `LocalBusiness` schema has no `sameAs`.** Nothing on the site links to
+  the profile, so Google is left to infer the connection rather than being told
+  it. One line in the JSON-LD in `index.html` fixes that, once someone supplies
+  the profile URL.
+- **`addressLocality` says Atwood.** Every price and the whole service-area
+  table are measured from **Milan**, and the hero says "Milan/Atwood". If the
+  profile is pitched at Milan, the site and the listing disagree on the
+  business's town, and a name/address/phone mismatch costs more local ranking
+  than anything else on these pages. Confirm which town the profile uses and
+  make the schema agree with it.
