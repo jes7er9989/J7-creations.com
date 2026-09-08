@@ -27,8 +27,17 @@ ASSETS = ('css/styles.css', 'css/mobile-fix.css', 'js/app.js', 'js/pricing.js',
           'js/chat.js')
 
 def digest(rel):
+    """Hash the file content, normalised to LF.
+
+    core.autocrlf checks these files out with CRLF on Windows while the
+    repo stores LF, so hashing the raw bytes produced a different stamp
+    on every Windows checkout for a file whose content had not changed,
+    rewriting all ten pages for nothing. Normalising first makes the
+    stamp depend on content alone, so it is the same on every machine.
+    """
     with open(os.path.join(ROOT, rel), 'rb') as fh:
-        return hashlib.sha256(fh.read()).hexdigest()[:8]
+        data = fh.read().replace(b'\r\n', b'\n')
+    return hashlib.sha256(data).hexdigest()[:8]
 
 def main():
     stamps = {}

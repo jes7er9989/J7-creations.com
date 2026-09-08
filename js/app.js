@@ -12,6 +12,31 @@
 const J7_PHONE = '+17312381438';
 const J7_PHONE_DISPLAY = '(731) 238-1438';
 
+// ========== Conversion tracking ==========
+// GA4 was installed months ago and never fired a single event, so nothing
+// could be measured. These three are what an ad campaign needs to optimise
+// against; without them Google bids blind and simply spends the budget.
+//
+// Guarded on every call: analytics is blocked by plenty of browsers and an
+// ad blocker must never take the contact form down with it.
+function j7Track(name, params) {
+    try {
+        if (typeof gtag === 'function') gtag('event', name, params || {});
+    } catch (e) {
+        /* tracking is never allowed to break the page */
+    }
+}
+
+// Phone taps, caught by delegation so links added later are covered too.
+document.addEventListener('click', function (e) {
+    const link = e.target && e.target.closest ? e.target.closest('a[href^="tel:"]') : null;
+    if (!link) return;
+    j7Track('phone_click', {
+        page_path: location.pathname,
+        link_url: link.getAttribute('href')
+    });
+});
+
 function j7PopulatePhone() {
     const configured = J7_PHONE && J7_PHONE_DISPLAY;
 
@@ -200,6 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 
                 if (response.ok) {
+                    // The conversion: Formspree accepted it, so the enquiry
+                    // actually reached Thomas.
+                    j7Track('generate_lead', {
+                        service: (formData.get('service') || 'unspecified'),
+                        page_path: location.pathname
+                    });
+
                     // Show success message
                     if (formSuccess) {
                         formSuccess.style.display = 'block';
@@ -609,6 +641,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             ? '\n\n(Worked out in chat from the online rates - happy to adjust.)\n\n'
                             : '\n\n(Figures from your online estimator - happy to adjust.)\n\n');
         message.value = preamble + message.value;
+
+        j7Track('estimate_sent', {
+            service: data.service || 'unspecified',
+            source: data.source === 'assistant' ? 'assistant' : 'calculator'
+        });
 
         const note = document.getElementById('estimate-loaded');
         if (note) note.style.display = 'block';

@@ -149,6 +149,14 @@
             },
             {
               "@type": "Question",
+              "name": "Do you repair hardware?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Some, yes, though it is not a main service. I take on repairs where a repair is actually worth doing — and if the parts cost more than the machine is worth, I will tell you that rather than charge you to find out. Anything past that, I will point you somewhere better."
+              }
+            },
+            {
+              "@type": "Question",
               "name": "Do I need to install anything?",
               "acceptedAnswer": {
                 "@type": "Answer",
@@ -257,15 +265,23 @@
     <script>
       // Applied before first paint: reading the theme in DOMContentLoaded
       // makes light-mode users see a flash of dark on every navigation.
+      //
+      // A saved choice always wins. Failing that, follow the visitor's own
+      // OS setting rather than forcing dark on someone whose phone is in
+      // light mode - which on a bright job site is a real readability cost.
+      // Dark stays the fallback where no preference is expressed at all.
       try {
+        var saved = localStorage.getItem('theme');
+        var prefersLight = window.matchMedia
+          && window.matchMedia('(prefers-color-scheme: light)').matches;
         document.documentElement.setAttribute(
-          'data-theme', localStorage.getItem('theme') || 'dark');
+          'data-theme', saved || (prefersLight ? 'light' : 'dark'));
       } catch (e) {
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
     <link rel="stylesheet" href="../css/styles.css?v=1ead7ceb">
-    <link rel="stylesheet" href="../css/mobile-fix.css?v=499ac820">
+    <link rel="stylesheet" href="../css/mobile-fix.css?v=de960d1b">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
 <body>
@@ -387,6 +403,10 @@
                     <p>WiFi trouble and slow speeds, device configuration, software and setup help, network troubleshooting, printer and email problems. Most issues are resolved in 30 to 60 minutes. If it turns out to need hands on the hardware, I will say so rather than run the clock.</p>
                 </details>
                 <details class="panel faq-item">
+                    <summary>Do you repair hardware?</summary>
+                    <p>Some, yes, though it is not a main service. I take on repairs where a repair is actually worth doing — and if the parts cost more than the machine is worth, I will tell you that rather than charge you to find out. Anything past that, I will point you somewhere better.</p>
+                </details>
+                <details class="panel faq-item">
                     <summary>Do I need to install anything?</summary>
                     <p>Usually a screenshare tool that I walk you through, and it comes off afterwards. Some things can be sorted over the phone with no software at all.</p>
                 </details>
@@ -466,11 +486,11 @@
             <p style="margin-top: 0.5rem;">
                 <a href="mailto:t.i@j7creations.com" style="color: var(--color-accent);">t.i@j7creations.com</a><span data-j7-phone-block> &middot; <a href="#" data-j7-phone style="color: var(--color-accent);"></a> &middot; <a href="#" data-j7-sms style="color: var(--color-accent);">Text me</a></span>
             </p>
-            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Serving West Tennessee | 100-mile radius | Site last updated: August 2026</p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-gray);">Serving West Tennessee | 100-mile radius | Site last updated: September 2026 &middot; <a href="/pages/privacy" style="color: var(--color-text-gray); text-decoration: underline;">Privacy</a></p>
         </div>
     </footer>
 
-    <script src="../js/app.js?v=2698c699"></script>
+    <script src="../js/app.js?v=a13e9aea"></script>
     <script src="../js/chat.js?v=c00ade26"></script>
 </body>
 </html>

@@ -527,8 +527,41 @@ npx wrangler pages dev . --binding ANTHROPIC_API_KEY=sk-... --kv CHAT_RATE_LIMIT
 
 ---
 
-## The highest-value thing left is not code
+## Local search
 
-A **Google Business Profile**. The site now has the phone number, service
-radius and structured data that local search ranks on. For a business defined
-by a 100-mile radius, that listing will do more than any further work here.
+**Thomas already has a Google Business Profile.** Earlier versions of this file
+told the reader to go and create one. Do not suggest it again.
+
+Done on the site side (22 Aug 2026, deployed):
+
+- `sameAs` in the `LocalBusiness` JSON-LD points at the listing, in its stable
+  `?cid=` form. A copied Maps URL carries a `g_ep` session token that rots.
+- `geo` matches where the listing is actually pinned. It previously said Atwood
+  in words while carrying Milan's coordinates, seven miles apart.
+- `addressLocality` stays **Atwood** - his real address - while `areaServed`
+  and every travel fee stay measured from **Milan**. That is correct, not a
+  mismatch: Google treats address and service area as separate fields.
+
+Done on the profile itself (28 Aug - 8 Sep 2026): name corrected to
+**J7 Creations**, phone **(731) 238-1438** added, hours set to match the site
+(Sun closed, Mon-Fri 9-6, Sat 10-4), service area expanded from three entries
+to ten, and the primary category moved off "Computer repair service" to
+**Computer support and services**.
+
+Still open there, and all of it is dashboard work only Thomas can do:
+
+- **Video verification is blocking further edits.** Google now requires it and
+  his edits stay invisible until it clears. It is a home business, and he is
+  reasonably reluctant to film it. The footage is private to Google's review
+  team and never appears publicly.
+- Obion County is still missing from the service area, so Union City - which
+  his own Google description names - is uncovered.
+- The seven service entries, the eight photos, and the payments attributes
+  (credit and debit both to *No*; there is no attribute for cash, Venmo or
+  Cash App, so the section cannot describe how he is actually paid).
+- **No reviews at all.** That is the highest-value thing left for local search
+  and the only item nobody can do for him.
+
+The "J Seven Creations" Facebook page and the "J7 Creations" YouTube channel
+are **not his** - an unrelated entity that Google's AI Overview keeps
+attributing his name to. Nothing to fix; do not suggest renaming them.
