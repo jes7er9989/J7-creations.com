@@ -18,8 +18,9 @@
     const STORE = 'j7ChatLog';
     const MAX_TURNS = 24;              // matches the cap the function enforces
     const GREETING =
-        'Ask me what something costs, how Thomas works, or where to find ' +
-        'anything on the site. I can work out an estimate and send it over.';
+        'Ask about any of the services, how Thomas works, what something ' +
+        'costs, or where to find anything on the site. If it turns into a ' +
+        'quote, I can send it straight over.';
 
     let log = [];                      // [{role, content}]
     let open = false;
@@ -225,17 +226,18 @@
         root.className = 'chat-root';
         root.innerHTML = `
             <button type="button" class="chat-launcher" aria-expanded="false"
-                    aria-controls="chat-panel" aria-label="Ask about pricing">
+                    aria-controls="chat-panel" aria-label="Ask a question">
                 <span class="chat-launcher__icon" aria-hidden="true">💬</span>
-                <span class="chat-launcher__label">Ask about pricing</span>
+                <span class="chat-launcher__label">Ask a question</span>
             </button>
             <div class="chat-panel panel" id="chat-panel" role="dialog"
-                 aria-label="Ask about pricing" hidden>
+                 aria-label="Ask a question" hidden>
                 <div class="chat-head">
                     <div>
-                        <strong>Ask about pricing</strong>
-                        <p class="chat-note">Answers come from the same rates as the
-                        calculators. Thomas confirms anything before work starts.</p>
+                        <strong>Ask a question</strong>
+                        <p class="chat-note">Services, pricing, or how J7 works.
+                        Any figure comes from the same rates as the calculators, and
+                        Thomas confirms before work starts.</p>
                     </div>
                     <button type="button" class="chat-close" aria-label="Close">×</button>
                 </div>
@@ -244,7 +246,7 @@
                     <label class="sr-only" for="chat-input">Your question</label>
                     <input id="chat-input" class="chat-input" type="text"
                            autocomplete="off" maxlength="2000"
-                           placeholder="What would four cameras cost?">
+                           placeholder="What do you need help with?">
                     <button type="submit" class="btn btn-primary chat-send">Send</button>
                 </form>
             </div>`;
