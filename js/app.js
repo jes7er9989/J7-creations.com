@@ -628,18 +628,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const lines = (data.lines || []).filter(Boolean).join('\n');
+        // What the chat collected, so the customer does not retype the problem
+        // they just finished explaining. It goes in the visible message, never
+        // anywhere hidden - they can read and correct it before sending.
+        const notes = (data.notes || []).filter(Boolean);
+        const notesBlock = notes.length
+            ? 'What I told the assistant:\n' + notes.map(n => '- ' + n).join('\n') + '\n\n'
+            : '';
         // The chat widget hands over the same payload, but "from the FAQ page
         // calculator" describes a page that has no calculator — so the source
         // says which of the two worked the figure out.
         const fromChat = data.source === 'assistant';
-        const preamble = (fromChat
-                            ? 'Estimate from the site assistant:'
-                            : 'Estimate from the ' + (data.page || 'website') + ' calculator:') +
-                         '\n\n' +
-                         (data.headline ? data.headline + '\n' : '') + lines +
-                         (fromChat
-                            ? '\n\n(Worked out in chat from the online rates - happy to adjust.)\n\n'
-                            : '\n\n(Figures from your online estimator - happy to adjust.)\n\n');
+        const heading = fromChat
+            ? (data.headline ? 'Estimate from the site assistant:'
+                             : 'Enquiry from the site assistant:')
+            : 'Estimate from the ' + (data.page || 'website') + ' calculator:';
+        const figures = (data.headline ? data.headline + '\n' : '') + lines;
+        const footnote = fromChat
+            ? (data.headline
+                ? '\n\n(Worked out in chat from the online rates - happy to adjust.)\n\n'
+                : '')   // no figures: notesBlock already ends blank
+            : '\n\n(Figures from your online estimator - happy to adjust.)\n\n';
+        const preamble = heading + '\n\n' + notesBlock + figures + footnote;
         message.value = preamble + message.value;
 
         j7Track('estimate_sent', {

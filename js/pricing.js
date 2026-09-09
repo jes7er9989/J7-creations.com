@@ -196,12 +196,15 @@ function j7SyncPricingLabels() {
  * throw it away — the visitor retyped it into a textarea from memory, or
  * gave up. This stashes it for the contact page to pick up.
  */
-function j7SendEstimate(serviceValue, headline, lines, source) {
+function j7SendEstimate(serviceValue, headline, lines, source, notes) {
     try {
         sessionStorage.setItem('j7Estimate', JSON.stringify({
             service: serviceValue,
             headline: headline,
             lines: lines,
+            // What the customer said, when the chat collected it. Saves them
+            // retyping the problem they just finished explaining.
+            notes: notes || null,
             page: document.title,
             // 'assistant' when the chat widget worked it out, absent when a
             // calculator did. The contact form says which, because "from the

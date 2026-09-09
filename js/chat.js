@@ -65,7 +65,10 @@
         let estimate = null;
         try {
             const parsed = JSON.parse(match[1].trim());
-            if (parsed && parsed.headline && Array.isArray(parsed.lines)) {
+            // headline is optional: a conversation can hand over as a plain
+            // enquiry when the first checks did not fix it and there is no
+            // figure yet.
+            if (parsed && (parsed.headline || parsed.notes)) {
                 estimate = parsed;
             }
         } catch (e) {
@@ -83,7 +86,7 @@
         // Shape and key belong to j7SendEstimate in js/pricing.js.
         if (typeof j7SendEstimate === 'function') {
             j7SendEstimate(estimate.service || 'other', estimate.headline,
-                           estimate.lines, 'assistant');
+                           estimate.lines, 'assistant', estimate.notes);
             return;
         }
         try {
@@ -91,6 +94,7 @@
                 service: estimate.service || 'other',
                 headline: estimate.headline,
                 lines: estimate.lines,
+                notes: estimate.notes || null,
                 page: document.title,
                 source: 'assistant',
                 at: Date.now()
@@ -120,7 +124,9 @@
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'btn btn-primary chat-handoff';
-            button.textContent = 'Send this to Thomas';
+            button.textContent = estimate.headline
+                ? 'Send this to Thomas'
+                : 'Send this to Thomas to look at';
             button.addEventListener('click', () => sendToForm(estimate));
             wrap.appendChild(button);
         }
