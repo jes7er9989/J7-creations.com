@@ -103,7 +103,7 @@ const J7_PRICING = {
     cableDrop: {
         easy:      { price: 80,  hours: 1.0,  label: 'Easy — open attic, basement or unfinished space' },
         standard:  { price: 125, hours: 1.75, label: 'Standard — finished wall, reasonable access' },
-        difficult: { price: 205, hours: 3.0,  label: 'Difficult — two storey, no attic, or conduit' }
+        difficult: { price: 205, hours: 3.0,  label: 'Difficult — two story, no attic, or conduit' }
     },
 
     // ---------- Other fabrication services ----------
