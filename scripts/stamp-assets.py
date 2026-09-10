@@ -23,8 +23,7 @@ Run this after changing anything in css/ or js/, then commit the result:
 import datetime, hashlib, io, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ASSETS = ('css/styles.css', 'css/mobile-fix.css', 'js/app.js', 'js/pricing.js',
-          'js/chat.js')
+ASSETS = ('css/styles.css', 'css/mobile-fix.css', 'js/app.js', 'js/pricing.js')
 
 def digest(rel):
     """Hash the file content, normalised to LF.
