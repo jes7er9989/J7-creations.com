@@ -110,6 +110,22 @@ const J7_PRICING = {
     // These were quoted only in page copy with no entry here, which is how
     // they drift. The fabrication page also claimed they were "quoted
     // separately" a hundred lines above listing firm rates for them.
+    // ---------- Custom builds ----------
+    // Desktops, servers and NAS boxes. Parts are always at cost with receipts
+    // shown, same as installation equipment - these are the labour only.
+    //
+    // Speccing the machine is the part that carries the expertise, and it is
+    // also the part somebody can take away and order from elsewhere. So it
+    // works like the free first hour on site: free when Thomas builds it,
+    // otherwise a flat fee and the list is theirs. $75 matches the CAD rate,
+    // because it is the same kind of work - paying for judgement, not hands.
+    builds: {
+        spec: 75,               // waived when the build is booked
+        standard: 100,          // assembled, OS and drivers, stress tested
+        complex: 250,           // custom cooling, sleeved cabling, case work
+        server: 200             // RAID, OS, shares, users, remote access
+    },
+
     cadPerHour: 75,
     cadFlatRange: [50, 150],
     laserPerSqIn: 0.08,
@@ -183,6 +199,9 @@ function j7SyncPricingLabels() {
             case 'gram':    el.textContent = '$' + value.toFixed(3) + '/g'; break;
             case 'percent': el.textContent = '+' + Math.round(value * 100) + '%'; break;
             case 'plain':   el.textContent = String(value); break;
+            // Whole-dollar figures. j7Money() would render a $100 build fee as
+            // "$100.00", which reads like a checkout total rather than a price.
+            case 'dollars': el.textContent = '$' + value; break;
             default:        el.textContent = j7Money(value);
         }
     });
