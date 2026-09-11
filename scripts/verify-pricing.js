@@ -4,7 +4,7 @@
 // smaller one. The original estimators broke that rule in three separate
 // places, and it is invisible until a customer finds it.
 
-const { J7_PRICING, j7TieredCost, j7UnitCost,
+const { J7_PRICING, j7TieredCost, j7UnitCost, j7PrintEstimate, j7SwapTimeFactor,
         j7OnsiteHours, J7_ONSITE_TASKS, J7_REMOTE_SCOPES } = require('../js/pricing.js');
 
 let failures = 0;
@@ -37,14 +37,11 @@ function sweep(label, priceAt, from, to, step = 1) {
 // ---------- 3D printing ----------
 const P = J7_PRICING.print;
 
+// The same function the calculator uses, so a check here is a check there.
 function printTotal(grams, pricePerKg = P.filamentPerKg.pla, quality = 1.0,
-                   qty = 1, waste = P.waste.minimal, rush = 1.0) {
-    const partWeight = grams * qty;
-    const filament = (pricePerKg / 1000) * partWeight * (1 + waste);
-    const machine = j7TieredCost(partWeight, P.tiers) * quality;
-    let subtotal = filament + P.setupFee + machine;
-    if (subtotal < P.orderMinimum) subtotal = P.orderMinimum;
-    return subtotal * rush;
+                   qty = 1, waste = P.waste.minimal, rush = 1.0, colors = 1, second = null) {
+    return j7PrintEstimate({ grams, qty, pricePerKg, quality,
+                             supportWaste: waste, rush, colors, second }).total;
 }
 
 console.log('\n3D PRINTING');
@@ -56,6 +53,28 @@ check('urgent 24hr is exactly double standard',
 check('order minimum floors tiny jobs', printTotal(5) === P.orderMinimum);
 check('1kg PLA lands near $52', Math.abs(printTotal(1000) - 51.58) < 0.5,
     `got ${printTotal(1000).toFixed(2)}`);
+
+// Multicolor and mixed materials
+{
+  const MIN = P.waste.minimal;
+  const multi = (colors, second = null, grams = 200) => printTotal(grams, 26, 1, 1, MIN, 1, colors, second);
+  sweep('print price by color count', c => multi(c), 1, P.maxFilaments);
+  check('2 colors cost more than 1', multi(2) > multi(1));
+  check('one color is priced exactly as before multicolor existed',
+      Math.abs(multi(1, null, 1000) - 51.58) < 0.5);
+  check('purge bands cover every filament count up to the maximum',
+      Array.from({ length: P.maxFilaments }, (_, i) => i + 1).every(n => P.purge.some(b => n <= b.upTo)));
+  check('swap time is capped at the maximum', Math.abs(j7SwapTimeFactor(P.maxFilaments) - (1 + P.swapTimeCap)) < 1e-9);
+  check('asking for more colors than the printers hold is priced at the maximum',
+      Math.abs(multi(P.maxFilaments + 4) - multi(P.maxFilaments)) < 1e-9);
+  check('a second material counts as a second filament',
+      Math.abs(multi(1, { pricePerKg: 26, share: 0.25 }) - multi(2)) < 1e-9);
+  check('a pricier second material raises the price',
+      multi(1, { pricePerKg: 95, share: 0.5 }) > multi(1, { pricePerKg: 26, share: 0.5 }));
+  sweep('PLA + carbon fiber price by CF share', s => multi(1, { pricePerKg: 95, share: s / 100 }), 1, 90);
+  check('rush doubles a multicolor job exactly',
+      Math.abs(printTotal(200, 32, 1, 1, MIN, 2.0, 4) - 2 * printTotal(200, 32, 1, 1, MIN, 1.0, 4)) < 1e-9);
+}
 
 // ---------- Per-unit installs ----------
 console.log('\nPER-UNIT INSTALLS');
@@ -120,11 +139,6 @@ check('access point stays under the $265 market floor', j7UnitCost(1, J7_PRICING
 check('complex hourly stays above remote but under $150 national ceiling',
     L.complex > L.remote && L.complex < 150);
 
-// ---------- Comparison table ----------
-console.log('\nOLD vs NEW');
-function oldPrint(g, perKg, feePerGram) {
-    const filament = (perKg / 1000) * g;
-    let service = feePerGram * g;
 // --- nozzle -----------------------------------------------------------------
 // Machine time must fall as the nozzle widens: a 0.8 lays material about twice
 // as fast as a 0.4, so the same gram of plastic takes half the machine time.
@@ -148,9 +162,11 @@ function oldPrint(g, perKg, feePerGram) {
         base * N['0.8'] < base * N['0.4']);
 }
 
-
-
-
+// ---------- Comparison table ----------
+console.log('\nOLD vs NEW');
+function oldPrint(g, perKg, feePerGram) {
+    const filament = (perKg / 1000) * g;
+    let service = feePerGram * g;
     if (g < 50) service = 5 + 0.05 * g;
     return filament + service;
 }

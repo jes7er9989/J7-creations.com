@@ -108,6 +108,14 @@ function ratesSection() {
         .map(([k, v]) => `${k.toUpperCase()} ${money(v)}/kg`)
         .join(', ');
 
+    const purgeBands = P.print.purge;
+    const purgeText = purgeBands.map((b, i) => {
+        if (!b.add) return null;
+        const from = i === 0 ? 1 : purgeBands[i - 1].upTo + 1;
+        const span = from === b.upTo ? String(from) : from + '-' + b.upTo;
+        return `${span} filaments +${Math.round(b.add * 100)}%`;
+    }).filter(Boolean).join(', ');
+
     const nozzleTime = Object.entries(P.print.nozzleTime)
         .map(([n, f]) => `${n} mm ${f}x`)
         .join(', ');
@@ -147,6 +155,10 @@ REMOTE SCOPES
   standard ${P.print.quality.standard}x, high ${P.print.quality.high}x) and with a finer
   nozzle (${nozzleTime}).
   Filament at cost: ${filament}.
+  Multicolor and mixed materials: up to ${P.print.maxFilaments} filaments in one print. Purge adds
+  extra filament (${purgeText}) on top of supports, and machine time rises
+  ${Math.round(P.print.swapTimePerExtra * 100)}% for each filament after the first, capped at +${Math.round(P.print.swapTimeCap * 100)}%.
+  A second material is priced at its own $/kg for its share of the part, and counts as a filament.
   Build plate ${J7_BUILD_PLATE_MM.join(' x ')} mm. Nozzles ${J7_NOZZLES.map(n => n.mm).join(', ')} mm.
   Infill steps ${J7_INFILL.map(i => Math.round(i.value * 100) + '%').join(', ')}.
   Part shapes used for weight: ${J7_PART_SHAPES.map(s => s.label).join('; ')}.
@@ -294,7 +306,8 @@ have now, and the town.
 Remote support: what device, what it is doing, when it started, and what
 they have already tried.
 3D printing: what the part is and what it does, roughly how big, whether it
-has to take heat, weight or weather, how many, and whether they have a photo
+has to take heat, weight or weather, how many colors or materials, how many
+copies, and whether they have a photo
 or file (they can attach it to the contact form).
 Smart home: which devices, what they control them with now, and what they
 want to happen.

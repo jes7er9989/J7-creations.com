@@ -36,7 +36,25 @@ const J7_PRICING = {
         // Calibrated so 0.4 is 1.0 — the common case is priced exactly as it
         // was before.
         nozzleTime: { '0.2': 2.0, '0.4': 1.0, '0.6': 0.67, '0.8': 0.5 },
-        waste: { minimal: 0.03, supports: 0.10, multicolor: 0.25 },
+        waste: { minimal: 0.03, supports: 0.10 },
+
+        // Multicolor and mixed materials. Two AMS units, so up to 8 filaments
+        // in one print. Every swap purges the old filament out of the nozzle,
+        // so more filaments cost more plastic, and the printer stops for each
+        // swap, so they cost more machine time. Thomas's calls, 11 Sep 2026.
+        //
+        // A second material counts as a filament: it goes through the same
+        // swap and purge a second color does.
+        maxFilaments: 8,
+        purge: [                        // extra filament, by filaments in the print
+            { upTo: 1, add: 0 },
+            { upTo: 2, add: 0.20 },
+            { upTo: 4, add: 0.35 },
+            { upTo: 8, add: 0.50 }
+        ],
+        swapTimePerExtra: 0.15,         // machine time +15% per filament after the first
+        swapTimeCap: 0.60,              // ...up to +60%
+        secondMaterialShares: [0.10, 0.25, 0.50],
         filamentPerKg: {
             pla: 26, petg: 32, abs: 35, tpu: 43,
             pc: 58, pa6: 69, pa12: 89, cf: 95, gf: 84
@@ -179,6 +197,66 @@ function j7UnitRate(quantity, bands) {
 
 function j7Money(value) {
     return '$' + value.toFixed(2);
+}
+
+/** Filaments in a print, clamped to what the printers can actually load. */
+function j7FilamentCount(filaments) {
+    return Math.min(Math.max(1, Math.round(filaments) || 1), J7_PRICING.print.maxFilaments);
+}
+
+/** Extra filament burned on purge, by how many filaments the print uses. */
+function j7PurgeWaste(filaments) {
+    const n = j7FilamentCount(filaments);
+    const band = J7_PRICING.print.purge.find(b => n <= b.upTo);
+    return band ? band.add : 0;
+}
+
+/** Machine-time multiplier for filament swaps. */
+function j7SwapTimeFactor(filaments) {
+    const P = J7_PRICING.print;
+    const extra = j7FilamentCount(filaments) - 1;
+    return 1 + Math.min(extra * P.swapTimePerExtra, P.swapTimeCap);
+}
+
+/**
+ * A whole 3D print estimate, in one place, so the calculator, the pricing
+ * checks and the assistant's rates cannot work different sums.
+ *
+ * job: { grams (per part), qty, pricePerKg, quality, nozzleTime,
+ *        supportWaste, colors, second: { pricePerKg, share } | null, rush }
+ */
+function j7PrintEstimate(job) {
+    const P = J7_PRICING.print;
+    const qty = Math.max(1, job.qty || 1);
+    const printed = job.grams * qty;
+    const second = job.second && job.second.share > 0 ? job.second : null;
+
+    const filaments = j7FilamentCount(Math.max(job.colors || 1, second ? 2 : 1));
+    const purge = j7PurgeWaste(filaments);
+    const waste = (job.supportWaste == null ? P.waste.minimal : job.supportWaste) + purge;
+    const bought = printed * (1 + waste);
+
+    // Blended price per kg: the second material at its own price for its
+    // share of the part, the main material for the rest.
+    const share = second ? second.share : 0;
+    const perKg = job.pricePerKg * (1 - share) + (second ? second.pricePerKg * share : 0);
+    const filamentCost = (perKg / 1000) * bought;
+
+    const swap = j7SwapTimeFactor(filaments);
+    const machineCost = j7TieredCost(printed, P.tiers)
+                      * (job.quality || 1) * (job.nozzleTime || 1) * swap;
+    const serviceFee = P.setupFee + machineCost;
+
+    // Order minimum before rush, so rush multiplies a real price
+    let subtotal = filamentCost + serviceFee;
+    const belowMinimum = subtotal < P.orderMinimum;
+    if (belowMinimum) subtotal = P.orderMinimum;
+
+    return {
+        printed, filaments, purge, waste, bought, perKg, filamentCost,
+        swap, machineCost, serviceFee, subtotal, belowMinimum,
+        total: subtotal * (job.rush || 1)
+    };
 }
 
 /**
@@ -770,6 +848,7 @@ if (typeof document !== 'undefined') {
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate,
+                       j7PrintEstimate, j7PurgeWaste, j7SwapTimeFactor, j7FilamentCount,
                        J7_SERVICE_AREA, j7LookupTown,
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,

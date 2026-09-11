@@ -371,6 +371,22 @@
                         </select>
                     </div>
                     <div>
+                        <label class="field-label" for="color-count">Colors</label>
+                        <select id="color-count" class="form-control"></select>
+                        <p class="field-hint">Up to <span data-price="print.maxFilaments" data-price-format="plain">8</span> in one print. Each extra color adds purge plastic and swap time.</p>
+                    </div>
+                    <div>
+                        <label class="field-label" for="second-material">Second material <span class="text-muted" style="font-weight: 400;">(optional)</span></label>
+                        <select id="second-material" class="form-control">
+                            <option value="" selected>None &mdash; one material</option>
+                        </select>
+                        <p class="field-hint">For parts that mix materials, like a PLA body with TPU grips.</p>
+                    </div>
+                    <div id="second-share-wrap" hidden>
+                        <label class="field-label" for="second-share">How much of the part is the second material?</label>
+                        <select id="second-share" class="form-control"></select>
+                    </div>
+                    <div>
                         <label class="field-label" for="nozzle-size">Nozzle / detail</label>
                         <select id="nozzle-size" class="form-control"></select>
                         <p class="field-hint">Finer holds small features but takes longer. Coarser lays thicker walls &mdash; stronger and faster, softer on detail.</p>
@@ -389,11 +405,10 @@
                         <p class="field-hint">Setup fee charged once per order</p>
                     </div>
                     <div>
-                        <label class="field-label" for="waste-factor">Supports / Waste</label>
+                        <label class="field-label" for="waste-factor">Supports</label>
                         <select id="waste-factor" class="form-control">
                             <option value="0.03" selected>Minimal - simple part, no supports (+3%)</option>
                             <option value="0.10">Supports needed - overhangs, brim (+10%)</option>
-                            <option value="0.25">Multi-color / AMS - purge waste (+25%)</option>
                         </select>
                     </div>
                     <div>
@@ -435,7 +450,8 @@
                 <h3 class="panel-title">How 3D Printing Pricing Works</h3>
                 <p style="font-size: 1.05rem; margin-bottom: 1rem;"><strong>Two-part pricing: Filament + Print Service Fee</strong></p>
                 <ul style="color: var(--color-text-gray); margin-left: 1.5rem; margin-bottom: 1rem;">
-                    <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers material, shipping, and storage. A small allowance is added for supports, brim, and multi-color purge — the plastic that gets used but isn't part of your finished piece.</li>
+                    <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers material, shipping, and storage. A small allowance is added for supports and brim — the plastic that gets used but isn't part of your finished piece.</li>
+                    <li><strong>Multicolor and mixed materials:</strong> Up to <span data-price="print.maxFilaments" data-price-format="plain">8</span> filaments in one print. Every swap purges plastic and stops the printer, so 2 filaments add <span data-price="print.purge.1.add" data-price-format="percent">+20%</span> filament, 3&ndash;4 add <span data-price="print.purge.2.add" data-price-format="percent">+35%</span> and 5&ndash;8 add <span data-price="print.purge.3.add" data-price-format="percent">+50%</span>, and machine time rises <span data-price="print.swapTimePerExtra" data-price-format="percent">+15%</span> for each filament after the first, up to <span data-price="print.swapTimeCap" data-price-format="percent">+60%</span>. A second material is charged at its own price for the share of the part it makes up.</li>
                     <li><strong>Print service fee:</strong> A <span data-price="print.setupFee">$5.00</span> setup fee once per order, plus a per-gram rate covering machine time, power, wear, slicing, and basic post-processing (support removal, cleaning).</li>
                     <li><strong>Volume pricing:</strong> The per-gram rate steps down as the job gets bigger. A 1kg print costs about half what it would on a flat rate.</li>
                     <li><strong>Total cost:</strong> Filament + Print Fee = Your Price, with a <span data-price="print.orderMinimum">$10.00</span> minimum order. Detailed quote provided before printing.</li>
@@ -657,7 +673,7 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=a4026004"></script>
+    <script src="../js/pricing.js?v=a9beca7f"></script>
     <script src="../js/app.js?v=fb0c13c8"></script>
     <script src="../js/chat.js?v=d96e40d8"></script>
     <script>
@@ -680,11 +696,34 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=a4026004 so they cannot drift from the
+        // All rates come from js/pricing.js?v=a9beca7f so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
         const ORDER_MINIMUM = PRINT.orderMinimum;
+
+        // Colors and the second material are built from pricing.js, so the
+        // 8-filament limit and the share steps cannot drift from what the
+        // estimate charges. The second material offers the same list as the
+        // first, so a price change there reaches both.
+        (function setUpFilamentOptions() {
+            const colorSel = document.getElementById('color-count');
+            for (let n = 1; n <= PRINT.maxFilaments; n++) {
+                colorSel.add(new Option(n === 1 ? '1 color' : n + ' colors', String(n), n === 1, n === 1));
+            }
+            const secondSel = document.getElementById('second-material');
+            [...document.getElementById('material-type').options].forEach(o => {
+                secondSel.add(new Option(o.text, o.value));
+            });
+            const shareSel = document.getElementById('second-share');
+            PRINT.secondMaterialShares.forEach((s, i) => {
+                shareSel.add(new Option('About ' + Math.round(s * 100) + '%', String(s), i === 0, i === 0));
+            });
+            const wrap = document.getElementById('second-share-wrap');
+            secondSel.addEventListener('change', () => { wrap.hidden = !secondSel.value; });
+        })();
+
+        const materialName = sel => sel.selectedOptions[0].text.split(' (')[0];
 
         function calculatePrice() {
             let weight = parseFloat(document.getElementById('part-weight').value);
@@ -710,29 +749,38 @@
                 case 'kg': weight = weight * 1000; break;
             }
 
-            // Total printed mass across the whole order
-            const partWeight = weight * quantity;
-
-            // Filament purchased includes supports, brim, and purge waste
-            const filamentWeight = partWeight * (1 + wasteFactor);
-            const filamentCost = (filamentPricePerKg / 1000) * filamentWeight;
+            const colors = parseInt(document.getElementById('color-count').value, 10) || 1;
+            const secondSel = document.getElementById('second-material');
+            const secondPerKg = parseFloat(secondSel.value) || 0;
+            const secondShare = secondPerKg
+                ? parseFloat(document.getElementById('second-share').value) || 0
+                : 0;
 
             // Machine time scales on the tiered rate, then on how long the job
-            // actually takes: finer layers are slower, and a wider nozzle lays
-            // material faster. Without the nozzle term a big-nozzle job billed
-            // more while printing in half the time.
+            // actually takes: finer layers are slower, a wider nozzle lays
+            // material faster, and every filament swap stops the printer.
             const nozzleMm = (document.getElementById('nozzle-size') || {}).value || '0.4';
-            const nozzleFactor = PRINT.nozzleTime[nozzleMm] || 1;
-            const machineCost = j7TieredCost(partWeight, PRINT.tiers)
-                              * qualityMultiplier * nozzleFactor;
-            const serviceFee = SETUP_FEE + machineCost;
 
-            // Apply order minimum before rush, so rush multiplies a real price
-            let subtotal = filamentCost + serviceFee;
-            const belowMinimum = subtotal < ORDER_MINIMUM;
-            if (belowMinimum) subtotal = ORDER_MINIMUM;
-
-            const total = subtotal * rushMultiplier;
+            // One function prices every print, in js/pricing.js?v=a9beca7f, so this page,
+            // the pricing checks and the assistant all work the same sums.
+            const est = j7PrintEstimate({
+                grams: weight,
+                qty: quantity,
+                pricePerKg: filamentPricePerKg,
+                quality: qualityMultiplier,
+                nozzleTime: PRINT.nozzleTime[nozzleMm] || 1,
+                supportWaste: wasteFactor,
+                colors: colors,
+                second: secondShare ? { pricePerKg: secondPerKg, share: secondShare } : null,
+                rush: rushMultiplier
+            });
+            const partWeight = est.printed;
+            const filamentCost = est.filamentCost;
+            const machineCost = est.machineCost;
+            const serviceFee = est.serviceFee;
+            const subtotal = est.subtotal;
+            const belowMinimum = est.belowMinimum;
+            const total = est.total;
 
             document.getElementById('filament-cost').textContent = '$' + filamentCost.toFixed(2);
             document.getElementById('service-fee').textContent = '$' + serviceFee.toFixed(2);
@@ -741,7 +789,15 @@
             // Plain-language breakdown so the number never looks arbitrary
             const notes = [];
             notes.push(`${quantity} × ${weight.toFixed(1)}g = <strong>${partWeight.toFixed(1)}g</strong> printed`);
-            notes.push(`+${(wasteFactor * 100).toFixed(0)}% waste = ${filamentWeight.toFixed(1)}g of filament purchased`);
+            if (est.filaments > 1) {
+                notes.push(`${est.filaments} filaments in the print: +${Math.round(est.purge * 100)}% purge plastic, ` +
+                           `+${Math.round((est.swap - 1) * 100)}% machine time for swaps`);
+            }
+            if (secondShare) {
+                notes.push(`About ${Math.round(secondShare * 100)}% ${materialName(secondSel)} at $${secondPerKg}/kg, ` +
+                           `the rest ${materialName(document.getElementById('material-type'))}`);
+            }
+            notes.push(`+${Math.round(est.waste * 100)}% waste = ${est.bought.toFixed(1)}g of filament purchased`);
             notes.push(`Service fee = $${SETUP_FEE.toFixed(2)} setup + $${machineCost.toFixed(2)} machine time`);
             if (belowMinimum) {
                 notes.push(`<strong>$${ORDER_MINIMUM.toFixed(2)} order minimum applied</strong>`);
@@ -765,6 +821,11 @@
                     'Print service fee: ' + document.getElementById('service-fee').textContent,
                     document.getElementById('price-breakdown').innerText,
                     'Material: ' + document.getElementById('material-type').selectedOptions[0].text,
+                    'Colors: ' + document.getElementById('color-count').selectedOptions[0].text,
+                    'Second material: ' + (document.getElementById('second-material').value
+                        ? document.getElementById('second-material').selectedOptions[0].text + ', ' +
+                          document.getElementById('second-share').selectedOptions[0].text.toLowerCase() + ' of the part'
+                        : 'none'),
                     'Quality: ' + document.getElementById('quality-level').selectedOptions[0].text,
                     'Nozzle: ' + document.getElementById('nozzle-size').selectedOptions[0].text,
                     'Turnaround: ' + document.getElementById('rush-level').selectedOptions[0].text,

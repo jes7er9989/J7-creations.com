@@ -260,6 +260,15 @@ contrast failures.**
 
 ## Estimators: the customer never supplies expertise
 
+**Multicolor and mixed materials (11 Sep 2026).** The 3D print estimator asks
+for colors (1 to `print.maxFilaments`, 8 with two AMS units) and an optional
+second material with its share of the part. Purge filament: 2 filaments +20%,
+3-4 +35%, 5-8 +50%, on top of supports. Machine time +15% per filament after
+the first, capped at +60%. A second material is priced at its own $/kg for its
+share and counts as a filament. All of it is `j7PrintEstimate()` in
+`js/pricing.js`, which the page, `verify-pricing.js` and the assistant's rates
+share - change the numbers there, then rebuild the prompt.
+
 The governing rule, learned the hard way twice. **Never ask a customer for a
 number that is the reason they are hiring you.** They cannot answer it, so they
 guess or leave, and either way the estimate is worthless.
