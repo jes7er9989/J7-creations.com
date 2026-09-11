@@ -1838,7 +1838,9 @@ button[onclick^="scrollPortfolio"] {
 
 /* Tap-to-answer choices under a question. Pill-shaped so they read as
    buttons, quieter than Send so they do not compete with it. The suggested
-   answer carries the accent and a small label, not a bigger size. */
+   answer carries the accent border, bold text and a small label - not a
+   tinted background, which over the light theme's frosted panel dropped
+   its text to 3:1. Everything sits on the same fill as the other chips. */
 .chat-choices {
     display: flex;
     flex-wrap: wrap;
@@ -1864,13 +1866,14 @@ button[onclick^="scrollPortfolio"] {
 
 .chat-choice--suggested {
     border-color: var(--color-accent);
-    background: var(--wash-accent);
+    font-weight: 600;
 }
 
 .chat-choice__tag {
     margin-left: var(--spacing-3xs);
     font-size: var(--text-xs);
-    color: var(--color-text-gray);
+    font-weight: 400;
+    color: inherit;
 }
 
 /* Three dots while the answer is on its way. Reduced-motion visitors get a
