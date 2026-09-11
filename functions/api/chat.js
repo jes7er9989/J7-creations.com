@@ -40,7 +40,7 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
     }
 });
 
-export async function onRequestPost(context) {
+async function handle(context) {
     const { request, env } = context;
 
     // Same-origin only. The key is ours to spend, not the internet's.
@@ -62,7 +62,18 @@ export async function onRequestPost(context) {
 
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     const key = `rl:${ip}:${Math.floor(Date.now() / 1000 / RATE_WINDOW)}`;
-    const used = parseInt(await env.CHAT_RATE_LIMIT.get(key), 10) || 0;
+    // KV is the counter, not the gate. A failed read or write is logged and
+    // the question still gets answered: KV allows one write per second to a
+    // key, so two messages from one visitor in the same second can make it
+    // throw, and an unhandled throw fails the whole request with an edge
+    // error page the visitor can do nothing with. The console spend cap still
+    // bounds the cost if the counter is ever down for longer.
+    let used = 0;
+    try {
+        used = parseInt(await env.CHAT_RATE_LIMIT.get(key), 10) || 0;
+    } catch (e) {
+        console.error('rate limit read failed: ' + e);
+    }
     if (used >= RATE_LIMIT) {
         return json({
             error: 'That is a lot of questions for one hour. Use the contact ' +
@@ -71,9 +82,13 @@ export async function onRequestPost(context) {
     }
     // Written before the call, not after, so a burst of parallel requests
     // cannot each read the same low count and all get through.
-    await env.CHAT_RATE_LIMIT.put(key, String(used + 1), {
-        expirationTtl: RATE_WINDOW * 2
-    });
+    try {
+        await env.CHAT_RATE_LIMIT.put(key, String(used + 1), {
+            expirationTtl: RATE_WINDOW * 2
+        });
+    } catch (e) {
+        console.error('rate limit write failed: ' + e);
+    }
 
     let body;
     try {
@@ -157,6 +172,20 @@ export async function onRequestPost(context) {
     }
 
     return json({ reply, stop_reason: data.stop_reason });
+}
+
+export async function onRequestPost(context) {
+    try {
+        return await handle(context);
+    } catch (e) {
+        // Anything unexpected still answers in JSON the widget can show, and
+        // leaves a stack trace in the deployment's real-time logs instead of
+        // a bare Cloudflare error page.
+        console.error('chat failed: ' + ((e && e.stack) || e));
+        return json({
+            error: 'The assistant is having trouble. The contact form still works.'
+        }, 502);
+    }
 }
 
 // Anything that is not a POST. Pages would otherwise return the static 404

@@ -267,16 +267,27 @@
         // reached it — a 404 from the static host, a dropped connection —
         // produces HTML or a TypeError, and neither says anything a visitor
         // can act on.
-        let data = null;
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messages: log.slice(-MAX_TURNS) })
-            });
-            data = await response.json().catch(() => null);
-        } catch (e) {
-            data = null;
+        const attempt = async () => {
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: log.slice(-MAX_TURNS) })
+                });
+                return await response.json().catch(() => null);
+            } catch (e) {
+                return null;
+            }
+        };
+
+        // One quiet retry when the reply never came from the function - a
+        // dropped connection or an edge error page. Not when the function
+        // answered with a reason (the hourly limit, not configured): asking
+        // again would only get the same answer.
+        let data = await attempt();
+        if (!data) {
+            await new Promise(resolve => setTimeout(resolve, 1200));
+            data = await attempt();
         }
 
         if (!data || !data.reply) {
