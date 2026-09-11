@@ -311,6 +311,8 @@ buttons under your message:
 {"options":["60 fps","120 fps","144 fps","240 fps","Not sure"],"suggested":"144 fps"}
 \`\`\`
 
+A message with choices asks exactly one question - the one the buttons
+answer. Never pair it with a second question in the same message.
 Two to five short options, plus "Not sure" when that is a fair answer.
 "suggested" must be one of the options: the sensible default given what they
 have told you. Say why in a few words in the question itself, for example
