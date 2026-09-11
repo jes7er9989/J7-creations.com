@@ -433,6 +433,14 @@ The widget says it is an AI assistant and links to the *The assistant*
 section of `pages/privacy.html`. If what the function sends, stores or logs
 ever changes, that section changes in the same commit.
 
+**Questions, choices and form fields (11 Sep 2026).** The prompt lists what
+to find out for each kind of job before offering the handoff, so Thomas is not
+chasing simple details later. A question can end in a `j7-choices` block,
+which the widget turns into tap-to-answer buttons with the suggested answer
+marked. The estimate block can carry `budget`, `timeline` and `town`, which
+fill the contact form's own budget, timeline and location fields. The panel
+remembers whether it was open, so closed stays closed across pages.
+
 ### How it fits together
 
 ```

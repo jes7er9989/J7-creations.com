@@ -627,6 +627,28 @@ document.addEventListener('DOMContentLoaded', () => {
             if (typeof updateServiceForm === 'function') updateServiceForm();
         }
 
+        // Budget, timeline and town, when the chat collected them. These are
+        // real fields on the form, and a figure that only appears inside the
+        // message is one Thomas has to go looking for.
+        const budgetSelect = document.getElementById('budget');
+        const budget = Number(data.budget);
+        if (budgetSelect && budget > 0 && !budgetSelect.value) {
+            budgetSelect.value = budget < 100 ? 'under-100'
+                : budget <= 300 ? '100-300'
+                : budget <= 500 ? '300-500'
+                : budget <= 1000 ? '500-1000'
+                : '1000-plus';
+        }
+        const timelineSelect = document.getElementById('timeline');
+        if (timelineSelect && data.timeline && !timelineSelect.value &&
+            [...timelineSelect.options].some(o => o.value === data.timeline)) {
+            timelineSelect.value = data.timeline;
+        }
+        const locationInput = document.getElementById('location');
+        if (locationInput && data.town && !locationInput.value) {
+            locationInput.value = String(data.town).slice(0, 120);
+        }
+
         const lines = (data.lines || []).filter(Boolean).join('\n');
         // What the chat collected, so the customer does not retype the problem
         // they just finished explaining. It goes in the visible message, never

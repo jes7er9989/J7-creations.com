@@ -16,6 +16,10 @@
     'use strict';
 
     const STORE = 'j7ChatLog';
+    // Whether the panel was open when the visitor left the page. Closed stays
+    // closed: reopening it on every page load after someone shut it is the
+    // widget following them around.
+    const OPEN_KEY = 'j7ChatOpen';
     const MAX_TURNS = 24;              // matches the cap the function enforces
     const GREETING =
         'Ask about any of the services, how Thomas works, what something ' +
@@ -77,6 +81,31 @@
         return { text: text.replace(match[0], '').trim(), estimate: estimate };
     }
 
+    // A question with a few likely answers ends with a j7-choices block. It
+    // becomes a row of buttons, so a visitor on a phone can tap an answer
+    // instead of typing one. They can still type anything they like.
+    function extractChoices(text) {
+        const match = text.match(/```j7-choices\s*([\s\S]*?)```/);
+        if (!match) return { text: text, choices: null };
+
+        let choices = null;
+        try {
+            const parsed = JSON.parse(match[1].trim());
+            const options = Array.isArray(parsed && parsed.options)
+                ? parsed.options.filter(o => typeof o === 'string' && o.trim()).slice(0, 6)
+                : [];
+            if (options.length) {
+                choices = {
+                    options: options,
+                    suggested: options.indexOf(parsed.suggested) !== -1 ? parsed.suggested : null
+                };
+            }
+        } catch (e) {
+            /* malformed block: drop it, the question still reads on its own */
+        }
+        return { text: text.replace(match[0], '').trim(), choices: choices };
+    }
+
     function sendToForm(estimate) {
         // pricing.js is only loaded on the four pages that have a calculator,
         // so the widget cannot rely on j7SendEstimate being there — and the
@@ -84,13 +113,32 @@
         // to start. Falling back to a bare /#contact would drop the estimate
         // on the floor on those pages, so write the same payload by hand.
         // Shape and key belong to j7SendEstimate in js/pricing.js.
+        //
+        // Budget, timeline and town ride along so the form's own fields are
+        // filled in, not only mentioned inside the message.
+        const budget = Number(String(estimate.budget == null ? '' : estimate.budget)
+            .replace(/[^0-9.]/g, ''));
+        const details = {
+            budget: budget > 0 ? budget : null,
+            timeline: estimate.timeline || null,
+            town: estimate.town || null
+        };
+
+        // The form is what they asked for, so the panel does not reopen over
+        // it on the next page.
+        try {
+            sessionStorage.setItem(OPEN_KEY, '0');
+        } catch (e) {
+            /* private mode: nothing to remember */
+        }
+
         if (typeof j7SendEstimate === 'function') {
             j7SendEstimate(estimate.service || 'other', estimate.headline,
-                           estimate.lines, 'assistant', estimate.notes);
+                           estimate.lines, 'assistant', estimate.notes, details);
             return;
         }
         try {
-            sessionStorage.setItem('j7Estimate', JSON.stringify({
+            sessionStorage.setItem('j7Estimate', JSON.stringify(Object.assign({
                 service: estimate.service || 'other',
                 headline: estimate.headline,
                 lines: estimate.lines,
@@ -98,7 +146,7 @@
                 page: document.title,
                 source: 'assistant',
                 at: Date.now()
-            }));
+            }, details)));
         } catch (e) {
             /* private mode: the form still works by hand */
         }
@@ -109,7 +157,7 @@
     // Rendering
     // ---------------------------------------------------------------------
 
-    function bubble(role, text, estimate) {
+    function bubble(role, text, estimate, choices) {
         const wrap = document.createElement('div');
         wrap.className = 'chat-msg chat-msg--' + role;
 
@@ -130,6 +178,27 @@
             button.addEventListener('click', () => sendToForm(estimate));
             wrap.appendChild(button);
         }
+
+        if (choices) {
+            const row = document.createElement('div');
+            row.className = 'chat-choices';
+            choices.options.forEach(option => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'chat-choice' +
+                    (option === choices.suggested ? ' chat-choice--suggested' : '');
+                chip.textContent = option;
+                if (option === choices.suggested) {
+                    const tag = document.createElement('span');
+                    tag.className = 'chat-choice__tag';
+                    tag.textContent = 'suggested';
+                    chip.appendChild(tag);
+                }
+                chip.addEventListener('click', () => send(option));
+                row.appendChild(chip);
+            });
+            wrap.appendChild(row);
+        }
         return wrap;
     }
 
@@ -139,12 +208,21 @@
         if (!log.length) {
             els.log.appendChild(bubble('assistant', GREETING, null));
         }
-        log.forEach(m => {
-            const parsed = m.role === 'assistant'
-                ? extractEstimate(m.content)
-                : { text: m.content, estimate: null };
+        log.forEach((m, i) => {
+            let parsed = { text: m.content, estimate: null, choices: null };
+            if (m.role === 'assistant') {
+                const est = extractEstimate(m.content);
+                const ch = extractChoices(est.text);
+                // Buttons only on the latest message. Once they have answered,
+                // an old row of choices is clutter that can be misclicked.
+                parsed = {
+                    text: ch.text,
+                    estimate: est.estimate,
+                    choices: i === log.length - 1 && !busy ? ch.choices : null
+                };
+            }
             if (parsed.text || parsed.estimate) {
-                els.log.appendChild(bubble(m.role, parsed.text, parsed.estimate));
+                els.log.appendChild(bubble(m.role, parsed.text, parsed.estimate, parsed.choices));
             }
         });
 
@@ -280,15 +358,22 @@
         });
     }
 
-    function toggle(next) {
+    function toggle(next, quiet) {
         open = next;
+        try {
+            sessionStorage.setItem(OPEN_KEY, open ? '1' : '0');
+        } catch (e) {
+            /* private mode: it just will not remember */
+        }
         els.panel.hidden = !open;
         els.root.classList.toggle('chat-root--open', open);
         els.launcher.setAttribute('aria-expanded', String(open));
         if (open) {
             render();
-            els.input.focus();
-        } else {
+            // Not on a page load: focusing the box then pops the keyboard up on
+            // a phone before the visitor has done anything.
+            if (!quiet) els.input.focus();
+        } else if (!quiet) {
             els.launcher.focus();
         }
     }
@@ -296,8 +381,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         load();
         build();
-        // A conversation carried across a page load reopens itself, since the
-        // visitor did not close it — they followed a link they were given.
-        if (log.length) toggle(true);
+        // Reopen only if it was open when they left the page. Someone who
+        // closed it is done looking at it, and it stays closed until they open
+        // it again.
+        let wasOpen = false;
+        try {
+            wasOpen = sessionStorage.getItem(OPEN_KEY) === '1';
+        } catch (e) {
+            wasOpen = false;
+        }
+        if (log.length && wasOpen) toggle(true, true);
     });
 })();
