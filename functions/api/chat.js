@@ -11,9 +11,11 @@
 
 import { SYSTEM_PROMPT } from './_prompt.js';
 
-// One line to change if Haiku disappoints. Cost per six-exchange conversation
-// with the prompt cached: Haiku 4.5 about $0.009, Opus 5 about $0.044.
-const MODEL = 'claude-haiku-4-5-20251001';
+// One line to change. Started on Haiku 4.5, which broke explicit pricing rules
+// and got basic arithmetic wrong in its first live conversations (11 Sep 2026).
+// Cost per six-exchange conversation with the prompt cached: Haiku 4.5 about
+// $0.009, Sonnet 5 about $0.018 ($2/$10 per million), Opus 5 about $0.044.
+const MODEL = 'claude-sonnet-5';
 
 // Short on purpose. Scope is enforced by the prompt, and a prompt is guidance
 // rather than a fence — but a model that cannot write at length cannot write

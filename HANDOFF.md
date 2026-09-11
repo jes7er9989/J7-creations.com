@@ -471,9 +471,16 @@ The behaviour half — scope, voice, what it may promise — is hand-written in
 - **It may state a price**, always as *"the calculator says roughly $X —
   Thomas confirms before any work starts."* Never a commitment, never a
   number that did not come from `pricing.js`.
-- **Haiku 4.5 to start**, in one constant (`MODEL` in `functions/api/chat.js`),
-  to be swapped for Opus 5 if it disappoints. Cost per six-exchange
-  conversation with the prompt cached: Haiku about \$0.009, Opus about \$0.044.
+- **Model: Sonnet 5** (since 11 Sep 2026), in one constant (`MODEL` in
+  `functions/api/chat.js`). It started on Haiku 4.5, which quoted 2 cameras at
+  \$290 instead of \$150 and guessed equipment costs into a total in its first
+  live conversations. Thomas chose the middle option over Opus 5. Cost per
+  six-exchange conversation with the prompt cached: Haiku about \$0.009,
+  Sonnet 5 about \$0.018, Opus 5 about \$0.044. The Anthropic key must be a
+  **workspace** key (Default workspace); an org-wide key is rejected.
+- **Camera pricing kept at \$75 / \$65 / \$55** (11 Sep 2026) after comparing it
+  with national labor-only rates (\$80–200 per camera). Per-unit and hourly
+  are never combined on one item.
 
 ### Before it can go live
 
