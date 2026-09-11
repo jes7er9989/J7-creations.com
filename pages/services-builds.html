@@ -97,7 +97,8 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="../css/styles.css?v=cb54559b">
+    <link rel="stylesheet" href="../css/styles.css?v=2f94cb4d">
+    <script src="../js/chat.js?v=dd52e480"></script>
     <link rel="stylesheet" href="../css/mobile-fix.css?v=de960d1b">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
@@ -150,7 +151,7 @@
     <header class="hero hero--page">
         <div class="hero-container">
             <h1 class="hero-title">Custom Builds</h1>
-            <p class="hero-subtitle">Desktops, servers and NAS boxes, specced for what you'll actually run rather than what a shop wants to shift. Parts at cost, receipts shown.</p>
+            <p class="hero-subtitle">Desktops, servers and NAS boxes, specced for what you'll actually run rather than what a store wants to sell. Parts at cost, receipts shown.</p>
             <div class="hero-cta">
                 <a href="/#contact" class="btn btn-primary">Tell me what it's for</a>
                 <a href="#build-pricing" class="btn btn-secondary">See the pricing</a>
@@ -195,7 +196,7 @@
                 <div class="capability-column">
                     <h3>Complex build</h3>
                     <p style="font-size: 1.5rem; color: var(--color-text-white);"><strong data-price="builds.complex" data-price-format="dollars">$250</strong></p>
-                    <p>Custom cooling loops, sleeved cabling, case modification, heavy tuning. The slow, fiddly ones.</p>
+                    <p>Custom cooling loops, sleeved cabling, case modification, heavy tuning. The slow, finicky ones.</p>
                 </div>
                 <div class="capability-column">
                     <h3>Server or NAS</h3>
@@ -230,7 +231,7 @@
                 </div>
                 <div class="service-card">
                     <h3>Built and tested</h3>
-                    <p>Assembled, updated, stress tested, and not handed over until it holds up under load. If it fails within 30 days I put it right.</p>
+                    <p>Assembled, updated, stress tested, and not handed over until it holds up under load. If it fails within 30 days I make it right.</p>
                 </div>
             </div>
         </div>
@@ -250,8 +251,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=41237c7a"></script>
-    <script src="../js/app.js?v=eb93ee45"></script>
+    <script src="../js/pricing.js?v=271da04f"></script>
+    <script src="../js/app.js?v=c86b4d03"></script>
     <script>
         function convertWeight() {
             const weight = parseFloat(document.getElementById('part-weight').value);
@@ -272,7 +273,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=41237c7a so they cannot drift from the
+        // All rates come from js/pricing.js?v=271da04f so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;

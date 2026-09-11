@@ -576,7 +576,7 @@ const J7_INTAKE = {
             { id: 'devices', label: 'Roughly how many devices connect?', options: [
                 'Under 10', '10 - 25', '25 - 50', 'More than 50'] },
             { id: 'cabling', label: 'Is there network cable in the walls already?',
-              hint: 'This is the biggest single swing on the price. Running new cable is most of the labour; reusing what is there costs nothing.',
+              hint: 'This is the biggest single swing on the price. Running new cable is most of the labor; reusing what is there costs nothing.',
               options: ['Yes, there are network points already', 'No, it is all wireless now',
                         'Some, but not where I need it', 'Not sure'] },
             { id: 'current', label: 'What equipment are you on now?', options: [

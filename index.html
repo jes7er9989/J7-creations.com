@@ -18,7 +18,7 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Local Business Schema -->
-    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=eb93ee45.
+    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=c86b4d03.
          Crawlers do not run the JavaScript that fills the visible number, so
          this one is a literal on purpose. -->
     <script type="application/ld+json">
@@ -110,7 +110,7 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="css/styles.css?v=cb54559b">
+    <link rel="stylesheet" href="css/styles.css?v=2f94cb4d">
     <link rel="stylesheet" href="css/mobile-fix.css?v=de960d1b">
     <link rel="icon" type="image/png" href="assets/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png"></head>
@@ -514,6 +514,7 @@
                         <option value="3d-printing">3D Printing & Fabrication</option>
                         <option value="network-infrastructure">Network Infrastructure</option>
                         <option value="installation">Field Installation</option>
+                        <option value="custom-builds">Custom Builds</option>
                         <option value="other">Other / Not Sure</option>
                     </select>
                 </div>
@@ -585,8 +586,9 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="js/pricing.js?v=41237c7a"></script>
-    <script src="js/app.js?v=eb93ee45"></script>
+    <script src="js/pricing.js?v=271da04f"></script>
+    <script src="js/app.js?v=c86b4d03"></script>
+    <script src="js/chat.js?v=dd52e480"></script>
     
     <!-- Portfolio Carousel Script -->
     <script>
@@ -631,7 +633,7 @@
             const serviceData = {
                 'remote-support': {
                     title: 'Remote Tech Support',
-                    info: '<p><strong>Best for:</strong> WiFi issues, slow computers, device setup, software help, network troubleshooting.</p><p><strong>How it works:</strong> Phone or screenshare session. I\'ll help you fix it remotely - no travel needed!</p><p><strong>Cost:</strong> $25/hour (30-minute minimum). Most issues resolved in 30-60 minutes.</p><p><strong>Payment:</strong> Cash, Venmo, or Cash App (due immediately after session).</p>',
+                    info: '<p><strong>Best for:</strong> WiFi issues, slow computers, device setup, software help, network troubleshooting.</p><p><strong>How it works:</strong> Phone or screenshare session. I\'ll help you fix it remotely, so there is no travel.</p><p><strong>Cost:</strong> $25/hour (30-minute minimum).</p><p><strong>Payment:</strong> Cash, Venmo, or Cash App (due immediately after session).</p>',
                     placeholder: 'Describe your issue: What device/program is giving you trouble? When did it start? What have you already tried?',
                     label: 'Describe Your Tech Issue',
                     checklist: '<h3 style="color: var(--color-success); margin-bottom: 1rem;">For Remote Support, Have Ready:</h3><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li><strong>Device info</strong> - What computer/phone/tablet is having issues?</li><li><strong>Problem description</strong> - What\'s happening? Any error messages?</li><li><strong>When it started</strong> - Did this start suddenly or gradually?</li><li><strong>What you\'ve tried</strong> - Any troubleshooting steps already?</li><li><strong>Your availability</strong> - When can you do a phone/screenshare session?</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (Mon–Fri 9–6, Sat 10–4 CST)</p>'
@@ -650,6 +652,14 @@
                     label: 'Describe Your Network Needs',
                     checklist: '<h3 style="color: var(--color-success); margin-bottom: 1rem;">For Network Projects, Have Ready:</h3><ul style="color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;"><li><strong>Property details</strong> - House size, number of floors, construction type?</li><li><strong>Current setup</strong> - What router/ISP do you have now?</li><li><strong>Problems</strong> - Dead zones, slow speeds, too many devices?</li><li><strong>Goals</strong> - Better coverage, security, smart home integration?</li><li><strong>Budget range</strong> - Equipment + labor (equipment quoted separately at retail cost).</li></ul><p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-success);">⏱️ <strong>Typical response time:</strong> 2-4 hours during business hours (Mon–Fri 9–6, Sat 10–4 CST)</p>'
                 },
+                'custom-builds': {
+                    title: 'Custom Builds',
+                    // Figures come from pricing.js, loaded above, so this
+                    // cannot drift from the builds page.
+                    info: '<p><strong>Best for:</strong> Gaming and editing desktops, workstations, home servers and NAS boxes.</p><p><strong>Pricing:</strong> Standard build $' + J7_PRICING.builds.standard + ', complex build $' + J7_PRICING.builds.complex + ', server or NAS $' + J7_PRICING.builds.server + '. Parts at cost with receipts. The parts list is free when I build it.</p>',
+                    placeholder: 'What is it for? The games or software you run, a rough budget, and anything you already have.',
+                    label: 'Describe Your Build'
+                },
                 'installation': {
                     title: 'Field Installation',
                     info: '<p><strong>Best for:</strong> Mounting equipment, cable runs, rack setup, camera installation, smart home devices.</p><p><strong>Service area:</strong> 100-mile radius from Milan/Atwood, TN.</p><p><strong>Pricing:</strong> Cameras from $75 each, access points from $125 each, or $45-85/hr for open-ended work | Travel: 0-25mi FREE, 25-50mi $15, 50-75mi $30, 75-100mi $50.</p>',
@@ -662,7 +672,7 @@
             // Hide service info if no selection or other
             if (!service || service === 'other') {
                 serviceInfo.style.display = 'none';
-                // The checklist is real fields now - see j7Intake in js/app.js?v=eb93ee45.
+                // The checklist is real fields now - see j7Intake in js/app.js?v=c86b4d03.
                 messageLabel.textContent = 'Project Details';
                 messageField.placeholder = 'Tell me about your project...';
                 return;
@@ -677,7 +687,7 @@
                 messageField.placeholder = data.placeholder;
                 
                 // Update checklist
-                // The checklist is real fields now - see j7Intake in js/app.js?v=eb93ee45.
+                // The checklist is real fields now - see j7Intake in js/app.js?v=c86b4d03.
             }
         }
     </script>

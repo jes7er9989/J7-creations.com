@@ -1,11 +1,13 @@
 # J7 Creations — Handoff
 
-> **State as of 19 Aug 2026.** Everything on the live site is deployed.
-> The **chatbot is built but not deployed** — it lives on the `chatbot`
-> branch and needs two things set in the Cloudflare dashboard before it can
-> work. See *The chatbot* near the end. Nothing else is in flight.
+> **State as of 11 Sep 2026.** The **chatbot is back on `main`** (restored by
+> reverting `01400f2`, then brought up to date with Custom Builds, the privacy
+> page and American spelling). It must not be pushed until `ANTHROPIC_API_KEY`
+> and the `CHAT_RATE_LIMIT` KV binding exist in Cloudflare — see *The chatbot*
+> near the end. The CRM ingest work sits unpushed on the local `crm-ingest`
+> branch; its privacy page needs reconciling with this one before it merges.
 
-**Last updated:** 19 August 2026
+**Last updated:** 11 September 2026
 **Live:** https://j7creations.com · **Repo:** https://github.com/jes7er9989/J7-creations.com
 
 Static site — plain HTML/CSS/JS, no build step, no framework. Pushing to `main`
@@ -415,13 +417,21 @@ Do not silently reverse these.
 
 ## The chatbot
 
-Built, tested locally, **not deployed**. It lives on the `chatbot` branch and
-does nothing until the two Cloudflare settings below exist.
+On `main`, tested locally, **not yet deployed**. It was taken off the live
+site in `01400f2` while it had no backend and restored on 11 Sep 2026. It does
+nothing until the two Cloudflare settings below exist, so do not push it
+before then.
 
-**Scope:** pricing, questions about Thomas and how the business works, site
-navigation, and walking someone to a quote. **Out of scope, on purpose:** tech
-support answers and product recommendations — the first is the paid service,
-the second is how people buy the wrong thing.
+**Scope:** general help — what J7 does, how the business works, what things
+cost, finding things on the site, and walking someone to a quote. It may offer
+the four obvious first checks on a problem (power cycle, cables, the switch,
+one device or all) once, then stops. **Out of scope, on purpose:** real tech
+support, product and parts recommendations (speccing a build is a paid
+service), speed promises and reviews.
+
+The widget says it is an AI assistant and links to the *The assistant*
+section of `pages/privacy.html`. If what the function sends, stores or logs
+ever changes, that section changes in the same commit.
 
 ### How it fits together
 
@@ -433,7 +443,7 @@ js/chat.js  →  POST /api/chat  →  functions/api/chat.js  →  Anthropic API
 ```
 
 The widget is built in JavaScript and appended to `<body>`, so there is no
-chat markup in any of the seven pages and nothing to keep in sync. It styles
+chat markup in any page and nothing to keep in sync. It styles
 itself with the existing `.panel` treatment, which is what makes it work in
 both themes for free.
 

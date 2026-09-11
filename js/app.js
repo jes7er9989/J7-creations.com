@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     mesh = null;
                 }
                 if (!mesh) {
-                    meshOut.textContent = 'I could not read that one. Send it with your enquiry and I will quote it by hand.';
+                    meshOut.textContent = 'I could not read that one. Send it with your message and I will quote it by hand.';
                     result.hidden = true;
                     return;
                 }
@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fromChat = data.source === 'assistant';
         const heading = fromChat
             ? (data.headline ? 'Estimate from the site assistant:'
-                             : 'Enquiry from the site assistant:')
+                             : 'From the site assistant:')
             : 'Estimate from the ' + (data.page || 'website') + ' calculator:';
         const figures = (data.headline ? data.headline + '\n' : '') + lines;
         const footnote = fromChat
