@@ -198,11 +198,139 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     
+    // ========== Enquiry beacon ==========
+    // The contact form has always posted to Formspree, and it still does. This
+    // sends a second, JSON-only copy of the same enquiry to /api/intake so it
+    // lands in the CRM inbox instead of only in an email.
+    //
+    // The order is deliberate and not negotiable: Formspree first, this after,
+    // and only once Formspree has answered ok. If this endpoint is down, if the
+    // database binding is missing, if this function throws — the enquiry has
+    // already reached Thomas. Nothing here is allowed to touch the visitor's
+    // experience, so it has no await on the success path, no error surfaced,
+    // and a hard timeout.
+    //
+    // No files. The form accepts up to 100MB of STLs and photos and those stay
+    // on the Formspree path; pushing them through a Worker would put the one
+    // thing that works at risk of a body-size limit. The beacon records how
+    // many were attached so the inbox can say "3 files, in the email".
+    let j7LastEstimate = null;      // set by applyIncomingEstimate below
+
+    // The chat transcript, which does NOT travel in the estimate handoff.
+    // js/chat.js keeps the conversation in its own sessionStorage key and the
+    // handoff block carries only the figures and the summary, so reading the
+    // log directly is the only way the full conversation reaches the CRM. It
+    // also means a chat that hands over with no price at all still arrives
+    // with what was said, which is the case that matters most.
+    //
+    // Shape belongs to js/chat.js: {role: 'user' | 'assistant', content}.
+    // Normalised here to the {role, text} the intake endpoint expects, because
+    // 'user' reads wrong in a CRM where the user is Thomas.
+    function j7ChatTranscript() {
+        try {
+            const raw = sessionStorage.getItem('j7ChatLog');
+            if (!raw) return null;
+            const log = JSON.parse(raw);
+            if (!Array.isArray(log) || !log.length) return null;
+            const out = log
+                .filter(t => t && typeof t.content === 'string' && t.content.trim())
+                .slice(-24)
+                .map(t => ({
+                    role: t.role === 'assistant' ? 'assistant' : 'visitor',
+                    text: t.content
+                }));
+            return out.length ? out : null;
+        } catch (e) {
+            return null;      // private mode, or a log this version cannot read
+        }
+    }
+
+    function j7DedupeKey(email, message) {
+        // Same person, same message, same hour is a double submission. The same
+        // message tomorrow is a follow-up and deserves its own row. Hashed
+        // rather than stored plainly: it goes in an indexed column and does not
+        // need to be readable.
+        const hour = new Date().toISOString().slice(0, 13);
+        const basis = (email || '') + '|' + (message || '').slice(0, 200) + '|' + hour;
+        let h1 = 0x811c9dc5, h2 = 0x01000193;
+        for (let i = 0; i < basis.length; i++) {
+            const c = basis.charCodeAt(i);
+            h1 = (h1 ^ c) * 16777619 >>> 0;
+            h2 = (h2 + c * 31 + (h2 << 5)) >>> 0;
+        }
+        return h1.toString(36) + h2.toString(36);
+    }
+
+    function j7Beacon(formData) {
+        try {
+            const intake = {};
+            document.querySelectorAll('[data-intake]').forEach(el => {
+                if (el.value) intake[el.dataset.intake] = el.value;
+            });
+
+            // The input is name="attachment", singular, with multiple — so
+            // getAll, not get, or a three-file submission reports one.
+            const files = formData.getAll('attachment')
+                .filter(f => f && typeof f === 'object' && f.size > 0);
+
+            const get = k => {
+                const v = formData.get(k);
+                return typeof v === 'string' ? v : null;
+            };
+            const message = get('message');
+
+            const payload = {
+                channel: j7LastEstimate && j7LastEstimate.source === 'assistant'
+                    ? 'chatbot'
+                    : (j7LastEstimate ? 'calculator' : 'contact_form'),
+                name: get('name'),
+                email: get('email'),
+                phone: get('phone'),
+                location: get('location'),
+                service: get('service'),
+                message: message,
+                intake: Object.keys(intake).length ? intake : null,
+                estimate: j7LastEstimate ? {
+                    headline: j7LastEstimate.headline || null,
+                    lines: (j7LastEstimate.lines || []).filter(Boolean),
+                    // What they told the assistant, in their words. The handoff
+                    // block carries it and applyIncomingEstimate folds it into
+                    // the visible message; this keeps it as structure too, so
+                    // the CRM does not have to parse prose back out.
+                    notes: (j7LastEstimate.notes || []).filter(Boolean),
+                    source: j7LastEstimate.source || 'calculator',
+                    page: j7LastEstimate.page || null,
+                    service: j7LastEstimate.service || null
+                } : null,
+                transcript: j7ChatTranscript(),
+                attachment_count: files.length,
+                attachment_names: files.slice(0, 20).map(f => f.name),
+                source_page: location.pathname,
+                dedupe: j7DedupeKey(get('email'), message)
+            };
+
+            // attachment_* are not columns; they ride along inside the raw
+            // record, which is where "what was actually submitted" belongs.
+            const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+            if (ctrl) setTimeout(() => ctrl.abort(), 8000);
+
+            fetch('/api/intake', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+                keepalive: true,
+                signal: ctrl ? ctrl.signal : undefined
+            }).catch(() => {});
+        } catch (e) {
+            // Never let this be visible. The enquiry is already delivered.
+        }
+    }
+
     // ========== Contact Form AJAX Submission ==========
     const contactForm = document.getElementById('contact-form');
     const formSuccess = document.getElementById('form-success');
     const submitBtn = document.getElementById('submit-btn');
-    
+
     if (contactForm) {
         contactForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -231,6 +359,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         service: (formData.get('service') || 'unspecified'),
                         page_path: location.pathname
                     });
+
+                    // Formspree accepted it, so the enquiry is delivered. Only
+                    // now does the CRM get told, and only on a best-effort
+                    // basis. See j7Beacon above for why the order matters.
+                    j7Beacon(formData);
 
                     // Show success message
                     if (formSuccess) {
@@ -608,6 +741,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // Ignore anything stale enough to be from a previous visit
         if (!data || !data.at || Date.now() - data.at > 30 * 60 * 1000) return;
+
+        // Keep a copy for the enquiry beacon. This function consumes the
+        // sessionStorage entry and folds the figures into the message as prose,
+        // which is right for the email but loses the structure. The CRM wants
+        // the numbers as numbers, so it gets them from here.
+        j7LastEstimate = data;
 
         const serviceSelect = document.getElementById('service');
         const message = document.getElementById('message');
