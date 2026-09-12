@@ -673,7 +673,7 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=a9beca7f"></script>
+    <script src="../js/pricing.js?v=cd76662f"></script>
     <script src="../js/app.js?v=fb0c13c8"></script>
     <script src="../js/chat.js?v=d96e40d8"></script>
     <script>
@@ -696,7 +696,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=a9beca7f so they cannot drift from the
+        // All rates come from js/pricing.js?v=cd76662f so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
@@ -761,7 +761,7 @@
             // material faster, and every filament swap stops the printer.
             const nozzleMm = (document.getElementById('nozzle-size') || {}).value || '0.4';
 
-            // One function prices every print, in js/pricing.js?v=a9beca7f, so this page,
+            // One function prices every print, in js/pricing.js?v=cd76662f, so this page,
             // the pricing checks and the assistant all work the same sums.
             const est = j7PrintEstimate({
                 grams: weight,

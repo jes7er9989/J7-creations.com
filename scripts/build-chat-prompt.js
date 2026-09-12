@@ -445,7 +445,8 @@ the number. Ask one question at a time, never a form's worth at once.
 
 What the business is built on: no markup on parts, no subscriptions, no
 lock-in, everything documented and owned by the customer. He does not take
-checks - cash, Venmo or Cash App.
+checks or invoice - cash, Venmo or Cash App. Jobs over $${J7_PRICING.deposit.over} take a
+${Math.round(J7_PRICING.deposit.share * 100)}% deposit up front, which covers materials.
 
 ## Site map, for pointing people at things
 

@@ -401,7 +401,16 @@ Do not silently reverse these.
   that is how customers compare installers.
 - **3D printing is cheaper on large jobs.** A 1kg print went from $91 to $52.
   The old flat per-gram rate scaled linearly forever.
-- **No checks.** Cash, Venmo, Cash App and Net-7 invoicing only.
+- **No checks, no invoicing.** Cash, Venmo or Cash App. Jobs over $300 take a
+  50% deposit up front, which covers materials (`J7_PRICING.deposit`,
+  12 Sep 2026). The homepage used to offer Net-7 invoicing; that is gone.
+- **Travel is $25 / $45 / $65** for 25-50 / 50-75 / 75-100 miles, free within
+  25 (12 Sep 2026). The old $15 / $30 / $50 did not cover the vehicle. Town
+  fees in `J7_SERVICE_AREA` are derived from miles, so only the bands change.
+- **Laser engraving ($0.08/sq in + $25) and finishing ($25-75 a part) are
+  deliberate.** The Sep 2026 market check put laser far under market and
+  finishing above it; Thomas kept both. Finishing is priced so it is worth
+  doing, not to win the work.
 - **No testimonials or invented credibility.** There are none yet, so the site
   surfaces the real commitments instead: no markup on equipment with receipts
   shown, free first hour on site, 30-day callback on installs.

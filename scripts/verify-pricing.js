@@ -7,6 +7,9 @@
 const { J7_PRICING, j7TieredCost, j7UnitCost, j7PrintEstimate, j7SwapTimeFactor,
         j7OnsiteHours, J7_ONSITE_TASKS, J7_REMOTE_SCOPES } = require('../js/pricing.js');
 
+const fs = require('fs');
+const path = require('path');
+
 let failures = 0;
 function check(label, condition, detail) {
     if (condition) {
@@ -130,6 +133,36 @@ function onsite(rate, hours, travelFee = 0, rush = 1.0) {
 sweep('on-site labour by hours', h => onsite(L.simple, h), 0.5, 40, 0.5);
 check('travel fee is additive, not multiplied by rush',
     onsite(L.simple, 4, 30, 1.0) === L.simple * 4 + 30);
+
+// ---------- Travel and payment ----------
+console.log('\nTRAVEL AND PAYMENT');
+{
+  const T = J7_PRICING.travel;
+  const { J7_SERVICE_AREA, j7TravelFee } = require('../js/pricing.js');
+  check('travel is free inside the first band', T[0].fee === 0);
+  check('travel bands rise with distance',
+      T.every((b, i) => i === 0 || (b.maxMiles > T[i - 1].maxMiles && b.fee > T[i - 1].fee)));
+  check('every town\'s fee comes from its miles',
+      J7_SERVICE_AREA.every(t => t.fee === j7TravelFee(t.miles)));
+  check('towns past the last band are quoted individually',
+      J7_SERVICE_AREA.filter(t => t.miles > T[T.length - 1].maxMiles).every(t => t.fee === -1));
+  // The travel dropdowns are literal HTML. Hold them to pricing.js.
+  const root = path.join(__dirname, '..');
+  const fees = T.map(b => String(b.fee)).sort().join(',');
+  [['pages/services-it.html', 'it-travel'], ['pages/services-installation.html', 'install-distance']].forEach(([file, id]) => {
+    const html = fs.readFileSync(path.join(root, file), 'utf8');
+    const sel = (html.match(new RegExp('<select id="' + id + '"[\\s\\S]*?</select>')) || [''])[0];
+    const vals = [...sel.matchAll(/value="(\d+)"/g)].map(m => m[1]).sort().join(',');
+    check(file + ' travel dropdown matches pricing.js', vals === fees, 'page ' + vals + ' vs ' + fees);
+  });
+  const D = J7_PRICING.deposit;
+  check('deposit share is a real fraction', D.share > 0 && D.share < 1);
+  const faq = fs.readFileSync(path.join(root, 'pages/faq.html'), 'utf8');
+  check('FAQ states the deposit threshold from pricing.js (both copies)',
+      faq.split('Jobs over $' + D.over + ' take a ' + Math.round(D.share * 100) + '% deposit').length === 3);
+  const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  check('homepage no longer offers invoicing', !/invoice|Net 7/i.test(home));
+}
 
 // ---------- Market sanity ----------
 console.log('\nMARKET POSITION (should sit under national rates)');

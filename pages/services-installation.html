@@ -222,12 +222,12 @@
                 <div class="capability-column">
                     <h3>Up to 50 miles</h3>
                     <p>Jackson &middot; McKenzie &middot; Alamo &middot; Gleason &middot; Sharon &middot; Bells &middot; Kenton &middot; Dresden &middot; Maury City &middot; Lexington &middot; Paris &middot; Martin &middot; Dyersburg &middot; Newbern &middot; Henderson &middot; Obion &middot; Halls &middot; Union City &middot; Brownsville &middot; Troy &middot; Camden</p>
-                    <p style="margin-top: 1rem; color: var(--color-text-gray);"><strong>$15 travel fee</strong></p>
+                    <p style="margin-top: 1rem; color: var(--color-text-gray);"><strong>$25 travel fee</strong></p>
                 </div>
                 <div class="capability-column">
                     <h3>Up to 75 miles</h3>
                     <p>Parsons &middot; Fulton, KY &middot; Ripley &middot; Bolivar &middot; Tiptonville &middot; Selmer &middot; Murray, KY &middot; Covington &middot; Waverly &middot; Savannah</p>
-                    <p style="margin-top: 1rem; color: var(--color-text-gray);"><strong>$30 travel fee</strong></p>
+                    <p style="margin-top: 1rem; color: var(--color-text-gray);"><strong>$45 travel fee</strong></p>
                 </div>
             </div>
             <!-- SERVICE-AREA:END -->
@@ -317,9 +317,9 @@
                         <label class="field-label" for="install-distance">Distance from Atwood, TN</label>
                         <select id="install-distance" class="form-control">
                             <option value="0">0-25 miles (No fee)</option>
-                            <option value="15">25-50 miles (+$15)</option>
-                            <option value="30">50-75 miles (+$30)</option>
-                            <option value="50">75-100 miles (+$50)</option>
+                            <option value="25">25-50 miles (+$25)</option>
+                            <option value="45">50-75 miles (+$45)</option>
+                            <option value="65">75-100 miles (+$65)</option>
                             <option value="custom">Beyond 100 miles (Quote required)</option>
                         </select>
                     </div>
@@ -413,9 +413,9 @@
                     <p style="margin-bottom: 1rem;"><strong>Based on distance from Milan/Atwood, TN</strong></p>
                     <ul style="color: var(--color-text-gray); margin-left: 1.5rem;">
                         <li>0-25 miles (local): <strong>No fee</strong></li>
-                        <li>25-50 miles (regional): <strong>$15</strong></li>
-                        <li>50-75 miles (extended): <strong>$30</strong></li>
-                        <li>75-100 miles (far): <strong>$50</strong></li>
+                        <li>25-50 miles (regional): <strong data-price="travel.1.fee" data-price-format="dollars">$25</strong></li>
+                        <li>50-75 miles (extended): <strong data-price="travel.2.fee" data-price-format="dollars">$45</strong></li>
+                        <li>75-100 miles (far): <strong data-price="travel.3.fee" data-price-format="dollars">$65</strong></li>
                     </ul>
                     <p class="note"><em>Beyond 100 miles: Quote required (may require travel arrangements)</em></p>
                 </div>
@@ -544,11 +544,11 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=a9beca7f"></script>
+    <script src="../js/pricing.js?v=cd76662f"></script>
     <script src="../js/app.js?v=fb0c13c8"></script>
     <script src="../js/chat.js?v=d96e40d8"></script>
     <script>
-        // Rates come from js/pricing.js?v=a9beca7f — see that file to change any price.
+        // Rates come from js/pricing.js?v=cd76662f — see that file to change any price.
         // Per-unit types quote by the piece, which is how customers compare
         // installers. Hourly types are open-ended work where a unit count
         // would be meaningless.

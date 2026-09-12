@@ -6,9 +6,11 @@
 // overwrites them from here on load. That way a rate can never drift between
 // the calculator, the page copy, and a neighbouring page.
 //
-// Rates benchmarked Aug 2026 against national market data, then set to roughly
-// 55-65% of it for West Tennessee. Remote support is held at $25/hr
-// deliberately as the accessible entry point.
+// Rates benchmarked Aug 2026 and re-checked Sep 2026 against national market
+// data. Installs, cable runs, network work, printing and builds sit at or
+// below the national low end for West Tennessee; on-site hourly and CAD sit at
+// market; laser is cheap and finishing is priced high, both on purpose.
+// Remote support is held at $25/hr deliberately as the accessible entry point.
 
 const J7_PRICING = {
 
@@ -151,13 +153,22 @@ const J7_PRICING = {
     postProcessRange: [25, 75],
 
     // ---------- Modifiers ----------
+    // Travel by road miles from Milan. Raised 12 Sep 2026 (Thomas's call): the
+    // old $15 / $30 / $50 did not cover the vehicle - a 100-mile round trip is
+    // about $70 at the IRS rate of 70 cents a mile, before the drive time.
+    // These are roughly two-thirds of the IRS mileage beyond the free 25 miles.
+    // Every town's fee in J7_SERVICE_AREA is worked out from these.
     travel: [
         { maxMiles: 25, fee: 0 },
-        { maxMiles: 50, fee: 15 },
-        { maxMiles: 75, fee: 30 },
-        { maxMiles: 100, fee: 50 }
+        { maxMiles: 50, fee: 25 },
+        { maxMiles: 75, fee: 45 },
+        { maxMiles: 100, fee: 65 }
     ],
-    rush: { standard: 1.0, rush48: 1.5, urgent24: 2.0 }
+    rush: { standard: 1.0, rush48: 1.5, urgent24: 2.0 },
+
+    // Payment: cash, Venmo or Cash App - no checks, no invoicing. Jobs over
+    // $300 take a 50% deposit up front, which covers materials. (12 Sep 2026)
+    deposit: { over: 300, share: 0.5 }
 };
 
 
@@ -325,57 +336,74 @@ function j7SendEstimate(serviceValue, headline, lines, source, notes, details) {
 // rest are great-circle scaled by 1.30, which is above the worst ratio those
 // four showed (1.27). The bias is deliberate: over-stating a travel fee and
 // then charging less is a good surprise, while quoting "free" and then adding
-// $15 is exactly the hidden fee this business advertises against.
+// a fee is exactly the hidden charge this business advertises against.
 //
-// fee: -1 means beyond the radius — quote individually.
+// Each town's fee is worked out from its miles and the travel bands in
+// J7_PRICING, so changing a band changes every town. -1 means beyond the
+// radius: quote individually.
 const J7_SERVICE_AREA = [
-        { town: "Milan",         miles:   0, fee: 0 },
-        { town: "Atwood",        miles:   8, fee: 0 },
-        { town: "Medina",        miles:  10, fee: 0 },
-        { town: "Bradford",      miles:  14, fee: 0 },
-        { town: "Humboldt",      miles:  14, fee: 0 },
-        { town: "Trenton",       miles:  14, fee: 0 },
-        { town: "Greenfield",    miles:  21, fee: 0 },
-        { town: "Dyer",          miles:  22, fee: 0 },
-        { town: "Huntingdon",    miles:  25, fee: 0 },
-        { town: "Rutherford",    miles:  25, fee: 0 },
-        { town: "Jackson",       miles:  27, fee: 15 },
-        { town: "McKenzie",      miles:  27, fee: 15 },
-        { town: "Alamo",         miles:  29, fee: 15 },
-        { town: "Gleason",       miles:  29, fee: 15 },
-        { town: "Sharon",        miles:  29, fee: 15 },
-        { town: "Bells",         miles:  30, fee: 15 },
-        { town: "Kenton",        miles:  31, fee: 15 },
-        { town: "Dresden",       miles:  33, fee: 15 },
-        { town: "Maury City",    miles:  35, fee: 15 },
-        { town: "Lexington",     miles:  36, fee: 15 },
-        { town: "Paris",         miles:  38, fee: 15 },
-        { town: "Martin",        miles:  39, fee: 15 },
-        { town: "Dyersburg",     miles:  40, fee: 15 },
-        { town: "Newbern",       miles:  41, fee: 15 },
-        { town: "Henderson",     miles:  44, fee: 15 },
-        { town: "Obion",         miles:  44, fee: 15 },
-        { town: "Halls",         miles:  46, fee: 15 },
-        { town: "Union City",    miles:  46, fee: 15 },
-        { town: "Brownsville",   miles:  47, fee: 15 },
-        { town: "Troy",          miles:  48, fee: 15 },
-        { town: "Camden",        miles:  50, fee: 15 },
-        { town: "Parsons",       miles:  52, fee: 30 },
-        { town: "Fulton, KY",    miles:  53, fee: 30 },
-        { town: "Ripley",        miles:  58, fee: 30 },
-        { town: "Bolivar",       miles:  62, fee: 30 },
-        { town: "Tiptonville",   miles:  67, fee: 30 },
-        { town: "Selmer",        miles:  68, fee: 30 },
-        { town: "Murray, KY",    miles:  70, fee: 30 },
-        { town: "Covington",     miles:  72, fee: 30 },
-        { town: "Waverly",       miles:  72, fee: 30 },
-        { town: "Savannah",      miles:  73, fee: 30 },
-        { town: "Dickson",       miles: 101, fee: -1 },
-        { town: "Paducah, KY",   miles: 105, fee: -1 },
-        { town: "Clarksville",   miles: 115, fee: -1 },
-        { town: "Memphis",       miles: 117, fee: -1 },
-        { town: "Nashville",     miles: 145, fee: -1 }
+        { town: "Milan",         miles:   0 },
+        { town: "Atwood",        miles:   8 },
+        { town: "Medina",        miles:  10 },
+        { town: "Bradford",      miles:  14 },
+        { town: "Humboldt",      miles:  14 },
+        { town: "Trenton",       miles:  14 },
+        { town: "Greenfield",    miles:  21 },
+        { town: "Dyer",          miles:  22 },
+        { town: "Huntingdon",    miles:  25 },
+        { town: "Rutherford",    miles:  25 },
+        { town: "Jackson",       miles:  27 },
+        { town: "McKenzie",      miles:  27 },
+        { town: "Alamo",         miles:  29 },
+        { town: "Gleason",       miles:  29 },
+        { town: "Sharon",        miles:  29 },
+        { town: "Bells",         miles:  30 },
+        { town: "Kenton",        miles:  31 },
+        { town: "Dresden",       miles:  33 },
+        { town: "Maury City",    miles:  35 },
+        { town: "Lexington",     miles:  36 },
+        { town: "Paris",         miles:  38 },
+        { town: "Martin",        miles:  39 },
+        { town: "Dyersburg",     miles:  40 },
+        { town: "Newbern",       miles:  41 },
+        { town: "Henderson",     miles:  44 },
+        { town: "Obion",         miles:  44 },
+        { town: "Halls",         miles:  46 },
+        { town: "Union City",    miles:  46 },
+        { town: "Brownsville",   miles:  47 },
+        { town: "Troy",          miles:  48 },
+        { town: "Camden",        miles:  50 },
+        { town: "Parsons",       miles:  52 },
+        { town: "Fulton, KY",    miles:  53 },
+        { town: "Ripley",        miles:  58 },
+        { town: "Bolivar",       miles:  62 },
+        { town: "Tiptonville",   miles:  67 },
+        { town: "Selmer",        miles:  68 },
+        { town: "Murray, KY",    miles:  70 },
+        { town: "Covington",     miles:  72 },
+        { town: "Waverly",       miles:  72 },
+        { town: "Savannah",      miles:  73 },
+        { town: "Dickson",       miles: 101 },
+        { town: "Paducah, KY",   miles: 105 },
+        { town: "Clarksville",   miles: 115 },
+        { town: "Memphis",       miles: 117 },
+        { town: "Nashville",     miles: 145 }
 ];
+J7_SERVICE_AREA.forEach(t => { t.fee = j7TravelFee(t.miles); });
+
+/** Travel fee for a road distance from Milan, or -1 beyond the last band. */
+function j7TravelFee(miles) {
+    const band = J7_PRICING.travel.find(b => miles <= b.maxMiles);
+    return band ? band.fee : -1;
+}
+
+/** "0-25mi free, 25-50mi $25, ..." for copy that lists the bands. */
+function j7TravelSummary() {
+    return J7_PRICING.travel.map((b, i) => {
+        const from = i === 0 ? 0 : J7_PRICING.travel[i - 1].maxMiles;
+        return from + '-' + b.maxMiles + 'mi ' + (b.fee ? '$' + b.fee : 'free');
+    }).join(', ');
+}
 
 function j7LookupTown(query) {
     const q = String(query || '').toLowerCase().replace(/[^a-z ]/g, '').trim();
@@ -849,7 +877,7 @@ if (typeof document !== 'undefined') {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate,
                        j7PrintEstimate, j7PurgeWaste, j7SwapTimeFactor, j7FilamentCount,
-                       J7_SERVICE_AREA, j7LookupTown,
+                       J7_SERVICE_AREA, j7LookupTown, j7TravelFee, j7TravelSummary,
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,
