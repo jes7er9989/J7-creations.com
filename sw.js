@@ -12,7 +12,7 @@ const urlsToCache = [
     '/pages/services-installation',
     '/css/styles.css?v=c91ac0b8',
     '/css/mobile-fix.css?v=de960d1b',
-    '/js/app.js?v=d762deb3',
+    '/js/app.js?v=4cf7f72d',
     '/js/chat.js?v=d96e40d8',
     '/js/pricing.js?v=1636fc1c',
     '/manifest.json',
