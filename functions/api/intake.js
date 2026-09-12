@@ -22,6 +22,8 @@
 //   * It returns nothing about the database. {ok:true} or an error, never a
 //     row, never an id that means anything, never a count.
 
+import { notifyDevices } from './_push.js';
+
 const CHANNELS = new Set(['contact_form', 'chatbot', 'calculator']);
 
 // Body cap. A contact form submission is a couple of KB; a full chat
@@ -218,64 +220,20 @@ async function handle({ request, env, waitUntil }) {
     return json({ ok: false, error: 'Could not record' }, 500);
   }
 
-  // Tell Discord an enquiry landed, without waiting for it and without letting
-  // a webhook failure affect the answer. waitUntil keeps the worker alive past
-  // the response so the visitor is never held up by a third party.
+  // Buzz Thomas's phone, without waiting for it and without letting a failed
+  // notification affect the answer. waitUntil keeps the worker alive past the
+  // response so the visitor is never held up.
   //
-  // This ping carries only what the row already knows: who, what service,
-  // budget, timescale, what they wrote. No summary and no suggested reply,
-  // because those need Claude and the API key deliberately does not live on a
-  // public endpoint — a stranger with a loop could spend real money there. The
-  // CRM adds them afterwards, behind Cloudflare Access.
-  const ping = notifyDiscord(env, id, raw);
+  // The push carries NOTHING about them — not a name, not a word of the
+  // message. It is a bare wake-up saying an enquiry arrived; everything else is
+  // behind the Access login in the CRM. That is what lets the VAPID key live on
+  // this public project at all: someone who steals it can buzz a phone and
+  // nothing more. It is also why this page's privacy notice has nothing to
+  // disclose about a notification service.
+  const ping = notifyDevices(env, env.DB).catch(() => {});
   if (typeof waitUntil === 'function') waitUntil(ping); else await ping;
 
   return json({ ok: true });
-}
-
-// A webhook URL is write-only to one channel, so it is a far smaller thing to
-// put on a public endpoint than an API key. Still a secret: bind it, never
-// inline it. Never throws — a missed notification is not worth a lost enquiry.
-async function notifyDiscord(env, id, raw) {
-  if (!env.DISCORD_WEBHOOK) return;
-
-  const who = raw.name || raw.email || raw.phone || 'No name given';
-  const facts = [
-    raw.email ? `Email: ${raw.email}` : null,
-    raw.phone ? `Phone: ${raw.phone}` : null,
-    raw.location ? `Town: ${raw.location}` : null,
-    raw.service ? `Service: ${String(raw.service).replace(/-/g, ' ')}` : null,
-    raw.budget ? `Budget: $${raw.budget.toLocaleString('en-US')}`
-      : (raw.budget_band ? `Budget band: ${raw.budget_band}` : null),
-    raw.timeline ? `Timescale: ${raw.timeline}` : null,
-    raw.estimate?.headline ? `Site quoted: ${raw.estimate.headline}` : null,
-    raw.attachment_count ? `${raw.attachment_count} file(s), in the email` : null,
-    Array.isArray(raw.transcript) ? `Chat: ${raw.transcript.length} turns` : null,
-  ].filter(Boolean).join('\n');
-
-  const base = env.CRM_BASE_URL || 'https://crm.j7creations.com';
-  const body = {
-    username: 'J7 enquiries',
-    embeds: [{
-      title: `New enquiry — ${who.slice(0, 200)}`,
-      description: raw.message ? raw.message.slice(0, 1_500) : 'No message. Details below.',
-      color: 0x5ee891,
-      url: `${base}/#/inbox/${id}`,
-      fields: facts ? [{ name: 'Details', value: facts.slice(0, 1_000) }] : [],
-      footer: { text: 'A summary and a draft reply follow once the CRM reads it' },
-    }],
-  };
-
-  try {
-    await fetch(env.DISCORD_WEBHOOK, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(8_000),
-    });
-  } catch (err) {
-    console.error('J7 intake: Discord ping failed', err.message);
-  }
 }
 
 async function throttleLimit(env) {
