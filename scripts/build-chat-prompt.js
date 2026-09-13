@@ -116,6 +116,11 @@ function ratesSection() {
         return `${span} filaments +${Math.round(b.add * 100)}%`;
     }).filter(Boolean).join(', ');
 
+    const DB = P.delivery.bands;
+    const deliveryText = DB.map(b => `up to ${b.maxMiles} miles ${money(b.fee)}`).join(', ');
+    const GA = P.shipping.groundAdvantage;
+    const lightShip = [GA.near, GA.far].map(p => Math.ceil(p * (1 + P.shipping.buffer)));
+
     const nozzleTime = Object.entries(P.print.nozzleTime)
         .map(([n, f]) => `${n} mm ${f}x`)
         .join(', ');
@@ -164,6 +169,14 @@ REMOTE SCOPES
   Part shapes used for weight: ${J7_PART_SHAPES.map(s => s.label).join('; ')}.
   Rush: standard as quoted, +${Math.round((P.rush.rush48 - 1) * 100)}% for 48 hours,
   +${Math.round((P.rush.urgent24 - 1) * 100)}% for 24.
+  Getting it to them: there is NO pickup. Parts ship anywhere in the US, or are
+  hand-delivered near Milan (${deliveryText}). Further than ${DB[DB.length - 1].maxMiles} miles,
+  delivery is arranged with Thomas directly. There is no free shipping.
+  Shipping is an estimate from the finished part's size and weight, where it is
+  going and how fast. The estimator on the 3D printing page works it out; do not
+  calculate it yourself. A light part, under a pound packed, usually ships for
+  ${money(lightShip[0])}-${money(lightShip[1])} by USPS Ground Advantage; bigger or heavier parts, faster
+  shipping, delicate packing or a signature cost more.
 
 CAD AND FINISHING
   CAD ${money(P.cadPerHour)}/hr, typically ${money(P.cadFlatRange[0])}-${money(P.cadFlatRange[1])} flat.
@@ -308,7 +321,8 @@ they have already tried.
 3D printing: what the part is and what it does, roughly how big, whether it
 has to take heat, weight or weather, how many colors or materials, how many
 copies, and whether they have a photo
-or file (they can attach it to the contact form).
+or file (they can attach it to the contact form), and where it is going -
+shipped, or hand-delivered if they are near Milan.
 Smart home: which devices, what they control them with now, and what they
 want to happen.
 
@@ -378,11 +392,25 @@ Work it the way the installation calculator does:
   point or smart device.
 - Add the travel fee once per job, from the service-area list. Rush and urgent
   multiply labor only, never travel.
+- Only say there is no travel fee when you know the town and it is on the
+  no-fee list, or the work is remote. If you do not know where the job is, say
+  the travel fee depends on distance - free within ${J7_PRICING.travel[0].maxMiles} miles of Milan, then the
+  bands in the rates - and ask the town. Never say or imply there are no travel
+  fees in general.
 - Add the pieces up and check the arithmetic before you say the total.
 
 Equipment is never part of the figure. Never estimate what cameras, access
 points, computer parts or any other equipment will cost, not even roughly -
 say it is separate and at cost, and leave it out of the total.
+
+## Shipping and delivery for printed parts
+
+There is no pickup. Every print conversation should cover how the part gets to
+them: shipped (charged separately, estimated from its size, weight,
+destination and speed) or hand-delivered for a fee within ${J7_PRICING.delivery.bands[J7_PRICING.delivery.bands.length - 1].maxMiles} miles of Milan. Ask
+which, and where it is going, before offering to send it over. Never say
+shipping is free or included, and never quote an exact shipping price - point
+them at the estimator on the 3D printing page for that.
 
 ## Plain text
 
@@ -397,13 +425,15 @@ from the list above, offer to send it to Thomas.
 If they say yes, end that message with a fenced block exactly like this:
 
 \`\`\`j7-estimate
-{"service":"installation","headline":"$760","lines":["4 cameras at $65 each - $260","Standard cable runs, 4 x $125 - $500","No travel fee to Trenton","Equipment at cost, separate"],"notes":["Wants 4 cameras covering a shop yard in Trenton","Brick building, one camera would go above the roll-up door","No network cable out there yet","Hoping to have it done before the end of the month"],"town":"Trenton"}
+{"service":"installation","headline":"$785","lines":["4 cameras at $65 each - $260","Standard cable runs, 4 x $125 - $500","Travel to Jackson - $25","Equipment at cost, separate"],"notes":["Wants 4 cameras covering a shop yard in Jackson","Brick building, one camera would go above the roll-up door","No network cable out there yet","Hoping to have it done before the end of the month"],"town":"Jackson"}
 \`\`\`
 
 Rules for the block: "service" is one of remote-support, 3d-printing,
 network-infrastructure, installation, custom-builds, other. "headline" is the
 figure as you said it. "lines" are the breakdown, each line readable on its
-own.
+own. An on-site job always has a travel line (the fee, or "Travel depends on
+the town" if you do not know it). A print always has a shipping or delivery
+line ("Shipping estimated separately", or the delivery fee).
 
 Three optional fields fill in the contact form's own boxes. Include each one
 whenever the customer told you:

@@ -455,12 +455,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function recalc() {
-            if (mode === 'manual') { result.hidden = true; return; }
+            // The size the weight came from, for the shipping estimate. A typed
+            // weight has no size, so shipping falls back to what they pick.
+            if (mode === 'manual') { delete weightField.dataset.j7Dims; result.hidden = true; return; }
             const infill = parseFloat(infillSel.value);
             const nozzle = nozzleSel ? parseFloat(nozzleSel.value) : 0.4;
 
             if (mode === 'file') {
                 if (!mesh) { result.hidden = true; return; }
+                weightField.dataset.j7Dims = mesh.dimsMm.map(x => (x / 10).toFixed(1)).join(',');
                 apply(j7GramsFromMesh(mesh.volumeCm3, mesh.areaCm2, infill, density(), nozzle),
                       'Measured from your file.');
                 return;
@@ -474,6 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 dims = J7_SIZE_REFS[+sizeSel.value].dims;
             }
+            weightField.dataset.j7Dims = dims.map(x => x.toFixed(1)).join(',');
             apply(j7GramsFromDescription(dims[0], dims[1], dims[2],
                                          shapeSel.value, infill, density(), nozzle),
                   'A rough estimate from the size and shape.');

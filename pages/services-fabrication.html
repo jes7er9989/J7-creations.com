@@ -420,6 +420,41 @@
                         </select>
                     </div>
                 </div>
+                <div style="margin: 0 0 1.5rem;">
+                    <h4 class="panel-title" style="margin-bottom: 0.75rem;">Getting it to you</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                        <div>
+                            <label class="field-label" for="ship-method">Shipping or delivery</label>
+                            <select id="ship-method" class="form-control">
+                                <option value="ship" selected>Ship it to me</option>
+                                <option value="deliver">Hand delivery near Milan</option>
+                            </select>
+                            <p class="field-hint">No pickup. Shipping is estimated from the size and weight of the finished part.</p>
+                        </div>
+                        <div data-ship="ship">
+                            <label class="field-label" for="ship-region">Shipping to</label>
+                            <select id="ship-region" class="form-control"></select>
+                        </div>
+                        <div data-ship="ship">
+                            <label class="field-label" for="ship-speed">Shipping speed</label>
+                            <select id="ship-speed" class="form-control"></select>
+                        </div>
+                        <div data-ship="ship">
+                            <label class="field-label" for="ship-size">Size of the finished part</label>
+                            <select id="ship-size" class="form-control"></select>
+                            <p class="field-hint" id="ship-size-hint"></p>
+                        </div>
+                        <div data-ship="ship">
+                            <span class="field-label">Extras</span>
+                            <label style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem;"><input type="checkbox" id="ship-delicate"> Delicate &mdash; extra padding</label>
+                            <label style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.35rem;"><input type="checkbox" id="ship-signature"> Signature required on delivery</label>
+                        </div>
+                        <div data-ship="deliver" hidden>
+                            <label class="field-label" for="deliver-distance">How far from Milan?</label>
+                            <select id="deliver-distance" class="form-control"></select>
+                        </div>
+                    </div>
+                </div>
                 <button onclick="calculatePrice()" class="btn btn-primary" style="margin-bottom: 1.5rem;">Calculate Estimate</button>
                 
                 <div id="price-result" class="result-panel" style="display: none;">
@@ -432,6 +467,10 @@
                         <div>
                             <p class="text-fine">Print Service Fee:</p>
                             <p id="service-fee" style="font-size: 1.25rem; font-weight: 700;">$0.00</p>
+                        </div>
+                        <div>
+                            <p class="text-fine">Shipping / delivery:</p>
+                            <p id="ship-cost" style="font-size: 1.25rem; font-weight: 700;">$0.00</p>
                         </div>
                         <div>
                             <p style="color: var(--color-accent); font-size: 0.9rem;">Total Estimate:</p>
@@ -450,7 +489,7 @@
                 <h3 class="panel-title">How 3D Printing Pricing Works</h3>
                 <p style="font-size: 1.05rem; margin-bottom: 1rem;"><strong>Two-part pricing: Filament + Print Service Fee</strong></p>
                 <ul style="color: var(--color-text-gray); margin-left: 1.5rem; margin-bottom: 1rem;">
-                    <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers material, shipping, and storage. A small allowance is added for supports and brim — the plastic that gets used but isn't part of your finished piece.</li>
+                    <li><strong>Filament cost:</strong> Priced based on Bambu Lab retail pricing. Covers the material and what it costs to get it here. A small allowance is added for supports and brim — the plastic that gets used but isn't part of your finished piece.</li>
                     <li><strong>Multicolor and mixed materials:</strong> Up to <span data-price="print.maxFilaments" data-price-format="plain">8</span> filaments in one print. Every swap purges plastic and stops the printer, so 2 filaments add <span data-price="print.purge.1.add" data-price-format="percent">+20%</span> filament, 3&ndash;4 add <span data-price="print.purge.2.add" data-price-format="percent">+35%</span> and 5&ndash;8 add <span data-price="print.purge.3.add" data-price-format="percent">+50%</span>, and machine time rises <span data-price="print.swapTimePerExtra" data-price-format="percent">+15%</span> for each filament after the first, up to <span data-price="print.swapTimeCap" data-price-format="percent">+60%</span>. A second material is charged at its own price for the share of the part it makes up.</li>
                     <li><strong>Print service fee:</strong> A <span data-price="print.setupFee">$5.00</span> setup fee once per order, plus a per-gram rate covering machine time, power, wear, slicing, and basic post-processing (support removal, cleaning).</li>
                     <li><strong>Volume pricing:</strong> The per-gram rate steps down as the job gets bigger. A 1kg print costs about half what it would on a flat rate.</li>
@@ -624,12 +663,12 @@
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
                         <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: var(--color-accent);">3</span>
                         <h3>I Print</h3>
-                        <p>Once approved, I print your part(s) in the specified material. I'll send photos before shipping/pickup.</p>
+                        <p>Once approved, I print your part(s) in the specified material. I'll send photos before it ships or I deliver it.</p>
                     </li>
                     <li style="margin-bottom: 2rem; padding-left: 4rem; position: relative;">
                         <span style="position: absolute; left: 0; top: 0; font-size: 2rem; font-weight: 700; color: var(--color-accent);">4</span>
                         <h3>You Install</h3>
-                        <p>Pick up locally or I ship. If it doesn't fit or work, I'll make it right — that's my guarantee.</p>
+                        <p>I ship it, or hand-deliver within 60 miles of Milan &mdash; there is no pickup. If it doesn't fit or work, I'll make it right — that's my guarantee.</p>
                     </li>
                 </ol>
             </div>
@@ -673,8 +712,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=cd76662f"></script>
-    <script src="../js/app.js?v=fb0c13c8"></script>
+    <script src="../js/pricing.js?v=1636fc1c"></script>
+    <script src="../js/app.js?v=d762deb3"></script>
     <script src="../js/chat.js?v=d96e40d8"></script>
     <script>
         function convertWeight() {
@@ -696,7 +735,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=cd76662f so they cannot drift from the
+        // All rates come from js/pricing.js?v=1636fc1c so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
@@ -724,6 +763,65 @@
         })();
 
         const materialName = sel => sel.selectedOptions[0].text.split(' (')[0];
+
+        // Shipping and delivery choices, built from pricing.js so the regions,
+        // speeds and delivery bands match what the estimate charges.
+        (function setUpShipping() {
+            const S = J7_PRICING.shipping;
+            const add = (sel, value, text, on) => sel.add(new Option(text, value, on, on));
+            const region = document.getElementById('ship-region');
+            S.regions.forEach((r, i) => add(region, r.id, r.label, i === 0));
+            const speed = document.getElementById('ship-speed');
+            S.speeds.forEach((s, i) => add(speed, s.id, s.label, i === 0));
+            const size = document.getElementById('ship-size');
+            add(size, 'auto', 'Same as the part described above', true);
+            J7_SIZE_REFS.forEach((r, i) => add(size, String(i), r.label, false));
+
+            const bands = J7_PRICING.delivery.bands;
+            const dist = document.getElementById('deliver-distance');
+            bands.forEach((b, i) => {
+                const from = i === 0 ? -1 : bands[i - 1].maxMiles;
+                const towns = J7_SERVICE_AREA.filter(t => t.miles > from && t.miles <= b.maxMiles)
+                    .slice(0, 3).map(t => t.town);
+                add(dist, String(b.maxMiles), 'Up to ' + b.maxMiles + ' miles ($' + b.fee + ')' +
+                    (towns.length ? ' - e.g. ' + towns.join(', ') : ''), i === 0);
+            });
+            add(dist, 'far', 'Further than ' + bands[bands.length - 1].maxMiles + ' miles - let\u2019s arrange it', false);
+
+            const method = document.getElementById('ship-method');
+            const sync = () => document.querySelectorAll('[data-ship]').forEach(el => {
+                el.hidden = el.dataset.ship !== method.value;
+            });
+            method.addEventListener('change', sync);
+            sync();
+        })();
+
+        let lastShipping = null;
+
+        function shippingForOrder(gramsPerPart, quantity) {
+            if (document.getElementById('ship-method').value === 'deliver') {
+                const d = document.getElementById('deliver-distance').value;
+                return j7DeliveryEstimate(d === 'far' ? null : parseFloat(d));
+            }
+            const sizeSel = document.getElementById('ship-size');
+            const measured = document.getElementById('part-weight').dataset.j7Dims;
+            let dims = null;
+            if (sizeSel.value !== 'auto') dims = J7_SIZE_REFS[+sizeSel.value].dims;
+            else if (measured) dims = measured.split(',').map(Number);
+            document.getElementById('ship-size-hint').textContent = sizeSel.value === 'auto'
+                ? (measured ? 'Using ' + dims.map(x => Math.round(x)).join(' x ') + ' cm from above.'
+                            : 'No size above, so shipping is estimated from the weight alone.')
+                : '';
+            return j7ShippingEstimate({
+                dimsCm: dims,
+                gramsPerPart: gramsPerPart,
+                quantity: quantity,
+                region: document.getElementById('ship-region').value,
+                speed: document.getElementById('ship-speed').value,
+                delicate: document.getElementById('ship-delicate').checked,
+                signature: document.getElementById('ship-signature').checked
+            });
+        }
 
         function calculatePrice() {
             let weight = parseFloat(document.getElementById('part-weight').value);
@@ -761,7 +859,7 @@
             // material faster, and every filament swap stops the printer.
             const nozzleMm = (document.getElementById('nozzle-size') || {}).value || '0.4';
 
-            // One function prices every print, in js/pricing.js?v=cd76662f, so this page,
+            // One function prices every print, in js/pricing.js?v=1636fc1c, so this page,
             // the pricing checks and the assistant all work the same sums.
             const est = j7PrintEstimate({
                 grams: weight,
@@ -784,7 +882,13 @@
 
             document.getElementById('filament-cost').textContent = '$' + filamentCost.toFixed(2);
             document.getElementById('service-fee').textContent = '$' + serviceFee.toFixed(2);
-            document.getElementById('total-cost').textContent = '$' + total.toFixed(2);
+            // Shipping or delivery goes on after rush: rush speeds up the print,
+            // not the carrier, and the delivery trip is a pass-through like travel.
+            const ship = shippingForOrder(weight, quantity);
+            lastShipping = ship;
+            const shipCost = ship.quote ? 0 : ship.cost;
+            document.getElementById('ship-cost').textContent = ship.quote ? 'Quoted' : '$' + shipCost.toFixed(2);
+            document.getElementById('total-cost').textContent = '$' + (total + shipCost).toFixed(2);
 
             // Plain-language breakdown so the number never looks arbitrary
             const notes = [];
@@ -806,6 +910,7 @@
                 const label = rushMultiplier === 2 ? 'URGENT 24hr (+100%)' : 'RUSH 48hr (+50%)';
                 notes.push(`<strong>${label}</strong> applied to $${subtotal.toFixed(2)}`);
             }
+            notes.push(ship.note + (ship.quote ? '' : ' - added to the total'));
             document.getElementById('price-breakdown').innerHTML = notes.join('<br>');
 
             document.getElementById('price-result').style.display = 'block';
@@ -829,6 +934,9 @@
                     'Quality: ' + document.getElementById('quality-level').selectedOptions[0].text,
                     'Nozzle: ' + document.getElementById('nozzle-size').selectedOptions[0].text,
                     'Turnaround: ' + document.getElementById('rush-level').selectedOptions[0].text,
+                    'Getting it to them: ' + (lastShipping
+                        ? lastShipping.summary + (lastShipping.quote ? ' (quoted separately)' : ' - $' + lastShipping.cost)
+                        : 'not chosen'),
                     'Weight basis: ' + (document.getElementById('part-weight').dataset.j7Basis
                                         || 'typed in by the customer')
                 ]

@@ -5,6 +5,7 @@
 // places, and it is invisible until a customer finds it.
 
 const { J7_PRICING, j7TieredCost, j7UnitCost, j7PrintEstimate, j7SwapTimeFactor,
+        j7ShippingEstimate, j7DeliveryEstimate,
         j7OnsiteHours, J7_ONSITE_TASKS, J7_REMOTE_SCOPES } = require('../js/pricing.js');
 
 const fs = require('fs');
@@ -162,6 +163,57 @@ console.log('\nTRAVEL AND PAYMENT');
       faq.split('Jobs over $' + D.over + ' take a ' + Math.round(D.share * 100) + '% deposit').length === 3);
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   check('homepage no longer offers invoicing', !/invoice|Net 7/i.test(home));
+}
+
+// ---------- Shipping and delivery ----------
+console.log('\nSHIPPING AND DELIVERY');
+{
+  const S = J7_PRICING.shipping;
+  const ship = (o) => j7ShippingEstimate(Object.assign(
+      { gramsPerPart: 200, quantity: 1, region: 'near', speed: 'ground' }, o));
+  sweep('shipping by weight (no size given)', g => ship({ gramsPerPart: g }).cost || 0, 20, 8000, 20);
+  sweep('shipping by part size', c => ship({ dimsCm: [c, c * 0.6, c * 0.4] }).cost || 0, 2, 60);
+  const box = { dimsCm: [30, 20, 15], gramsPerPart: 1500 };
+  check('farther never costs less (near <= mid <= far)',
+      ship({ ...box, region: 'near' }).cost <= ship({ ...box, region: 'mid' }).cost
+      && ship({ ...box, region: 'mid' }).cost <= ship({ ...box, region: 'far' }).cost);
+  check('faster never costs less (ground <= 2-day <= overnight)',
+      ship({ ...box, speed: 'ground' }).cost <= ship({ ...box, speed: 'twoDay' }).cost
+      && ship({ ...box, speed: 'twoDay' }).cost <= ship({ ...box, speed: 'overnight' }).cost);
+  check('delicate packing never costs less', ship({ ...box, delicate: true }).cost >= ship(box).cost);
+  check('a signature adds at least its fee', ship({ ...box, signature: true }).cost - ship(box).cost >= S.signature);
+  const tiny = ship({ dimsCm: [5, 3, 1], gramsPerPart: 15 });
+  check('a light part ships USPS Ground Advantage', tiny.method === 'usps', JSON.stringify(tiny));
+  check('the Ground Advantage estimate includes the buffer',
+      tiny.cost === Math.ceil(S.groundAdvantage.near * (1 + S.buffer)));
+  check('Ground Advantage is never used at a pound or more',
+      ship({ dimsCm: [12, 9, 8], gramsPerPart: 700 }).method !== 'usps');
+  check('Ground Advantage rises with distance',
+      S.groundAdvantage.near <= S.groundAdvantage.mid && S.groundAdvantage.mid <= S.groundAdvantage.far);
+  const plate = ship({ dimsCm: [18, 10, 0.3], gramsPerPart: 500 });
+  check('a flat part over a pound uses the small flat-rate box',
+      plate.method === 'flat' && /Small/.test(plate.carrier), JSON.stringify(plate));
+  check('the small flat-rate estimate includes the buffer',
+      plate.cost === Math.ceil(S.flatRate[0].price * (1 + S.buffer)));
+  check('USPS services are never used for 2-day or overnight',
+      ship({ dimsCm: [5, 3, 1], gramsPerPart: 15, speed: 'twoDay' }).method === 'ground');
+  check('Alaska, Hawaii and abroad are quoted', ship({ region: 'quote' }).quote === true);
+  check('over the billable weight limit is quoted', ship({ gramsPerPart: 40000, dimsCm: [40, 40, 40] }).quote === true);
+  check('oversize is quoted', ship({ dimsCm: [130, 10, 10] }).quote === true);
+  const B = J7_PRICING.delivery.bands;
+  check('delivery bands rise with distance',
+      B.every((b, i) => i === 0 || (b.maxMiles > B[i - 1].maxMiles && b.fee > B[i - 1].fee)));
+  check('delivery inside the first band costs the first fee', j7DeliveryEstimate(5).cost === B[0].fee);
+  check('delivery past the last band is arranged, not priced', j7DeliveryEstimate(B[B.length - 1].maxMiles + 1).quote === true);
+  const root = path.join(__dirname, '..');
+  const faq = fs.readFileSync(path.join(root, 'pages/faq.html'), 'utf8');
+  check('FAQ states the delivery limit from pricing.js (both copies)',
+      faq.split('Within ' + B[B.length - 1].maxMiles + ' miles of Milan I can hand-deliver').length === 3);
+  const fab = fs.readFileSync(path.join(root, 'pages/services-fabrication.html'), 'utf8');
+  check('fabrication page offers no pickup', !/pick ?up locally|shipping\/pickup/i.test(fab));
+  check('fabrication page states the delivery limit from pricing.js', fab.includes('within ' + B[B.length - 1].maxMiles + ' miles of Milan'));
+  const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  check('homepage no longer says shipping is included', !/shipping included/i.test(home));
 }
 
 // ---------- Market sanity ----------

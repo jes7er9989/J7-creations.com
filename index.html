@@ -18,7 +18,7 @@
     <meta name="theme-color" content="#1a1a1a">
     
     <!-- Local Business Schema -->
-    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=fb0c13c8.
+    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=d762deb3.
          Crawlers do not run the JavaScript that fills the visible number, so
          this one is a literal on purpose. -->
     <script type="application/ld+json">
@@ -435,7 +435,7 @@
                     <p style="color: var(--color-text-gray); margin-bottom: 1rem;">Available to clients anywhere in the United States:</p>
                     <ul style="text-align: left; color: var(--color-text-gray); margin-left: 1.5rem; line-height: 1.8;">
                         <li>Remote Tech Support ($25/hr)</li>
-                        <li>3D Printing & CAD Design (shipping included)</li>
+                        <li>3D Printing & CAD Design (shipped anywhere in the US)</li>
                         <li>Network Consulting & Design</li>
                         <li>Laser Etching Services</li>
                     </ul>
@@ -586,8 +586,8 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="js/pricing.js?v=cd76662f"></script>
-    <script src="js/app.js?v=fb0c13c8"></script>
+    <script src="js/pricing.js?v=1636fc1c"></script>
+    <script src="js/app.js?v=d762deb3"></script>
     <script src="js/chat.js?v=d96e40d8"></script>
     
     <!-- Portfolio Carousel Script -->
@@ -672,7 +672,7 @@
             // Hide service info if no selection or other
             if (!service || service === 'other') {
                 serviceInfo.style.display = 'none';
-                // The checklist is real fields now - see j7Intake in js/app.js?v=fb0c13c8.
+                // The checklist is real fields now - see j7Intake in js/app.js?v=d762deb3.
                 messageLabel.textContent = 'Project Details';
                 messageField.placeholder = 'Tell me about your project...';
                 return;
@@ -687,7 +687,7 @@
                 messageField.placeholder = data.placeholder;
                 
                 // Update checklist
-                // The checklist is real fields now - see j7Intake in js/app.js?v=fb0c13c8.
+                // The checklist is real fields now - see j7Intake in js/app.js?v=d762deb3.
             }
         }
     </script>

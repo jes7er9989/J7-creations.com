@@ -168,7 +168,85 @@ const J7_PRICING = {
 
     // Payment: cash, Venmo or Cash App - no checks, no invoicing. Jobs over
     // $300 take a 50% deposit up front, which covers materials. (12 Sep 2026)
-    deposit: { over: 300, share: 0.5 }
+    deposit: { over: 300, share: 0.5 },
+
+    // ---------- Shipping finished parts ----------
+    // An ESTIMATE from the finished part's size and weight (Thomas, 12 Sep
+    // 2026). There is no free shipping and no pickup.
+    //
+    // Ground rates are the published 2026 UPS and FedEx Ground list rates,
+    // averaged (the two are within a few percent), by billable pound and
+    // distance band. Residential delivery and fuel are added because nearly
+    // every order goes to a house. Billable weight is the greater of the real
+    // weight and length x width x height / 139 in inches, as both carriers bill.
+    // Light parts go USPS Ground Advantage, and a USPS Priority Mail flat-rate
+    // box is used when the part fits one and it is cheaper.
+    //
+    // `buffer` is Thomas's margin for a label that costs more than estimated.
+    // It is never shown or mentioned to customers.
+    shipping: {
+        buffer: 0.10,
+        residential: 6.48,          // UPS $6.50 / FedEx $6.45 per home delivery
+        fuel: 0.25,                 // ground fuel surcharge, mid-2026
+        dimDivisor: 139,
+        maxBillableLb: 50,          // heavier than this is quoted
+        maxSideIn: 48,              // longer than this is quoted (oversize)
+        // Padding each side of the part. Half an inch of bubble wrap is what a
+        // small part actually gets - a full inch would push even a keyring
+        // past the small flat-rate box's 1.5-inch depth.
+        padIn: 0.5,
+        delicatePadIn: 1.5,         //   ...or this, for delicate parts
+        delicateMaterials: 3.00,    // extra packing material for delicate parts
+        boxLbPerCubicIn: 0.0004,    // box and fill weight, by box volume
+        boxBaseLb: 0.25,
+        signature: 7.70,
+        // USPS Ground Advantage for light parts (Thomas, 12 Sep 2026). Under a
+        // pound of real packed weight and a cubic foot of box, commercial
+        // pricing is one price per zone whatever the ounces (USPS Notice 123,
+        // 12 Jul 2026). Each region uses the dearest zone inside it: near is
+        // zone 4, mid zone 6, far zone 8. No residential or fuel surcharge.
+        groundAdvantage: { underLb: 1, maxCubicIn: 1728, near: 7.46, mid: 7.86, far: 8.40 },
+        regions: [
+            { id: 'near',  zone: 'z1_4', label: 'Tennessee, the South or Midwest (within about 600 miles, e.g. Atlanta, Chicago, Dallas)' },
+            { id: 'mid',   zone: 'z5_6', label: 'The East Coast, Florida, Texas, the Plains or Rockies (about 600-1,400 miles)' },
+            { id: 'far',   zone: 'z7_8', label: 'The West - Arizona, Utah, Idaho, Montana and beyond (over 1,400 miles)' },
+            { id: 'quote', zone: null,   label: 'Alaska, Hawaii or outside the US - I will quote it' }
+        ],
+        speeds: [
+            { id: 'ground',   factor: 1.0,  label: 'Standard ground' },
+            { id: 'twoDay',   factor: 2.1,  label: '2-day air' },
+            { id: 'overnight', factor: 3.75, label: 'Overnight air' }
+        ],
+        // Billable lb -> base rate, before residential and fuel.
+        ground: {
+            weights: [1, 2, 3, 5, 7, 10, 15, 20],
+            z1_4: [11.99, 12.78, 13.58, 15.33, 17.50, 20.75, 26.15, 31.15],
+            z5_6: [13.35, 14.75, 16.13, 18.95, 22.15, 27.05, 34.85, 42.35],
+            z7_8: [15.58, 17.25, 19.43, 24.10, 28.80, 36.10, 46.95, 56.25]
+        },
+        // USPS Priority Mail flat-rate boxes, 2026 commercial prices, inside
+        // dimensions in inches. Ground speed only - these are Priority Mail.
+        flatRate: [
+            { label: 'USPS Priority Mail Small Flat Rate Box',  inside: [8.44, 5.19, 1.5],   price: 12.10 },
+            { label: 'USPS Priority Mail Medium Flat Rate Box', inside: [11, 8.5, 5.75],     price: 21.17 },
+            { label: 'USPS Priority Mail Medium Flat Rate Box', inside: [13.75, 11.75, 3.25], price: 21.17 },
+            { label: 'USPS Priority Mail Large Flat Rate Box',  inside: [12, 11.75, 5.75],   price: 31.00 }
+        ]
+    },
+
+    // ---------- Hand delivery ----------
+    // Instead of pickup, which Thomas does not offer. Priced like travel: about
+    // two-thirds of the IRS mileage (70 cents) on the round trip at the far edge
+    // of each band. Past the last band it needs arranging with Thomas, because
+    // it may mean travel arrangements.
+    delivery: {
+        bands: [
+            { maxMiles: 15, fee: 15 },
+            { maxMiles: 30, fee: 30 },
+            { maxMiles: 45, fee: 45 },
+            { maxMiles: 60, fee: 60 }
+        ]
+    }
 };
 
 
@@ -403,6 +481,106 @@ function j7TravelSummary() {
         const from = i === 0 ? 0 : J7_PRICING.travel[i - 1].maxMiles;
         return from + '-' + b.maxMiles + 'mi ' + (b.fee ? '$' + b.fee : 'free');
     }).join(', ');
+}
+
+/**
+ * Estimated shipping for a print order.
+ *
+ * job: { dimsCm: [l, w, h] of one part (optional), gramsPerPart, quantity,
+ *        region, speed, delicate, signature }
+ * Returns { quote, cost, method, carrier, billableLb, summary }. `cost`
+ * includes the hidden buffer and is rounded up to the whole dollar.
+ */
+function j7ShippingEstimate(job) {
+    const S = J7_PRICING.shipping;
+    const region = S.regions.find(r => r.id === job.region) || S.regions[0];
+    const speed = S.speeds.find(s => s.id === job.speed) || S.speeds[0];
+    const qty = Math.max(1, Math.round(job.quantity) || 1);
+    const grams = Math.max(1, job.gramsPerPart || 1) * qty;
+
+    // Size of the parts, packed. Without measurements, assume a solid-ish
+    // cube for the weight: printed parts are mostly air, so 35% fill at PLA
+    // density. Several parts scale the single part's shape by the extra volume.
+    let dims = Array.isArray(job.dimsCm) && job.dimsCm.every(d => d > 0)
+        ? job.dimsCm.slice(0, 3)
+        : Array(3).fill(Math.cbrt((job.gramsPerPart || 1) / 1.24 / 0.35));
+    if (qty > 1) {
+        const k = Math.cbrt(qty * 1.2);
+        dims = dims.map(d => d * k);
+    }
+    const pad = job.delicate ? S.delicatePadIn : S.padIn;
+    const box = dims.map(d => d / 2.54 + pad * 2).sort((a, b) => b - a);
+    const volume = box[0] * box[1] * box[2];
+    const actualLb = grams / 453.592 + S.boxBaseLb + volume * S.boxLbPerCubicIn;
+    const dimLb = volume / S.dimDivisor;
+    const billableLb = Math.max(1, Math.ceil(Math.max(actualLb, dimLb)));
+
+    const summary = [region.label.split(' (')[0], speed.label, job.delicate ? 'delicate' : null,
+                     job.signature ? 'signature' : null].filter(Boolean).join(', ');
+
+    if (!region.zone) {
+        return { quote: true, summary, note: 'Shipping to Alaska, Hawaii or outside the US is quoted separately.' };
+    }
+    if (billableLb > S.maxBillableLb || box[0] > S.maxSideIn) {
+        return { quote: true, billableLb, summary, note: 'A package this big or heavy is quoted separately.' };
+    }
+
+    // Ground, interpolated between published weights.
+    const W = S.ground.weights;
+    const R = S.ground[region.zone];
+    let base;
+    if (billableLb <= W[0]) {
+        base = R[0];
+    } else if (billableLb >= W[W.length - 1]) {
+        const slope = (R[R.length - 1] - R[R.length - 2]) / (W[W.length - 1] - W[W.length - 2]);
+        base = R[R.length - 1] + slope * (billableLb - W[W.length - 1]);
+    } else {
+        const i = W.findIndex(w => w >= billableLb);
+        const t = (billableLb - W[i - 1]) / (W[i] - W[i - 1]);
+        base = R[i - 1] + t * (R[i] - R[i - 1]);
+    }
+    let cost = (base + S.residential) * (1 + S.fuel) * speed.factor;
+    let method = 'ground';
+    let carrier = speed.id === 'ground' ? 'UPS or FedEx Ground' : 'UPS or FedEx ' + speed.label;
+
+    // A flat-rate box, when the packed part fits one and it is cheaper.
+    if (speed.id === 'ground') {
+        const fits = S.flatRate
+            .filter(f => { const inside = f.inside.slice().sort((a, b) => b - a);
+                           return box.every((d, i) => d <= inside[i]); })
+            .sort((a, b) => a.price - b.price)[0];
+        if (fits && fits.price < cost) {
+            cost = fits.price;
+            method = 'flat';
+            carrier = fits.label;
+        }
+        const GA = S.groundAdvantage;
+        const gaPrice = GA[region.id];
+        if (gaPrice && actualLb < GA.underLb && volume <= GA.maxCubicIn && gaPrice < cost) {
+            cost = gaPrice;
+            method = 'usps';
+            carrier = 'USPS Ground Advantage';
+        }
+    }
+
+    if (job.delicate) cost += S.delicateMaterials;
+    if (job.signature) cost += S.signature;
+    cost = Math.ceil(cost * (1 + S.buffer));
+
+    return { quote: false, cost, method, carrier, billableLb, summary,
+             note: 'Shipping estimate $' + cost + ' (' + carrier + ')' };
+}
+
+/** Hand-delivery fee for a distance from Milan, or a quote past the last band. */
+function j7DeliveryEstimate(miles) {
+    const bands = J7_PRICING.delivery.bands;
+    const band = miles == null ? null : bands.find(b => miles <= b.maxMiles);
+    if (!band) {
+        return { quote: true, summary: 'hand delivery over ' + bands[bands.length - 1].maxMiles + ' miles',
+                 note: 'Delivery over ' + bands[bands.length - 1].maxMiles + ' miles is arranged with me directly.' };
+    }
+    return { quote: false, cost: band.fee, summary: 'hand delivery within ' + band.maxMiles + ' miles',
+             note: 'Hand delivery within ' + band.maxMiles + ' miles of Milan: $' + band.fee };
 }
 
 function j7LookupTown(query) {
@@ -878,6 +1056,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate,
                        j7PrintEstimate, j7PurgeWaste, j7SwapTimeFactor, j7FilamentCount,
                        J7_SERVICE_AREA, j7LookupTown, j7TravelFee, j7TravelSummary,
+                       j7ShippingEstimate, j7DeliveryEstimate,
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,

@@ -404,6 +404,17 @@ Do not silently reverse these.
 - **No checks, no invoicing.** Cash, Venmo or Cash App. Jobs over $300 take a
   50% deposit up front, which covers materials (`J7_PRICING.deposit`,
   12 Sep 2026). The homepage used to offer Net-7 invoicing; that is gone.
+- **Shipping and hand delivery (12 Sep 2026).** There is no pickup and no free
+  shipping. The 3D print estimator adds an estimated shipping cost from the
+  finished part's size and weight (`j7ShippingEstimate`): averaged UPS/FedEx
+  Ground list rates by billable pound and distance band, plus residential and
+  fuel, dimensional weight at /139, USPS Ground Advantage for parts under a pound
+  packed, or a USPS flat-rate box when it fits and is cheaper; 2-day, overnight, delicate padding and signature are options. It
+  carries a 10% buffer (`shipping.buffer`) that is never shown to customers.
+  Hand delivery is $15 / $30 / $45 / $60 up to 15 / 30 / 45 / 60 miles; further
+  is arranged with Thomas. Carrier rates drift - recheck `shipping.ground`,
+  `residential`, `fuel`, `flatRate` and `groundAdvantage` each January and
+  July.
 - **Travel is $25 / $45 / $65** for 25-50 / 50-75 / 75-100 miles, free within
   25 (12 Sep 2026). The old $15 / $30 / $50 did not cover the vehicle. Town
   fees in `J7_SERVICE_AREA` are derived from miles, so only the bands change.
