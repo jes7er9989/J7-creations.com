@@ -20,7 +20,12 @@ const MODEL = 'claude-sonnet-5';
 // Short on purpose. Scope is enforced by the prompt, and a prompt is guidance
 // rather than a fence — but a model that cannot write at length cannot write
 // the tech-support tutorial it is told not to write.
-const MAX_TOKENS = 500;
+//
+// Was 500. Once the assistant started sizing and weighing parts (13 Sep 2026),
+// any question that needed working out came back with no text at all - the
+// allowance was used up before an answer was written. The prompt still asks
+// for two or three sentences; this is headroom for the working, not length.
+const MAX_TOKENS = 1500;
 
 // Cost control, all of it deliberate:
 //   - a conversation is capped, so one visitor cannot run up an unbounded bill
@@ -166,6 +171,15 @@ async function handle(context) {
         .map(b => b.text)
         .join('')
         .trim();
+
+    // Why an answer was short or missing goes to the deployment's real-time
+    // logs - the stop reason, block types and token counts, never the text.
+    if (!reply || data.stop_reason !== 'end_turn') {
+        console.error('chat reply: stop_reason=' + data.stop_reason +
+            ' blocks=' + (data.content || []).map(b => b.type).join(',') +
+            ' usage=' + JSON.stringify(data.usage || {}) +
+            ' empty=' + !reply);
+    }
 
     if (!reply) {
         return json({ error: 'No answer came back. Try asking differently.' }, 502);
