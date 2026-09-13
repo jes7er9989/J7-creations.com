@@ -20,8 +20,7 @@ const path = require('path');
 const {
     J7_PRICING, J7_SERVICE_AREA, J7_REMOTE_SCOPES, J7_ONSITE_TASKS,
     J7_SURFACE_FACTOR, J7_HEIGHT_FACTOR, J7_PART_SHAPES, J7_NOZZLES,
-    J7_INFILL, J7_PRINTERS, J7_FILAMENT_DENSITY,
-    j7GramsFromDescription, j7PrintEstimate
+    J7_INFILL, J7_PRINTERS
 } = require('../js/pricing.js');
 
 const ROOT = path.join(__dirname, '..');
@@ -132,13 +131,6 @@ function ratesSection() {
         (n.highFlow ? ' high-flow' : '') +
         (n.hardened ? ' hardened steel' : ' (not hardened, so no carbon or glass fibre)')).join(', ');
 
-    // Per-gram rates are fractions of a cent, so they are written out as
-    // they are rather than through money(), which would round them away.
-    const machineBands = P.print.tiers.map((t, i) => {
-        const from = i === 0 ? 0 : P.print.tiers[i - 1].upTo;
-        return (t.upTo === Infinity ? `over ${from} g` : `${from}-${t.upTo} g`) + ` $${t.rate}/g`;
-    }).join(', ');
-
     return `## Rates
 
 LABOR, per hour
@@ -170,12 +162,7 @@ REMOTE SCOPES
 
 3D PRINTING
   ${money(P.print.setupFee)} setup per order, ${money(P.print.orderMinimum)} order minimum.
-  Machine time is charged on the grams printed, in marginal bands - each rate
-  applies only to the grams inside its band: ${machineBands}.
-  Filament bought is the grams printed plus waste: +${Math.round(P.print.waste.minimal * 100)}% for a simple part,
-  +${Math.round(P.print.waste.supports * 100)}% when it needs supports.
-  A print costs filament + setup + machine time, never less than the order minimum.
-  Machine time rises with quality (draft ${P.print.quality.draft}x,
+  Machine time is tiered by weight, and rises with quality (draft ${P.print.quality.draft}x,
   standard ${P.print.quality.standard}x, high ${P.print.quality.high}x) and with a finer
   nozzle (${nozzleTime}).
   Filament at cost: ${filament}.
@@ -347,9 +334,7 @@ it is built from, where the dead spots are, what router or equipment they
 have now, and the town.
 Remote support: what device, what it is doing, when it started, and what
 they have already tried.
-3D printing: what the part is and what it does, roughly how big (when they
-name a thing rather than measure it, estimate the size yourself - see
-"Working out a part's size and weight"), whether it
+3D printing: what the part is and what it does, roughly how big, whether it
 has to take heat, weight or weather, how many colors or materials, how many
 copies, and whether they have a photo
 or file (they can attach it to the contact form), and where it is going -
@@ -389,9 +374,7 @@ always type their own answer instead.
 You may give a figure, always as an estimate and never as a commitment: "the
 rates work that out at roughly $X - Thomas confirms before any work starts."
 Every number you give must come from the rates below. Do not invent one, do
-not round for tidiness, and do not average two figures. The one thing you may
-estimate yourself is a part's size and weight, by the method below, and you
-always say that it is an estimate.
+not round for tidiness, and do not average two figures.
 
 If a job needs a number you do not have, name what is missing instead of
 guessing: "that depends on whether there is cable in the walls already, which
@@ -403,8 +386,6 @@ labor. Say so whenever you quote an install or a build.
 Never ask a customer for a number that is the reason they are hiring Thomas -
 not what a part weighs, not how long the job will take, not how many access
 points they need. Ask what they can see. Work the rest out yourself.
-
-${sizingSection()}
 
 ## How an installation figure is worked out
 
@@ -532,87 +513,6 @@ chat.`;
 
 
 // ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
-// Sizing a part from a description (Thomas, 13 Sep 2026: a customer asked for
-// the gun Johnny Silverhand carries in Cyberpunk 2077, and the assistant
-// should be able to size and weigh a thing like that itself). The method is
-// the estimator's own "describe it" path, j7GramsFromDescription, and the
-// worked example is computed by that function and j7PrintEstimate - so the
-// sum the assistant is shown is one the site itself agrees with.
-// Declared as a function so BEHAVIOUR, above, can call it.
-// ---------------------------------------------------------------------------
-
-function sizingSection() {
-    const P = J7_PRICING.print;
-    const split = label => label.split(' — ');
-    const shapes = J7_PART_SHAPES
-        .map(s => `${split(s.label)[0]} (${split(s.label)[1]}): occupancy ${s.occ}, shell ${s.shell}`)
-        .join('\n     ');
-    const infill = J7_INFILL.map(i => i.label.replace(' — ', ' - ')).join('\n     ');
-    const density = Object.entries(P.filamentPerKg)
-        .map(([k, perKg]) => `${k.toUpperCase()} ${J7_FILAMENT_DENSITY[perKg]}`)
-        .join(', ');
-    const inches = cm => Math.round(cm / 2.54 * 10) / 10;
-    const plateMm = J7_PRINTERS.buildMm.singleNozzle;
-    const dualMm = J7_PRINTERS.buildMm.dualNozzle;
-    const plateIn = plateMm.map(mm => Math.round(mm / 25.4 * 10) / 10);
-
-    // The worked example: a life-size cosplay prop.
-    const dims = [30, 15, 4];
-    const shape = J7_PART_SHAPES.find(s => s.id === 'normal');
-    const fill = 0.15;
-    const perKg = P.filamentPerKg.pla;
-    const grams = j7GramsFromDescription(dims[0], dims[1], dims[2], shape.id, fill, J7_FILAMENT_DENSITY[perKg], 0.4);
-    const est = j7PrintEstimate({
-        grams, qty: 1, pricePerKg: perKg, quality: P.quality.standard,
-        nozzleTime: P.nozzleTime['0.4'], supportWaste: P.waste.supports, colors: 1, rush: 1
-    });
-    const c = n => '$' + n.toFixed(2);
-
-    return `## Working out a part's size and weight
-
-People often name a thing instead of measuring it - a prop from a game or a
-film, a replacement knob, a mount for a particular device. Do not send them off
-with a tape measure, and never ask what it weighs. Estimate it yourself, the
-same way the estimator's "describe it" option does. Work the numbers out
-quietly and give the result, with at most one short line of working - the
-answer should still be two or three sentences.
-
-1. Size. From what you know about the object, give the box it would fit in -
-   length x width x height, in inches and cm. Say what you assumed: a prop is
-   life-size unless they say otherwise, and a character's item is sized against
-   the character. If you do not recognise the thing or cannot tell its scale,
-   ask for one measurement or a comparison ("about the size of a shoebox")
-   rather than guessing.
-2. Shape - how much of that box is actually part:
-     ${shapes}
-3. Infill - by what it has to survive:
-     ${infill}
-   A display piece or prop that nobody leans on is usually 15%.
-4. Grams = length x width x height in cm x occupancy
-   x (shell + (1 - shell) x infill) x density.
-   Density in g/cm3: ${density}.
-5. One part on one nozzle fits ${plateMm.join(' x ')} mm (${plateIn.join(' x ')} in); printing with both
-   nozzles, ${dualMm.join(' x ')} mm. If it is bigger, say it would have to be printed in
-   pieces and joined, and that Thomas confirms whether that works - do not
-   promise it.
-
-Then price it from the rates like any other print. Say plainly that the size
-and weight are your estimate from the description, that a photo, a file or one
-real measurement would firm it up, and that Thomas confirms before any work
-starts. They can check it themselves with the same size, shape and infill in
-the estimator's "describe it" option. In the estimate block, put the assumed
-size and weight in "lines" (for example "Estimated size ${inches(dims[0])} x ${inches(dims[1])} x ${inches(dims[2])} in, about ${Math.round(grams)} g
-of PLA"), because "notes" is only for what they told you.
-
-Worked example, computed with the site's own formula - a life-size cosplay prop
-about ${dims.join(' x ')} cm (${dims.map(inches).join(' x ')} in), ${split(shape.label)[0]} shape, ${Math.round(fill * 100)}% infill, PLA, needs supports:
-  ${dims.join(' x ')} x ${shape.occ} x (${shape.shell} + ${+(1 - shape.shell).toFixed(2)} x ${fill}) x ${J7_FILAMENT_DENSITY[perKg]} = about ${Math.round(grams)} g printed
-  Filament: ${Math.round(est.bought)} g with supports, at ${money(perKg)}/kg = ${c(est.filamentCost)}
-  Service fee: ${c(P.setupFee)} setup + ${c(est.machineCost)} machine time = ${c(est.serviceFee)}
-  Total about ${c(est.total)} at standard quality, before shipping.`;
-}
 
 function build() {
     const faq = readFaq();
