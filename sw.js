@@ -14,7 +14,7 @@ const urlsToCache = [
     '/css/mobile-fix.css?v=de960d1b',
     '/js/app.js?v=4cf7f72d',
     '/js/chat.js?v=d96e40d8',
-    '/js/pricing.js?v=7f9ce909',
+    '/js/pricing.js?v=81704610',
     '/manifest.json',
     '/assets/images/j7-mark-nav.379b77f9.png',
     '/assets/images/j7-wall.fd59da6c.jpg',

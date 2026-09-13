@@ -407,21 +407,33 @@ Do not silently reverse these.
 - **Shipping and hand delivery (12-13 Sep 2026).** There is no pickup and no
   free shipping. The 3D print estimator works out every shipping option from
   the finished part's size and weight (`j7ShippingOptions`) and the customer
-  picks one, cheapest first: USPS Ground Advantage, UPS or FedEx Ground, USPS
-  Priority Mail (a flat-rate box when that is cheaper), 3-day air, 2-day air,
-  USPS Priority Mail Express and overnight air. Each is priced from the
-  carrier's own 2026 table for the dearest zone in the region
-  (`shipping.rates`): USPS commercial prices from Notice 123, averaged UPS/FedEx
-  Ground, and FedEx Standard List Rates for the air services. UPS/FedEx add
-  residential and fuel and bill dimensional weight at /139; USPS only bills
-  volume over a cubic foot (/166). Delicate padding and a signature add to
-  every option. Everything carries a 10% buffer (`shipping.buffer`) that is
-  never shown to customers. This replaced a model that multiplied the ground
-  price by 2.1 for 2-day and 3.75 for overnight, which overpriced 2-day and
-  hid the cheap USPS options above a pound. Hand delivery is $15 / $30 / $45 /
-  $60 up to 15 / 30 / 45 / 60 miles; further is arranged with Thomas. Carrier
-  rates drift - recheck `shipping.rates`, `residential`, `airResidential`,
-  `fuel`, `airFuel` and `flatRate` each January and July (fuel moves weekly).
+  picks one, cheapest first. Thomas's rule (13 Sep 2026): offer every tier
+  there is a real price for, and let the customer choose. That is ten
+  services: USPS Ground Advantage, Priority Mail (a flat-rate box when that is
+  cheaper) and Priority Mail Express; FedEx Ground (Home Delivery), Express
+  Saver, 2Day, 2Day A.M., Standard Overnight, Priority Overnight and First
+  Overnight. UPS is not offered because its 2026 rate PDFs would not load, so
+  there were no real UPS prices to use.
+  `shipping.rates` holds the exact price for every pound from 1 to 50 lb, for
+  the dearest zone in each region (near zone 4, mid zone 6, far zone 8) - no
+  interpolation. Sources: USPS Notice 123 (effective 12 Jul 2026, commercial
+  prices, read from the PDF), and the FedEx Standard List Rates 2026 (updated
+  1 Jun 2026) and 2026 surcharge PDFs. The PDFs' text only comes out through
+  pdf.js in the browser; WebFetch cannot read them, and its summary of the
+  USPS web page got Priority Mail Express wrong from 25 lb up.
+  Surcharges: FedEx residential ($6.45 Ground, $6.95 Express), FedEx fuel (weekly
+  - 28% Ground and 30.5% Express for the week of 14 Sep 2026), signature
+  ($7.60 FedEx, $4.15 USPS), USPS long-parcel and over-2-cubic-foot fees, and
+  dimensional weight (FedEx /139 always, USPS /166 over a cubic foot). USPS
+  Priority Mail and Express are left out past 108 in length plus girth and
+  Ground Advantage switches to its oversized price; FedEx is left out when a
+  side is over 30 in (additional handling) or past 130 in length plus girth.
+  Not modelled: FedEx's Delivery Area Surcharge for rural ZIP codes ($6.60) -
+  the 10% buffer (`shipping.buffer`, never shown to customers) absorbs it.
+  This replaced a model that multiplied the ground price by 2.1 for 2-day and
+  3.75 for overnight. Hand delivery is $15 / $30 / $45 / $60 up to 15 / 30 /
+  45 / 60 miles; further is arranged with Thomas. Recheck `shipping.rates`,
+  `shipping.fedex` and `shipping.usps` each January and July; fuel moves weekly.
 - **Travel is $25 / $45 / $65** for 25-50 / 50-75 / 75-100 miles, free within
   25 (12 Sep 2026). The old $15 / $30 / $50 did not cover the vehicle. Town
   fees in `J7_SERVICE_AREA` are derived from miles, so only the bands change.

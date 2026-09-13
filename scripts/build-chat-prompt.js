@@ -118,7 +118,7 @@ function ratesSection() {
 
     const DB = P.delivery.bands;
     const deliveryText = DB.map(b => `up to ${b.maxMiles} miles ${money(b.fee)}`).join(', ');
-    const GA = P.shipping.rates.groundAdvantage.underLb;
+    const GA = P.shipping.rates.groundAdvantageUnderLb;
     const lightShip = [GA.near, GA.far].map(p => Math.ceil(p * (1 + P.shipping.buffer)));
     const shipServices = P.shipping.services.map(s => s.label.split(' (')[0]).join(', ');
 

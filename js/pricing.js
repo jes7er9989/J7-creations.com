@@ -175,37 +175,47 @@ const J7_PRICING = {
     // 2026). There is no free shipping and no pickup.
     //
     // The customer sees every option in `services`, cheapest first, and picks
-    // one (Thomas, 13 Sep 2026: give them as many options as possible, so a
-    // patient customer is never pushed into paying for air).
+    // one. Thomas, 13 Sep 2026: offer every tier there is a real price for and
+    // let the customer choose, so a patient customer is never pushed into
+    // paying for air.
     //
-    // Every price comes from the carrier's own 2026 table, for the dearest zone
-    // inside each region: near is zone 4, mid zone 6, far zone 8.
-    //   USPS Ground Advantage, Priority Mail, Priority Mail Express: commercial
-    //     prices, USPS Notice 123, effective 12 Jul 2026. No residential or
-    //     fuel surcharge. USPS bills by box volume (/166) only over a cubic foot.
-    //   UPS or FedEx Ground: the two published list rates averaged (they are
-    //     within a few percent).
-    //   3-day, 2-day and overnight air: FedEx Standard List Rates 2026 (updated
-    //     1 Jun 2026) for Express Saver, 2Day and Standard Overnight. UPS 3 Day
-    //     Select, 2nd Day Air and Next Day Air Saver list close to these.
-    // UPS and FedEx add residential delivery and fuel, because nearly every
-    // order goes to a house, and bill the greater of the real weight and
-    // length x width x height / 139 in inches.
+    // `rates` is the carrier's own price for every pound from 1 to 50 lb, for
+    // the dearest zone inside each region: near is zone 4, mid zone 6, far
+    // zone 8. Nothing is interpolated.
+    //   USPS: Notice 123, commercial prices, effective 12 Jul 2026.
+    //   FedEx: Standard List Rates 2026 (updated 1 Jun 2026) and the 2026
+    //     surcharge list.
+    // UPS is not offered: its 2026 rate PDFs would not load, so there were no
+    // real UPS prices to use.
     //
-    // `buffer` is Thomas's margin for a label that costs more than estimated.
-    // It is never shown or mentioned to customers.
+    // `buffer` is Thomas's margin for a label that costs more than estimated
+    // (FedEx's rural Delivery Area Surcharge, for one). It is never shown or
+    // mentioned to customers.
     //
-    // Recheck every January and July: the USPS tables, both fuel surcharges
-    // (they move weekly), both residential charges and the FedEx tables.
+    // Recheck every January and July. FedEx fuel moves weekly.
     shipping: {
         buffer: 0.10,
-        residential: 6.48,          // ground: UPS $6.50 / FedEx $6.45 per home delivery
-        fuel: 0.27,                 // ground fuel surcharge, FedEx week of 7 Sep 2026
-        airResidential: 5.95,       // FedEx Express residential delivery charge, 2026
-        airFuel: 0.2875,            // express fuel surcharge, FedEx week of 7 Sep 2026
-        dimDivisor: 139,
-        uspsDimDivisor: 166,
-        uspsDimOverCubicIn: 1728,   // USPS only bills by volume over a cubic foot
+        fedex: {
+            groundResidential: 6.45,    // FedEx Home Delivery residential surcharge
+            expressResidential: 6.95,   // FedEx Express residential delivery charge
+            groundFuel: 0.28,           // week of 14 Sep 2026
+            expressFuel: 0.305,         // week of 14 Sep 2026
+            signature: 7.60,            // Direct or Indirect Signature Required
+            dimDivisor: 139,            // bills the greater of real weight and L x W x H / 139
+            maxLengthPlusGirthIn: 130,  // oversize past this - left out rather than guessed
+            maxSecondSideIn: 30         // additional handling past this - left out rather than guessed
+        },
+        usps: {
+            signature: 4.15,            // Signature Confirmation, commercial
+            dimDivisor: 166,
+            dimOverCubicIn: 1728,       // volume only counts over a cubic foot
+            maxLengthPlusGirthIn: 108,  // Priority Mail and Express stop here...
+            oversizedUpToIn: 130,       // ...Ground Advantage charges its oversized price up to here
+            // Nonstandard fees: longest side over 22 in, over 30 in, box over 2 cubic feet.
+            long22: { groundAdvantage: 4.50, priority: 4.50, express: 4.50 },
+            long30: { groundAdvantage: 10.00, priority: 21.00, express: 21.00 },
+            over2CubicFt: { groundAdvantage: 21.00, priority: 35.00, express: 35.00 }
+        },
         maxBillableLb: 50,          // heavier than this is quoted
         maxSideIn: 48,              // longer than this is quoted (oversize)
         // Padding each side of the part. Half an inch of bubble wrap is what a
@@ -216,7 +226,6 @@ const J7_PRICING = {
         delicateMaterials: 3.00,    // extra packing material for delicate parts
         boxLbPerCubicIn: 0.0004,    // box and fill weight, by box volume
         boxBaseLb: 0.25,
-        signature: 7.70,
         regions: [
             { id: 'near',  label: 'Tennessee, the South or Midwest (within about 600 miles, e.g. Atlanta, Chicago, Dallas)' },
             { id: 'mid',   label: 'The East Coast, Florida, Texas, the Plains or Rockies (about 600-1,400 miles)' },
@@ -225,56 +234,102 @@ const J7_PRICING = {
         ],
         // Every way to send it. `rank` is speed, 1 fastest, for the "fastest" tag.
         services: [
-            { id: 'uspsGround', rank: 5,   days: '2-5 business days', label: 'USPS Ground Advantage' },
-            { id: 'ground',     rank: 4,   days: '1-5 business days', label: 'UPS or FedEx Ground' },
-            { id: 'priority',   rank: 3,   days: '1-3 business days', label: 'USPS Priority Mail' },
-            { id: 'saver',      rank: 3,   days: '3 business days',   label: '3-day air (FedEx Express Saver or UPS 3 Day Select)' },
-            { id: 'twoDay',     rank: 2,   days: '2 business days',   label: '2-day air (FedEx 2Day or UPS 2nd Day Air)' },
-            { id: 'express',    rank: 1.5, days: '1-2 business days', label: 'USPS Priority Mail Express' },
-            { id: 'overnight',  rank: 1,   days: 'Next business day', label: 'Overnight air (FedEx Standard Overnight or UPS Next Day Air Saver)' }
+            { id: 'uspsGround',        table: 'groundAdvantage',   carrier: 'usps',         rank: 5,   days: '2-5 business days',                label: 'USPS Ground Advantage' },
+            { id: 'ground',            table: 'ground',            carrier: 'fedexGround',  rank: 4,   days: '1-5 business days',                label: 'FedEx Ground (Home Delivery)' },
+            { id: 'priority',          table: 'priority',          carrier: 'usps',         rank: 3,   days: '1-3 business days',                label: 'USPS Priority Mail' },
+            { id: 'saver',             table: 'saver',             carrier: 'fedexExpress', rank: 3,   days: '3 business days',                  label: 'FedEx Express Saver' },
+            { id: 'twoDay',            table: 'twoDay',            carrier: 'fedexExpress', rank: 2,   days: '2 business days',                  label: 'FedEx 2Day' },
+            { id: 'twoDayAM',          table: 'twoDayAM',          carrier: 'fedexExpress', rank: 1.9, days: '2 business days, by midday',       label: 'FedEx 2Day A.M.' },
+            { id: 'express',           table: 'express',           carrier: 'usps',         rank: 1.5, days: '1-2 business days',                label: 'USPS Priority Mail Express' },
+            { id: 'overnight',         table: 'overnight',         carrier: 'fedexExpress', rank: 1.2, days: 'Next business day, by evening',    label: 'FedEx Standard Overnight' },
+            { id: 'priorityOvernight', table: 'priorityOvernight', carrier: 'fedexExpress', rank: 1.1, days: 'Next business day, by midday',     label: 'FedEx Priority Overnight' },
+            { id: 'firstOvernight',    table: 'firstOvernight',    carrier: 'fedexExpress', rank: 1,   days: 'Next business day, early morning', label: 'FedEx First Overnight' }
         ],
-        // Billable lb -> base price per region, before any surcharge.
+        // Price for each billable pound, 1 to 50 lb: [0] is 1 lb, [49] is 50 lb.
+        // FedEx figures are before residential and fuel.
         rates: {
-            weights: [1, 2, 3, 5, 7, 10, 15, 20],
-            // Under a pound (and a cubic foot) Ground Advantage is one price per
-            // zone whatever the ounces.
+            groundAdvantageUnderLb:   { near: 7.46,   mid: 7.86,   far: 8.40 },    // under a pound, any ounces
+            groundAdvantageOversized: { near: 169.43, mid: 228.67, far: 288.23 },  // 108-130 in length plus girth
+            expressHalfLb:            { near: 34.19,  mid: 40.99,  far: 47.63 },   // half a pound and under
             groundAdvantage: {
-                underLb: { near: 7.46, mid: 7.86, far: 8.40 },
-                near: [8.15, 8.51, 9.67, 11.02, 11.90, 14.44, 17.67, 19.66],
-                mid:  [9.63, 11.58, 13.59, 15.89, 17.65, 19.94, 25.13, 30.32],
-                far:  [10.67, 12.87, 15.75, 19.19, 21.83, 25.34, 32.91, 40.39]
-            },
-            ground: {
-                near: [11.99, 12.78, 13.58, 15.33, 17.50, 20.75, 26.15, 31.15],
-                mid:  [13.35, 14.75, 16.13, 18.95, 22.15, 27.05, 34.85, 42.35],
-                far:  [15.58, 17.25, 19.43, 24.10, 28.80, 36.10, 46.95, 56.25]
+                near: [8.15, 8.51, 9.67, 10.65, 11.02, 11.55, 11.90, 12.43, 13.65, 14.44, 15.18, 15.89, 16.53, 17.13, 17.67, 17.94, 18.41, 18.94, 19.36, 19.66, 21.79, 24.07, 27.33, 31.62, 36.60,
+                       39.07, 41.58, 42.85, 44.11, 45.34, 46.55, 47.73, 48.88, 50.04, 51.18, 52.25, 53.35, 54.44, 55.49, 56.54, 57.59, 58.59, 59.57, 60.54, 61.50, 62.42, 63.33, 64.22, 65.10, 65.96],
+                mid:  [9.63, 11.58, 13.59, 15.16, 15.89, 16.89, 17.65, 18.34, 19.13, 19.94, 21.28, 22.20, 23.16, 24.14, 25.13, 26.09, 26.85, 27.70, 28.52, 30.32, 31.69, 36.73, 43.29, 51.28, 58.24,
+                       61.73, 65.24, 67.49, 69.69, 71.88, 74.02, 76.13, 78.24, 80.30, 82.37, 84.33, 86.32, 88.31, 90.27, 92.17, 94.08, 95.94, 97.79, 99.60, 101.39, 103.17, 104.90, 106.61, 108.29, 109.94],
+                far:  [10.67, 12.87, 15.75, 18.01, 19.19, 20.68, 21.83, 22.90, 24.09, 25.34, 27.37, 28.73, 30.11, 31.53, 32.91, 34.29, 35.42, 36.64, 37.84, 40.39, 43.01, 49.74, 58.41, 68.97, 78.19,
+                       82.80, 87.46, 90.53, 93.58, 96.60, 99.57, 102.51, 105.42, 108.29, 111.16, 113.94, 116.74, 119.51, 122.25, 124.96, 127.62, 130.28, 132.88, 135.45, 138.01, 140.52, 143.00, 145.45, 147.88, 150.27]
             },
             priority: {
-                near: [10.40, 10.79, 12.68, 15.72, 17.46, 19.62, 23.91, 28.29],
-                mid:  [14.47, 15.34, 18.86, 26.35, 30.28, 33.74, 41.99, 53.02],
-                far:  [15.22, 16.37, 20.57, 29.18, 34.97, 41.28, 53.60, 68.06]
+                near: [10.40, 10.79, 12.68, 14.96, 15.72, 16.46, 17.46, 17.97, 18.78, 19.62, 20.43, 21.25, 22.10, 22.96, 23.91, 24.68, 25.82, 27.17, 27.75, 28.29, 31.08, 33.89, 36.69, 39.50, 42.29,
+                       45.15, 48.05, 49.51, 50.94, 52.38, 53.77, 55.14, 56.52, 57.83, 59.15, 60.45, 61.72, 62.96, 64.18, 65.39, 66.57, 67.73, 68.86, 69.98, 71.10, 72.15, 73.21, 74.23, 75.24, 76.23],
+                mid:  [14.47, 15.34, 18.86, 24.51, 26.35, 28.16, 30.28, 31.50, 32.63, 33.74, 35.40, 36.76, 38.30, 40.02, 41.99, 44.19, 46.50, 49.26, 50.58, 53.02, 57.77, 62.52, 67.26, 72.01, 76.77,
+                       83.72, 86.96, 89.12, 91.27, 93.40, 95.52, 97.62, 99.68, 101.78, 103.84, 105.79, 107.72, 109.60, 111.72, 113.78, 115.81, 117.69, 119.56, 121.38, 123.18, 124.98, 126.77, 128.52, 130.27, 132.04],
+                far:  [15.22, 16.37, 20.57, 26.82, 29.18, 31.90, 34.97, 37.15, 39.25, 41.28, 44.05, 46.25, 48.54, 51.00, 53.60, 56.40, 59.22, 62.42, 64.47, 68.06, 76.40, 84.73, 93.06, 101.39, 109.73,
+                       121.13, 123.92, 126.84, 129.43, 131.81, 134.30, 136.61, 139.03, 141.43, 143.67, 146.03, 148.36, 150.69, 152.99, 155.26, 157.59, 159.81, 161.95, 164.24, 166.47, 168.66, 170.87, 173.03, 175.15, 177.34]
+            },
+            express: {
+                near: [39.05, 43.91, 48.77, 53.63, 58.54, 65.02, 71.50, 77.93, 84.41, 90.89, 96.34, 101.85, 107.36, 112.81, 118.37, 123.88, 129.33, 134.84, 140.35, 145.80, 151.91, 158.01, 164.06, 170.16, 176.26,
+                       182.31, 188.36, 194.46, 200.56, 206.61, 212.66, 218.81, 224.86, 230.91, 237.06, 243.49, 249.65, 256.02, 262.44, 268.87, 277.24, 283.61, 289.88, 296.36, 302.35, 309.15, 315.36, 321.63, 328.05, 334.48],
+                mid:  [48.77, 56.54, 64.32, 72.04, 79.82, 87.32, 94.83, 102.23, 109.79, 117.29, 122.75, 128.04, 133.49, 138.84, 144.29, 149.64, 155.09, 160.49, 165.89, 171.29, 177.83, 184.52, 191.16, 197.81, 204.45,
+                       211.09, 217.73, 224.43, 230.96, 237.66, 244.25, 250.94, 257.58, 264.23, 270.81, 278.32, 285.72, 292.68, 299.49, 306.89, 316.77, 324.11, 331.35, 338.53, 345.71, 352.89, 360.18, 367.47, 374.98, 382.00],
+                far:  [55.79, 63.94, 72.04, 80.19, 88.35, 96.77, 105.30, 113.73, 122.21, 130.68, 136.73, 142.78, 148.88, 154.93, 160.98, 167.08, 173.18, 179.18, 185.22, 191.33, 198.62, 205.85, 213.14, 220.32, 227.61,
+                       234.85, 242.14, 249.38, 256.67, 263.90, 271.19, 278.43, 285.72, 292.95, 300.24, 308.24, 316.34, 324.17, 332.32, 340.31, 350.90, 358.89, 367.15, 375.03, 383.24, 391.23, 399.33, 407.38, 415.53, 423.58]
+            },
+            ground: {
+                near: [13.26, 15.33, 15.99, 16.65, 17.06, 17.23, 17.68, 18.29, 18.38, 18.56, 19.35, 19.54, 19.77, 19.97, 20.25, 20.62, 20.84, 21.07, 22.21, 22.32, 23.29, 23.92, 24.68, 25.71, 25.83,
+                       26.91, 27.45, 28.72, 28.98, 30.08, 30.69, 30.70, 32.08, 33.10, 34.19, 34.46, 34.82, 35.93, 37.47, 37.48, 38.57, 40.07, 40.13, 41.17, 41.18, 42.48, 43.17, 43.67, 43.68, 43.70],
+                mid:  [14.47, 16.34, 17.49, 18.22, 19.26, 19.29, 19.63, 20.42, 20.86, 21.10, 22.27, 23.05, 23.76, 25.16, 26.54, 27.39, 28.56, 30.05, 30.94, 31.99, 32.99, 34.34, 35.63, 37.33, 38.41,
+                       39.81, 41.42, 43.44, 44.68, 45.40, 46.28, 46.29, 49.21, 49.22, 50.06, 52.16, 52.39, 53.57, 56.01, 56.08, 58.42, 58.68, 61.87, 62.22, 62.25, 63.89, 64.76, 65.72, 66.21, 66.78],
+                far:  [15.01, 17.37, 19.11, 20.48, 21.69, 21.70, 22.51, 23.50, 24.75, 26.38, 28.58, 29.92, 31.27, 34.01, 35.40, 37.16, 37.17, 40.08, 42.00, 43.52, 44.86, 46.39, 48.68, 51.47, 53.05,
+                       55.25, 55.65, 58.32, 59.88, 61.78, 63.76, 64.46, 66.20, 69.37, 69.87, 72.61, 73.32, 74.69, 76.22, 76.24, 79.12, 79.52, 81.68, 82.53, 83.11, 85.32, 86.70, 88.07, 88.59, 89.83]
             },
             saver: {
-                near: [24.83, 25.29, 28.07, 32.19, 39.75, 45.01, 62.69, 74.00],
-                mid:  [35.69, 38.06, 44.25, 52.83, 65.49, 78.83, 105.14, 126.57],
-                far:  [41.41, 48.10, 54.32, 69.71, 82.57, 110.41, 147.36, 177.95]
+                near: [24.83, 25.29, 28.07, 30.52, 32.19, 36.78, 39.75, 41.11, 43.87, 45.01, 49.64, 54.16, 55.31, 60.01, 62.69, 64.87, 67.57, 70.16, 72.60, 74.00, 76.44, 79.78, 85.09, 87.24, 90.13,
+                       93.08, 96.60, 99.02, 101.88, 102.17, 105.14, 108.13, 112.55, 113.00, 116.27, 120.62, 121.07, 124.55, 126.84, 127.10, 130.55, 130.90, 137.16, 137.79, 140.67, 149.06, 149.91, 150.18, 150.38, 150.93],
+                mid:  [35.69, 38.06, 44.25, 46.55, 52.83, 62.06, 65.49, 71.89, 74.23, 78.83, 87.41, 92.83, 94.90, 99.73, 105.14, 109.56, 113.96, 118.05, 122.02, 126.57, 132.60, 137.22, 142.87, 145.32, 151.74,
+                       154.07, 158.12, 175.06, 180.23, 183.13, 192.46, 196.41, 202.13, 205.42, 205.78, 206.56, 222.09, 226.77, 232.13, 232.69, 237.75, 242.85, 247.74, 252.22, 252.68, 259.45, 260.31, 260.51, 260.74, 265.30],
+                far:  [41.41, 48.10, 54.32, 62.15, 69.71, 79.28, 82.57, 90.17, 102.41, 110.41, 117.19, 123.83, 132.62, 139.49, 147.36, 152.45, 160.83, 166.28, 172.32, 177.95, 183.78, 190.65, 192.39, 193.27, 210.40,
+                       216.82, 223.54, 230.74, 237.92, 244.73, 251.38, 254.70, 255.68, 275.09, 277.04, 286.38, 290.36, 290.93, 301.90, 309.81, 316.42, 326.40, 330.78, 331.55, 332.57, 352.96, 358.46, 365.06, 366.08, 371.20]
             },
             twoDay: {
-                near: [29.44, 30.58, 32.39, 38.11, 45.06, 56.11, 70.83, 85.47],
-                mid:  [42.80, 48.67, 55.20, 71.24, 89.08, 114.50, 158.49, 193.28],
-                far:  [46.97, 56.12, 64.38, 83.38, 96.33, 131.44, 175.97, 217.78]
+                near: [29.44, 30.58, 32.39, 35.06, 38.11, 41.54, 45.06, 48.22, 52.09, 56.11, 57.88, 61.06, 64.28, 67.54, 70.83, 73.91, 77.11, 79.92, 82.29, 85.47, 88.68, 91.12, 94.39, 97.41, 99.27,
+                       102.95, 105.57, 108.00, 111.19, 115.04, 118.15, 121.51, 124.89, 127.52, 130.27, 132.97, 136.19, 139.63, 141.99, 145.36, 147.06, 150.05, 152.34, 155.79, 158.06, 161.24, 163.93, 166.84, 167.23, 174.84],
+                mid:  [42.80, 48.67, 55.20, 63.78, 71.24, 79.20, 89.08, 98.57, 102.68, 114.50, 123.60, 127.47, 141.84, 144.10, 158.49, 165.44, 172.90, 182.42, 186.64, 193.28, 193.95, 206.67, 214.14, 221.96, 229.18,
+                       236.96, 244.99, 251.25, 258.02, 265.09, 271.15, 279.10, 286.59, 295.25, 304.12, 312.28, 320.77, 328.94, 336.91, 344.55, 352.34, 359.89, 368.36, 375.53, 382.37, 388.84, 389.54, 403.49, 410.35, 417.37],
+                far:  [46.97, 56.12, 64.38, 73.29, 83.38, 89.10, 96.33, 110.69, 121.50, 131.44, 142.41, 143.51, 161.10, 162.86, 175.97, 183.44, 191.96, 195.35, 210.97, 217.78, 223.03, 231.67, 239.61, 242.14, 262.48,
+                       269.72, 278.19, 284.92, 293.41, 300.84, 308.89, 316.34, 324.39, 332.37, 333.83, 342.45, 358.49, 368.27, 377.85, 386.20, 396.63, 406.59, 415.08, 423.25, 429.56, 438.83, 439.76, 443.26, 443.61, 444.32]
             },
-            // Half a pound and under has its own price.
-            express: {
-                halfLb: { near: 34.19, mid: 40.99, far: 47.63 },
-                near: [39.05, 43.91, 48.77, 58.54, 71.50, 90.89, 118.37, 145.80],
-                mid:  [48.77, 56.54, 64.32, 79.82, 94.83, 117.29, 144.29, 171.29],
-                far:  [55.79, 63.94, 72.04, 88.35, 105.30, 130.68, 160.98, 191.33]
+            twoDayAM: {
+                near: [36.38, 36.71, 38.87, 42.10, 46.77, 50.98, 55.31, 59.16, 63.94, 68.88, 69.82, 75.98, 77.14, 84.05, 88.13, 91.97, 95.95, 99.40, 102.38, 106.31, 110.30, 117.70, 121.95, 124.69, 125.84,
+                       132.98, 137.54, 138.00, 140.97, 143.14, 146.99, 151.18, 160.74, 161.73, 162.03, 165.41, 165.79, 172.01, 172.64, 180.83, 182.92, 188.88, 193.09, 201.25, 208.07, 212.20, 212.64, 219.63, 220.36, 225.22],
+                mid:  [48.76, 53.96, 61.99, 71.64, 80.00, 90.63, 100.09, 111.13, 122.71, 128.62, 130.72, 152.40, 159.34, 169.08, 181.36, 189.32, 194.22, 206.04, 213.59, 217.10, 229.03, 236.52, 245.06, 249.25, 262.25,
+                       271.17, 280.37, 287.56, 289.81, 297.73, 310.30, 319.38, 327.92, 337.84, 341.60, 350.75, 360.25, 375.29, 385.54, 394.29, 403.20, 404.20, 412.68, 429.72, 437.55, 444.40, 445.22, 461.58, 469.57, 474.91],
+                far:  [53.18, 63.18, 73.82, 84.01, 95.58, 104.71, 115.34, 126.90, 139.31, 149.63, 150.95, 174.52, 181.34, 187.00, 193.77, 201.96, 218.39, 223.77, 239.91, 241.53, 250.83, 269.84, 279.83, 284.53, 289.02,
+                       307.90, 309.81, 313.71, 319.59, 323.72, 340.51, 342.22, 351.32, 380.31, 383.22, 388.35, 388.87, 390.46, 422.06, 425.23, 454.68, 465.47, 466.55, 467.68, 481.52, 491.41, 492.42, 493.97, 505.70, 515.57]
             },
             overnight: {
-                near: [73.11, 84.09, 93.25, 107.46, 126.75, 145.23, 192.40, 226.22],
-                mid:  [87.80, 100.71, 108.02, 125.12, 151.53, 167.74, 223.98, 253.54],
-                far:  [99.65, 115.53, 126.28, 141.30, 169.88, 193.81, 256.08, 284.74]
+                near: [73.11, 84.09, 93.25, 100.08, 107.46, 118.45, 126.75, 133.85, 144.02, 145.23, 159.94, 168.75, 178.47, 187.55, 192.40, 201.46, 209.15, 215.44, 220.56, 226.22, 240.07, 246.27, 252.96, 253.63, 258.88,
+                       275.07, 279.70, 287.78, 294.78, 298.30, 308.22, 314.93, 324.43, 331.77, 332.51, 346.47, 355.01, 360.90, 364.04, 364.72, 378.08, 383.19, 393.50, 400.41, 408.84, 415.72, 416.42, 416.72, 416.98, 418.15],
+                mid:  [87.80, 100.71, 108.02, 121.26, 125.12, 141.47, 151.53, 161.75, 165.45, 167.74, 194.00, 203.47, 211.73, 219.93, 223.98, 235.63, 241.11, 246.41, 251.98, 253.54, 272.90, 274.84, 285.60, 288.27, 292.26,
+                       317.04, 320.71, 323.05, 323.35, 327.92, 353.62, 360.63, 363.96, 368.11, 368.80, 382.41, 402.02, 408.80, 409.49, 410.69, 430.42, 436.91, 441.02, 452.98, 454.18, 470.59, 472.89, 473.12, 473.33, 475.41],
+                far:  [99.65, 115.53, 126.28, 138.26, 141.30, 157.50, 169.88, 178.83, 192.12, 193.81, 213.80, 225.22, 236.08, 247.78, 256.08, 263.62, 269.24, 273.85, 283.56, 284.74, 304.67, 317.58, 318.88, 325.93, 330.30,
+                       344.48, 360.78, 370.23, 372.29, 376.56, 387.63, 397.96, 410.68, 416.55, 420.62, 425.93, 444.90, 446.81, 450.83, 451.86, 472.32, 483.19, 504.66, 518.26, 519.63, 535.45, 537.63, 537.85, 538.19, 544.87]
+            },
+            priorityOvernight: {
+                near: [85.63, 93.50, 103.55, 115.82, 120.37, 133.00, 138.94, 144.98, 150.14, 151.83, 185.22, 189.38, 193.63, 202.12, 205.64, 220.11, 232.39, 233.80, 234.07, 235.16, 256.54, 263.16, 270.45, 274.33, 288.54,
+                       299.90, 301.54, 315.61, 322.81, 329.29, 337.27, 344.42, 350.06, 357.48, 358.25, 372.42, 381.10, 387.07, 393.77, 394.46, 408.18, 413.40, 423.98, 431.03, 435.75, 442.71, 443.42, 443.63, 443.84, 445.61],
+                mid:  [99.68, 104.69, 124.94, 131.86, 133.09, 157.05, 163.51, 171.21, 171.99, 174.38, 221.76, 231.15, 232.10, 232.41, 233.87, 263.04, 265.97, 266.29, 266.53, 267.36, 283.70, 285.70, 308.75, 311.06, 317.11,
+                       340.47, 342.82, 350.99, 351.81, 353.33, 383.50, 386.53, 393.42, 394.12, 394.82, 408.65, 428.55, 435.42, 436.11, 437.34, 461.53, 463.96, 472.41, 480.66, 481.51, 498.18, 500.44, 500.67, 500.89, 503.06],
+                far:  [113.48, 129.96, 142.07, 154.60, 155.88, 180.72, 193.09, 199.10, 199.71, 201.47, 236.32, 241.29, 262.70, 264.85, 266.21, 293.14, 295.84, 296.12, 296.39, 297.86, 327.13, 338.23, 347.82, 354.83, 355.74,
+                       373.47, 383.66, 399.85, 401.95, 402.71, 411.02, 424.42, 441.32, 443.31, 447.44, 456.93, 472.44, 474.00, 475.43, 483.51, 497.34, 515.64, 530.61, 546.37, 547.96, 569.16, 571.29, 571.63, 571.91, 573.56]
+            },
+            firstOvernight: {
+                near: [116.63, 124.50, 134.55, 146.82, 151.37, 164.00, 169.94, 175.98, 181.14, 182.83, 216.22, 220.38, 224.63, 233.12, 236.64, 251.11, 263.39, 264.80, 265.07, 266.16, 287.54, 294.16, 301.45, 305.33, 319.54,
+                       330.90, 332.54, 346.61, 353.81, 360.29, 368.27, 375.42, 381.06, 388.48, 389.25, 403.42, 412.10, 418.07, 424.77, 425.46, 439.18, 444.40, 454.98, 462.03, 466.75, 473.71, 474.42, 474.63, 474.84, 476.61],
+                mid:  [130.68, 135.69, 155.94, 162.86, 164.09, 188.05, 194.51, 202.21, 202.99, 205.38, 252.76, 262.15, 263.10, 263.41, 264.87, 294.04, 296.97, 297.29, 297.53, 298.36, 314.70, 316.70, 339.75, 342.06, 348.11,
+                       371.47, 373.82, 381.99, 382.81, 384.33, 414.50, 417.53, 424.42, 425.12, 425.82, 439.65, 459.55, 466.42, 467.11, 468.34, 492.53, 494.96, 503.41, 511.66, 512.51, 529.18, 531.44, 531.67, 531.89, 534.06],
+                far:  [144.48, 160.96, 173.07, 185.60, 186.88, 211.72, 224.09, 230.10, 230.71, 232.47, 267.32, 272.29, 293.70, 295.85, 297.21, 324.14, 326.84, 327.12, 327.39, 328.86, 358.13, 369.23, 378.82, 385.83, 386.74,
+                       404.47, 414.66, 430.85, 432.95, 433.71, 442.02, 455.42, 472.32, 474.31, 478.44, 487.93, 503.44, 505.00, 506.43, 514.51, 528.34, 546.64, 561.61, 577.37, 578.96, 600.16, 602.29, 602.63, 602.91, 604.56]
             }
         },
         // USPS Priority Mail flat-rate boxes, 2026 commercial prices, inside
@@ -537,19 +592,6 @@ function j7TravelSummary() {
     }).join(', ');
 }
 
-/** A rate table's price at `lb`: linear between published weights, and past
- *  the last one at the last step's slope. */
-function j7RateAt(weights, row, lb) {
-    const n = weights.length - 1;
-    if (lb <= weights[0]) return row[0];
-    if (lb >= weights[n]) {
-        return row[n] + (row[n] - row[n - 1]) / (weights[n] - weights[n - 1]) * (lb - weights[n]);
-    }
-    const i = weights.findIndex(w => w >= lb);
-    const t = (lb - weights[i - 1]) / (weights[i] - weights[i - 1]);
-    return row[i - 1] + t * (row[i] - row[i - 1]);
-}
-
 /**
  * Every shipping option for a print order, cheapest first.
  *
@@ -579,56 +621,80 @@ function j7ShippingOptions(job) {
     const box = dims.map(d => d / 2.54 + pad * 2).sort((a, b) => b - a);
     const volume = box[0] * box[1] * box[2];
     const actualLb = grams / 453.592 + S.boxBaseLb + volume * S.boxLbPerCubicIn;
-    // UPS and FedEx always bill the greater of real and volume weight; USPS
-    // only once the box is over a cubic foot.
-    const billableLb = Math.max(1, Math.ceil(Math.max(actualLb, volume / S.dimDivisor)));
-    const overCubicFoot = volume > S.uspsDimOverCubicIn;
-    const uspsLb = Math.max(1, Math.ceil(overCubicFoot ? Math.max(actualLb, volume / S.uspsDimDivisor) : actualLb));
+    const lengthPlusGirth = box[0] + 2 * (box[1] + box[2]);
+    const F = S.fedex;
+    const U = S.usps;
+    const R = S.rates;
+    // FedEx always bills the greater of real and volume weight; USPS only once
+    // the box is over a cubic foot. Both round up to the next pound.
+    const fedexLb = Math.max(1, Math.ceil(Math.max(actualLb, volume / F.dimDivisor)));
+    const overCubicFoot = volume > U.dimOverCubicIn;
+    const uspsLb = Math.max(1, Math.ceil(overCubicFoot ? Math.max(actualLb, volume / U.dimDivisor) : actualLb));
 
     if (region.quote) {
         return { quote: true, region, options: [],
                  note: 'Shipping to Alaska, Hawaii or outside the US is quoted separately.' };
     }
-    if (billableLb > S.maxBillableLb || box[0] > S.maxSideIn) {
-        return { quote: true, region, billableLb, options: [],
+    if (fedexLb > S.maxBillableLb || uspsLb > S.maxBillableLb || box[0] > S.maxSideIn) {
+        return { quote: true, region, billableLb: fedexLb, options: [],
                  note: 'A package this big or heavy is quoted separately.' };
     }
 
-    const R = S.rates;
-    const W = R.weights;
     const id = region.id;
-    const air = base => (base + S.airResidential) * (1 + S.airFuel);
-    const prices = {
-        uspsGround: actualLb < 1 && !overCubicFoot ? R.groundAdvantage.underLb[id]
-                                                   : j7RateAt(W, R.groundAdvantage[id], uspsLb),
-        ground: (j7RateAt(W, R.ground[id], billableLb) + S.residential) * (1 + S.fuel),
-        priority: j7RateAt(W, R.priority[id], uspsLb),
-        saver: air(j7RateAt(W, R.saver[id], billableLb)),
-        twoDay: air(j7RateAt(W, R.twoDay[id], billableLb)),
-        express: actualLb <= 0.5 && !overCubicFoot ? R.express.halfLb[id]
-                                                   : j7RateAt(W, R.express[id], uspsLb),
-        overnight: air(j7RateAt(W, R.overnight[id], billableLb))
-    };
+    const at = (table, lb) => R[table][id][lb - 1];
+    const uspsFees = t => (box[0] > 30 ? U.long30[t] : box[0] > 22 ? U.long22[t] : 0)
+                        + (volume > 2 * U.dimOverCubicIn ? U.over2CubicFt[t] : 0);
+    const prices = {};
 
-    // Priority Mail goes in a flat-rate box when the packed part fits one and
-    // that is cheaper than Priority Mail by weight.
-    const flat = S.flatRate
-        .filter(f => { const inside = f.inside.slice().sort((a, b) => b - a);
-                       return box.every((d, i) => d <= inside[i]); })
-        .sort((a, b) => a.price - b.price)[0];
-    const flatLabel = flat && flat.price < prices.priority ? flat.label : null;
-    if (flatLabel) prices.priority = flat.price;
+    // USPS. Ground Advantage takes a bigger box than Priority Mail, at its
+    // oversized price.
+    if (lengthPlusGirth <= U.oversizedUpToIn) {
+        prices.uspsGround = (lengthPlusGirth > U.maxLengthPlusGirthIn ? R.groundAdvantageOversized[id]
+            : actualLb < 1 && !overCubicFoot ? R.groundAdvantageUnderLb[id]
+            : at('groundAdvantage', uspsLb)) + uspsFees('groundAdvantage');
+    }
+    let flatLabel = null;
+    if (lengthPlusGirth <= U.maxLengthPlusGirthIn) {
+        prices.priority = at('priority', uspsLb) + uspsFees('priority');
+        // A flat-rate box when the packed part fits one and it is cheaper.
+        const flat = S.flatRate
+            .filter(f => { const inside = f.inside.slice().sort((a, b) => b - a);
+                           return box.every((d, i) => d <= inside[i]); })
+            .sort((a, b) => a.price - b.price)[0];
+        if (flat && flat.price < prices.priority) {
+            prices.priority = flat.price;
+            flatLabel = flat.label;
+        }
+        prices.express = (actualLb <= 0.5 && !overCubicFoot ? R.expressHalfLb[id] : at('express', uspsLb))
+            + uspsFees('express');
+    }
 
-    const extras = (job.delicate ? S.delicateMaterials : 0) + (job.signature ? S.signature : 0);
-    const options = S.services.map(s => ({
-        id: s.id,
-        label: s.id === 'priority' && flatLabel ? flatLabel : s.label,
-        days: s.days,
-        rank: s.rank,
-        cost: Math.ceil((prices[s.id] + extras) * (1 + S.buffer))
-    })).sort((a, b) => a.cost - b.cost || a.rank - b.rank);
+    // FedEx, with residential delivery and fuel. A package that would draw
+    // oversize or additional-handling charges is left out rather than guessed.
+    if (lengthPlusGirth <= F.maxLengthPlusGirthIn && box[1] <= F.maxSecondSideIn) {
+        prices.ground = (at('ground', fedexLb) + F.groundResidential) * (1 + F.groundFuel);
+        S.services.filter(s => s.carrier === 'fedexExpress').forEach(s => {
+            prices[s.id] = (at(s.table, fedexLb) + F.expressResidential) * (1 + F.expressFuel);
+        });
+    }
 
-    return { quote: false, region, billableLb, options };
+    const options = S.services.filter(s => prices[s.id] !== undefined).map(s => {
+        const signature = job.signature ? (s.carrier === 'usps' ? U.signature : F.signature) : 0;
+        const packing = job.delicate ? S.delicateMaterials : 0;
+        return {
+            id: s.id,
+            label: s.id === 'priority' && flatLabel ? flatLabel : s.label,
+            days: s.days,
+            rank: s.rank,
+            cost: Math.ceil((prices[s.id] + packing + signature) * (1 + S.buffer))
+        };
+    }).sort((a, b) => a.cost - b.cost || a.rank - b.rank);
+
+    if (!options.length) {
+        return { quote: true, region, billableLb: fedexLb, options: [],
+                 note: 'A package this size is quoted separately.' };
+    }
+    return { quote: false, region, billableLb: fedexLb, options };
 }
 
 /**

@@ -175,16 +175,23 @@ console.log('\nSHIPPING AND DELIVERY');
   const opts = (o) => j7ShippingOptions(Object.assign({}, base, o));
   const costOf = (o, id) => (opts(o).options.find(x => x.id === id) || {}).cost || 0;
 
-  // The tables themselves: a price for every published weight, never cheaper
-  // for a heavier parcel or a farther one.
-  ['groundAdvantage', 'ground', 'priority', 'saver', 'twoDay', 'express', 'overnight'].forEach(t => {
+  // The tables themselves: a price for every pound from 1 to the limit, never
+  // cheaper for a heavier parcel or a farther one.
+  const TABLES = ['groundAdvantage', 'priority', 'express', 'ground', 'saver', 'twoDay', 'twoDayAM',
+                  'overnight', 'priorityOvernight', 'firstOvernight'];
+  TABLES.forEach(t => {
     const rows = ['near', 'mid', 'far'].map(r => R[t][r]);
-    check(t + ' has a price for every published weight', rows.every(row => row.length === R.weights.length));
+    check(t + ' has a price for every pound up to ' + S.maxBillableLb,
+        rows.every(row => row.length === S.maxBillableLb && row.every(p => typeof p === 'number' && p > 0)));
     check(t + ' never gets cheaper for a heavier parcel',
         rows.every(row => row.every((p, i) => i === 0 || p >= row[i - 1])));
     check(t + ' never gets cheaper farther away',
-        R.weights.every((w, i) => rows[0][i] <= rows[1][i] && rows[1][i] <= rows[2][i]));
+        rows[0].every((p, i) => rows[0][i] <= rows[1][i] && rows[1][i] <= rows[2][i]));
   });
+  check('every service has a rate table', S.services.every(s => R[s.table]));
+  const AIR = ['saver', 'twoDay', 'twoDayAM', 'overnight', 'priorityOvernight', 'firstOvernight'];
+  check('FedEx air: a faster service never lists for less, at any weight or distance',
+      ['near', 'mid', 'far'].every(r => R.saver[r].every((p, i) => AIR.every((t, k) => k === 0 || R[t][r][i] >= R[AIR[k - 1]][r][i]))));
 
   // Every option, as the customer sees it.
   S.services.forEach(s => {
@@ -200,8 +207,8 @@ console.log('\nSHIPPING AND DELIVERY');
   check('a chosen option is what the estimate charges', ship({ ...box, service: 'overnight' }).cost === costOf(box, 'overnight'));
   ['near', 'mid', 'far'].forEach(r => {
     const b = { ...box, region: r };
-    check('air: 3-day <= 2-day <= overnight (' + r + ')',
-        costOf(b, 'saver') <= costOf(b, 'twoDay') && costOf(b, 'twoDay') <= costOf(b, 'overnight'));
+    check('FedEx air: faster never costs less (' + r + ')',
+        AIR.every((t, k) => k === 0 || costOf(b, t) >= costOf(b, AIR[k - 1])));
     check('Priority Mail Express never costs less than Priority Mail (' + r + ')',
         costOf(b, 'express') >= costOf(b, 'priority'));
   });
@@ -209,14 +216,26 @@ console.log('\nSHIPPING AND DELIVERY');
       ship({ ...box, region: 'near' }).cost <= ship({ ...box, region: 'mid' }).cost
       && ship({ ...box, region: 'mid' }).cost <= ship({ ...box, region: 'far' }).cost);
   check('delicate packing never costs less', ship({ ...box, service: 'ground', delicate: true }).cost >= ship({ ...box, service: 'ground' }).cost);
-  check('a signature adds at least its fee',
-      ship({ ...box, service: 'ground', signature: true }).cost - ship({ ...box, service: 'ground' }).cost >= S.signature);
+  check('a FedEx signature adds at least FedEx\'s fee',
+      ship({ ...box, service: 'ground', signature: true }).cost - ship({ ...box, service: 'ground' }).cost >= S.fedex.signature);
+  check('a USPS signature adds at least USPS\'s fee',
+      ship({ ...box, service: 'uspsGround', signature: true }).cost - ship({ ...box, service: 'uspsGround' }).cost >= S.usps.signature);
   const tiny = ship({ dimsCm: [5, 3, 1], gramsPerPart: 15 });
   check('a light part is cheapest by USPS Ground Advantage', tiny.service === 'uspsGround', JSON.stringify(tiny));
   check('under a pound, Ground Advantage is the one-price-per-zone rate plus the buffer',
-      tiny.cost === Math.ceil(R.groundAdvantage.underLb.near * (1 + S.buffer)));
+      tiny.cost === Math.ceil(R.groundAdvantageUnderLb.near * (1 + S.buffer)));
   check('at a pound or more, Ground Advantage is priced by weight',
-      costOf({ dimsCm: [12, 9, 8], gramsPerPart: 700 }, 'uspsGround') > Math.ceil(R.groundAdvantage.underLb.near * (1 + S.buffer)));
+      costOf({ dimsCm: [12, 9, 8], gramsPerPart: 700 }, 'uspsGround') > Math.ceil(R.groundAdvantageUnderLb.near * (1 + S.buffer)));
+  check('a box over 22 inches long pays the USPS length fee',
+      costOf({ dimsCm: [57, 10, 5] }, 'uspsGround') - costOf({ dimsCm: [50, 10, 5] }, 'uspsGround') >= S.usps.long22.groundAdvantage);
+  const wide = opts({ dimsCm: [118, 63.5, 10.9], gramsPerPart: 500 });
+  check('past 108 inches length plus girth, Priority Mail and Express are not offered',
+      !wide.options.some(o => o.id === 'priority' || o.id === 'express') && wide.options.some(o => o.id === 'uspsGround'),
+      JSON.stringify(wide.options.map(o => o.id)));
+  check('past 108 inches length plus girth, Ground Advantage uses its oversized price',
+      costOf({ dimsCm: [118, 63.5, 10.9], gramsPerPart: 500 }, 'uspsGround') >= Math.ceil(R.groundAdvantageOversized.near * (1 + S.buffer)));
+  check('FedEx additional handling (a side over 30 inches) is left out, not guessed',
+      !opts({ dimsCm: [100, 80, 3] }).options.some(o => o.id === 'ground' || AIR.includes(o.id)));
   const plate = opts({ dimsCm: [18, 10, 0.3], gramsPerPart: 2000 }).options.find(o => o.id === 'priority');
   check('Priority Mail uses the small flat-rate box when that is cheaper',
       /Small Flat Rate/.test(plate.label) && plate.cost === Math.ceil(S.flatRate[0].price * (1 + S.buffer)), JSON.stringify(plate));
