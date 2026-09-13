@@ -20,7 +20,18 @@ const MODEL = 'claude-sonnet-5';
 // Short on purpose. Scope is enforced by the prompt, and a prompt is guidance
 // rather than a fence — but a model that cannot write at length cannot write
 // the tech-support tutorial it is told not to write.
-const MAX_TOKENS = 500;
+//
+// Claude Sonnet 5 thinks before it answers (adaptive thinking is on by
+// default), and max_tokens caps the thinking and the answer together. At 500,
+// and again at 1500, sizing a part spent every token thinking and returned no
+// text at all: stop_reason max_tokens, 1499 of 1500 output tokens thinking
+// (13 Sep 2026). So: low effort, which Anthropic recommends for chat on
+// Sonnet 5; room for the thinking; and one retry with thinking off if an
+// answer still comes back empty. The prompt still asks for two or three
+// sentences - this is headroom, not length.
+const MAX_TOKENS = 4000;
+const EFFORT = 'low';
+const FALLBACK_MAX_TOKENS = 800;
 
 // Cost control, all of it deliberate:
 //   - a conversation is capped, so one visitor cannot run up an unbounded bill
@@ -39,6 +50,63 @@ const json = (body, status = 200) => new Response(JSON.stringify(body), {
         'Cache-Control': 'no-store'
     }
 });
+
+// One call to the Messages API. Returns { reply, data }, or { error } holding
+// a Response ready to send. Why an answer was short or missing goes to the
+// deployment's real-time logs - stop reason, block types, token counts and
+// the options used, never the text.
+async function askClaude(env, messages, options) {
+    let upstream;
+    try {
+        upstream = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': env.ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify(Object.assign({
+                model: MODEL,
+                // Cached: the prompt is ~3k tokens and identical every time,
+                // which is most of what a short conversation would otherwise
+                // cost. This is the difference between $9 and $30 per 1,000.
+                system: [{
+                    type: 'text',
+                    text: SYSTEM_PROMPT,
+                    cache_control: { type: 'ephemeral' }
+                }],
+                messages
+            }, options))
+        });
+    } catch (e) {
+        return { error: json({ error: 'Could not reach the assistant just now.' }, 502) };
+    }
+
+    if (!upstream.ok) {
+        // Never pass the upstream body through - it can carry request detail,
+        // and a rate-limit or billing message is not the visitor's problem.
+        console.error('anthropic ' + upstream.status + ': ' + await upstream.text());
+        return { error: json({
+            error: 'The assistant is having trouble. The contact form still works.'
+        }, 502) };
+    }
+
+    const data = await upstream.json();
+    const reply = (data.content || [])
+        .filter(b => b.type === 'text')
+        .map(b => b.text)
+        .join('')
+        .trim();
+
+    if (!reply || data.stop_reason !== 'end_turn') {
+        console.error('chat reply: stop_reason=' + data.stop_reason +
+            ' blocks=' + (data.content || []).map(b => b.type).join(',') +
+            ' usage=' + JSON.stringify(data.usage || {}) +
+            ' options=' + JSON.stringify(options) +
+            ' empty=' + !reply);
+    }
+    return { reply, data };
+}
 
 async function handle(context) {
     const { request, env } = context;
@@ -124,54 +192,25 @@ async function handle(context) {
         return json({ error: 'Bad request.' }, 400);
     }
 
-    let upstream;
-    try {
-        upstream = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': env.ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01'
-            },
-            body: JSON.stringify({
-                model: MODEL,
-                max_tokens: MAX_TOKENS,
-                // Cached: the prompt is ~3k tokens and identical every time,
-                // which is most of what a short conversation would otherwise
-                // cost. This is the difference between $9 and $30 per 1,000.
-                system: [{
-                    type: 'text',
-                    text: SYSTEM_PROMPT,
-                    cache_control: { type: 'ephemeral' }
-                }],
-                messages: clean
-            })
+    // Low effort with room to think; if thinking still uses the whole allowance
+    // and no text comes back, ask once more with thinking off, so the visitor
+    // gets an answer rather than an error.
+    let result = await askClaude(env, clean, {
+        max_tokens: MAX_TOKENS,
+        output_config: { effort: EFFORT }
+    });
+    if (result.error) return result.error;
+    if (!result.reply) {
+        result = await askClaude(env, clean, {
+            max_tokens: FALLBACK_MAX_TOKENS,
+            thinking: { type: 'disabled' }
         });
-    } catch (e) {
-        return json({ error: 'Could not reach the assistant just now.' }, 502);
+        if (result.error) return result.error;
     }
-
-    if (!upstream.ok) {
-        // Never pass the upstream body through — it can carry request detail,
-        // and a rate-limit or billing message is not the visitor's problem.
-        console.error('anthropic ' + upstream.status + ': ' + await upstream.text());
-        return json({
-            error: 'The assistant is having trouble. The contact form still works.'
-        }, 502);
-    }
-
-    const data = await upstream.json();
-    const reply = (data.content || [])
-        .filter(b => b.type === 'text')
-        .map(b => b.text)
-        .join('')
-        .trim();
-
-    if (!reply) {
+    if (!result.reply) {
         return json({ error: 'No answer came back. Try asking differently.' }, 502);
     }
-
-    return json({ reply, stop_reason: data.stop_reason });
+    return json({ reply: result.reply, stop_reason: result.data.stop_reason });
 }
 
 export async function onRequestPost(context) {
