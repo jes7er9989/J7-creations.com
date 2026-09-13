@@ -5,7 +5,7 @@
 // places, and it is invisible until a customer finds it.
 
 const { J7_PRICING, j7TieredCost, j7UnitCost, j7PrintEstimate, j7SwapTimeFactor,
-        j7ShippingEstimate, j7DeliveryEstimate,
+        j7ShippingEstimate, j7ShippingOptions, j7DeliveryEstimate,
         j7OnsiteHours, J7_ONSITE_TASKS, J7_REMOTE_SCOPES } = require('../js/pricing.js');
 
 const fs = require('fs');
@@ -169,34 +169,61 @@ console.log('\nTRAVEL AND PAYMENT');
 console.log('\nSHIPPING AND DELIVERY');
 {
   const S = J7_PRICING.shipping;
-  const ship = (o) => j7ShippingEstimate(Object.assign(
-      { gramsPerPart: 200, quantity: 1, region: 'near', speed: 'ground' }, o));
-  sweep('shipping by weight (no size given)', g => ship({ gramsPerPart: g }).cost || 0, 20, 8000, 20);
-  sweep('shipping by part size', c => ship({ dimsCm: [c, c * 0.6, c * 0.4] }).cost || 0, 2, 60);
+  const R = S.rates;
+  const base = { gramsPerPart: 200, quantity: 1, region: 'near' };
+  const ship = (o) => j7ShippingEstimate(Object.assign({}, base, o));
+  const opts = (o) => j7ShippingOptions(Object.assign({}, base, o));
+  const costOf = (o, id) => (opts(o).options.find(x => x.id === id) || {}).cost || 0;
+
+  // The tables themselves: a price for every published weight, never cheaper
+  // for a heavier parcel or a farther one.
+  ['groundAdvantage', 'ground', 'priority', 'saver', 'twoDay', 'express', 'overnight'].forEach(t => {
+    const rows = ['near', 'mid', 'far'].map(r => R[t][r]);
+    check(t + ' has a price for every published weight', rows.every(row => row.length === R.weights.length));
+    check(t + ' never gets cheaper for a heavier parcel',
+        rows.every(row => row.every((p, i) => i === 0 || p >= row[i - 1])));
+    check(t + ' never gets cheaper farther away',
+        R.weights.every((w, i) => rows[0][i] <= rows[1][i] && rows[1][i] <= rows[2][i]));
+  });
+
+  // Every option, as the customer sees it.
+  S.services.forEach(s => {
+    sweep(s.label + ' by weight', g => costOf({ gramsPerPart: g }, s.id), 20, 8000, 20);
+    sweep(s.label + ' by part size', c => costOf({ dimsCm: [c, c * 0.6, c * 0.4] }, s.id), 2, 60);
+  });
+  sweep('the default (cheapest) shipping by weight', g => ship({ gramsPerPart: g }).cost || 0, 20, 8000, 20);
   const box = { dimsCm: [30, 20, 15], gramsPerPart: 1500 };
-  check('farther never costs less (near <= mid <= far)',
+  const all = opts(box).options;
+  check('every service is offered for an ordinary parcel', all.length === S.services.length);
+  check('options come back cheapest first', all.every((o, i) => i === 0 || o.cost >= all[i - 1].cost));
+  check('the estimate uses the cheapest option until one is chosen', ship(box).cost === all[0].cost);
+  check('a chosen option is what the estimate charges', ship({ ...box, service: 'overnight' }).cost === costOf(box, 'overnight'));
+  ['near', 'mid', 'far'].forEach(r => {
+    const b = { ...box, region: r };
+    check('air: 3-day <= 2-day <= overnight (' + r + ')',
+        costOf(b, 'saver') <= costOf(b, 'twoDay') && costOf(b, 'twoDay') <= costOf(b, 'overnight'));
+    check('Priority Mail Express never costs less than Priority Mail (' + r + ')',
+        costOf(b, 'express') >= costOf(b, 'priority'));
+  });
+  check('farther never costs less for the cheapest option (near <= mid <= far)',
       ship({ ...box, region: 'near' }).cost <= ship({ ...box, region: 'mid' }).cost
       && ship({ ...box, region: 'mid' }).cost <= ship({ ...box, region: 'far' }).cost);
-  check('faster never costs less (ground <= 2-day <= overnight)',
-      ship({ ...box, speed: 'ground' }).cost <= ship({ ...box, speed: 'twoDay' }).cost
-      && ship({ ...box, speed: 'twoDay' }).cost <= ship({ ...box, speed: 'overnight' }).cost);
-  check('delicate packing never costs less', ship({ ...box, delicate: true }).cost >= ship(box).cost);
-  check('a signature adds at least its fee', ship({ ...box, signature: true }).cost - ship(box).cost >= S.signature);
+  check('delicate packing never costs less', ship({ ...box, service: 'ground', delicate: true }).cost >= ship({ ...box, service: 'ground' }).cost);
+  check('a signature adds at least its fee',
+      ship({ ...box, service: 'ground', signature: true }).cost - ship({ ...box, service: 'ground' }).cost >= S.signature);
   const tiny = ship({ dimsCm: [5, 3, 1], gramsPerPart: 15 });
-  check('a light part ships USPS Ground Advantage', tiny.method === 'usps', JSON.stringify(tiny));
-  check('the Ground Advantage estimate includes the buffer',
-      tiny.cost === Math.ceil(S.groundAdvantage.near * (1 + S.buffer)));
-  check('Ground Advantage is never used at a pound or more',
-      ship({ dimsCm: [12, 9, 8], gramsPerPart: 700 }).method !== 'usps');
-  check('Ground Advantage rises with distance',
-      S.groundAdvantage.near <= S.groundAdvantage.mid && S.groundAdvantage.mid <= S.groundAdvantage.far);
-  const plate = ship({ dimsCm: [18, 10, 0.3], gramsPerPart: 500 });
-  check('a flat part over a pound uses the small flat-rate box',
-      plate.method === 'flat' && /Small/.test(plate.carrier), JSON.stringify(plate));
-  check('the small flat-rate estimate includes the buffer',
-      plate.cost === Math.ceil(S.flatRate[0].price * (1 + S.buffer)));
-  check('USPS services are never used for 2-day or overnight',
-      ship({ dimsCm: [5, 3, 1], gramsPerPart: 15, speed: 'twoDay' }).method === 'ground');
+  check('a light part is cheapest by USPS Ground Advantage', tiny.service === 'uspsGround', JSON.stringify(tiny));
+  check('under a pound, Ground Advantage is the one-price-per-zone rate plus the buffer',
+      tiny.cost === Math.ceil(R.groundAdvantage.underLb.near * (1 + S.buffer)));
+  check('at a pound or more, Ground Advantage is priced by weight',
+      costOf({ dimsCm: [12, 9, 8], gramsPerPart: 700 }, 'uspsGround') > Math.ceil(R.groundAdvantage.underLb.near * (1 + S.buffer)));
+  const plate = opts({ dimsCm: [18, 10, 0.3], gramsPerPart: 2000 }).options.find(o => o.id === 'priority');
+  check('Priority Mail uses the small flat-rate box when that is cheaper',
+      /Small Flat Rate/.test(plate.label) && plate.cost === Math.ceil(S.flatRate[0].price * (1 + S.buffer)), JSON.stringify(plate));
+  // The quote that started this (13 Sep 2026): a 315 g delicate part to the
+  // West came to $64 of 2-day air. Ground has to be on offer, and cheap.
+  check('a 315 g delicate part to the West has an option under $20',
+      opts({ gramsPerPart: 315, region: 'far', delicate: true }).options[0].cost < 20);
   check('Alaska, Hawaii and abroad are quoted', ship({ region: 'quote' }).quote === true);
   check('over the billable weight limit is quoted', ship({ gramsPerPart: 40000, dimsCm: [40, 40, 40] }).quote === true);
   check('oversize is quoted', ship({ dimsCm: [130, 10, 10] }).quote === true);
@@ -211,6 +238,8 @@ console.log('\nSHIPPING AND DELIVERY');
       faq.split('Within ' + B[B.length - 1].maxMiles + ' miles of Milan I can hand-deliver').length === 3);
   const fab = fs.readFileSync(path.join(root, 'pages/services-fabrication.html'), 'utf8');
   check('fabrication page offers no pickup', !/pick ?up locally|shipping\/pickup/i.test(fab));
+  check('fabrication page lets the customer pick from every option, not a speed dropdown',
+      fab.includes('id="ship-options"') && !fab.includes('id="ship-speed"'));
   check('fabrication page states the delivery limit from pricing.js', fab.includes('within ' + B[B.length - 1].maxMiles + ' miles of Milan'));
   const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   check('homepage no longer says shipping is included', !/shipping included/i.test(home));

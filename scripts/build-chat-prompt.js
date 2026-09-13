@@ -118,8 +118,9 @@ function ratesSection() {
 
     const DB = P.delivery.bands;
     const deliveryText = DB.map(b => `up to ${b.maxMiles} miles ${money(b.fee)}`).join(', ');
-    const GA = P.shipping.groundAdvantage;
+    const GA = P.shipping.rates.groundAdvantage.underLb;
     const lightShip = [GA.near, GA.far].map(p => Math.ceil(p * (1 + P.shipping.buffer)));
+    const shipServices = P.shipping.services.map(s => s.label.split(' (')[0]).join(', ');
 
     const nozzleTime = Object.entries(P.print.nozzleTime)
         .map(([n, f]) => `${n} mm ${f}x`)
@@ -172,11 +173,13 @@ REMOTE SCOPES
   Getting it to them: there is NO pickup. Parts ship anywhere in the US, or are
   hand-delivered near Milan (${deliveryText}). Further than ${DB[DB.length - 1].maxMiles} miles,
   delivery is arranged with Thomas directly. There is no free shipping.
-  Shipping is an estimate from the finished part's size and weight, where it is
-  going and how fast. The estimator on the 3D printing page works it out; do not
-  calculate it yourself. A light part, under a pound packed, usually ships for
-  ${money(lightShip[0])}-${money(lightShip[1])} by USPS Ground Advantage; bigger or heavier parts, faster
-  shipping, delicate packing or a signature cost more.
+  Shipping is an estimate from the finished part's size and weight and where it
+  is going. The estimator on the 3D printing page lists every option with its
+  price, cheapest first, and the customer picks one: ${shipServices}.
+  Do not calculate it yourself. A light part, under a pound packed, usually
+  ships for ${money(lightShip[0])}-${money(lightShip[1])} by USPS Ground Advantage; air and overnight cost several
+  times as much, and bigger or heavier parts, delicate packing or a signature
+  cost more.
 
 CAD AND FINISHING
   CAD ${money(P.cadPerHour)}/hr, typically ${money(P.cadFlatRange[0])}-${money(P.cadFlatRange[1])} flat.
@@ -406,11 +409,13 @@ say it is separate and at cost, and leave it out of the total.
 ## Shipping and delivery for printed parts
 
 There is no pickup. Every print conversation should cover how the part gets to
-them: shipped (charged separately, estimated from its size, weight,
-destination and speed) or hand-delivered for a fee within ${J7_PRICING.delivery.bands[J7_PRICING.delivery.bands.length - 1].maxMiles} miles of Milan. Ask
-which, and where it is going, before offering to send it over. Never say
-shipping is free or included, and never quote an exact shipping price - point
-them at the estimator on the 3D printing page for that.
+them: shipped (charged separately; the estimator on the 3D printing page shows
+every carrier and speed with its price and they choose) or hand-delivered for a
+fee within ${J7_PRICING.delivery.bands[J7_PRICING.delivery.bands.length - 1].maxMiles} miles of Milan. Ask which, where it is going, and how soon
+they need it, before offering to send it over. If they are not in a hurry, say
+ground shipping is far cheaper than air. Never say shipping is free or
+included, and never quote an exact shipping price - point them at the
+estimator for that.
 
 ## Plain text
 

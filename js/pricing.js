@@ -174,21 +174,38 @@ const J7_PRICING = {
     // An ESTIMATE from the finished part's size and weight (Thomas, 12 Sep
     // 2026). There is no free shipping and no pickup.
     //
-    // Ground rates are the published 2026 UPS and FedEx Ground list rates,
-    // averaged (the two are within a few percent), by billable pound and
-    // distance band. Residential delivery and fuel are added because nearly
-    // every order goes to a house. Billable weight is the greater of the real
-    // weight and length x width x height / 139 in inches, as both carriers bill.
-    // Light parts go USPS Ground Advantage, and a USPS Priority Mail flat-rate
-    // box is used when the part fits one and it is cheaper.
+    // The customer sees every option in `services`, cheapest first, and picks
+    // one (Thomas, 13 Sep 2026: give them as many options as possible, so a
+    // patient customer is never pushed into paying for air).
+    //
+    // Every price comes from the carrier's own 2026 table, for the dearest zone
+    // inside each region: near is zone 4, mid zone 6, far zone 8.
+    //   USPS Ground Advantage, Priority Mail, Priority Mail Express: commercial
+    //     prices, USPS Notice 123, effective 12 Jul 2026. No residential or
+    //     fuel surcharge. USPS bills by box volume (/166) only over a cubic foot.
+    //   UPS or FedEx Ground: the two published list rates averaged (they are
+    //     within a few percent).
+    //   3-day, 2-day and overnight air: FedEx Standard List Rates 2026 (updated
+    //     1 Jun 2026) for Express Saver, 2Day and Standard Overnight. UPS 3 Day
+    //     Select, 2nd Day Air and Next Day Air Saver list close to these.
+    // UPS and FedEx add residential delivery and fuel, because nearly every
+    // order goes to a house, and bill the greater of the real weight and
+    // length x width x height / 139 in inches.
     //
     // `buffer` is Thomas's margin for a label that costs more than estimated.
     // It is never shown or mentioned to customers.
+    //
+    // Recheck every January and July: the USPS tables, both fuel surcharges
+    // (they move weekly), both residential charges and the FedEx tables.
     shipping: {
         buffer: 0.10,
-        residential: 6.48,          // UPS $6.50 / FedEx $6.45 per home delivery
-        fuel: 0.25,                 // ground fuel surcharge, mid-2026
+        residential: 6.48,          // ground: UPS $6.50 / FedEx $6.45 per home delivery
+        fuel: 0.27,                 // ground fuel surcharge, FedEx week of 7 Sep 2026
+        airResidential: 5.95,       // FedEx Express residential delivery charge, 2026
+        airFuel: 0.2875,            // express fuel surcharge, FedEx week of 7 Sep 2026
         dimDivisor: 139,
+        uspsDimDivisor: 166,
+        uspsDimOverCubicIn: 1728,   // USPS only bills by volume over a cubic foot
         maxBillableLb: 50,          // heavier than this is quoted
         maxSideIn: 48,              // longer than this is quoted (oversize)
         // Padding each side of the part. Half an inch of bubble wrap is what a
@@ -200,32 +217,69 @@ const J7_PRICING = {
         boxLbPerCubicIn: 0.0004,    // box and fill weight, by box volume
         boxBaseLb: 0.25,
         signature: 7.70,
-        // USPS Ground Advantage for light parts (Thomas, 12 Sep 2026). Under a
-        // pound of real packed weight and a cubic foot of box, commercial
-        // pricing is one price per zone whatever the ounces (USPS Notice 123,
-        // 12 Jul 2026). Each region uses the dearest zone inside it: near is
-        // zone 4, mid zone 6, far zone 8. No residential or fuel surcharge.
-        groundAdvantage: { underLb: 1, maxCubicIn: 1728, near: 7.46, mid: 7.86, far: 8.40 },
         regions: [
-            { id: 'near',  zone: 'z1_4', label: 'Tennessee, the South or Midwest (within about 600 miles, e.g. Atlanta, Chicago, Dallas)' },
-            { id: 'mid',   zone: 'z5_6', label: 'The East Coast, Florida, Texas, the Plains or Rockies (about 600-1,400 miles)' },
-            { id: 'far',   zone: 'z7_8', label: 'The West - Arizona, Utah, Idaho, Montana and beyond (over 1,400 miles)' },
-            { id: 'quote', zone: null,   label: 'Alaska, Hawaii or outside the US - I will quote it' }
+            { id: 'near',  label: 'Tennessee, the South or Midwest (within about 600 miles, e.g. Atlanta, Chicago, Dallas)' },
+            { id: 'mid',   label: 'The East Coast, Florida, Texas, the Plains or Rockies (about 600-1,400 miles)' },
+            { id: 'far',   label: 'The West - Arizona, Utah, Idaho, Montana and beyond (over 1,400 miles)' },
+            { id: 'quote', quote: true, label: 'Alaska, Hawaii or outside the US - I will quote it' }
         ],
-        speeds: [
-            { id: 'ground',   factor: 1.0,  label: 'Standard ground' },
-            { id: 'twoDay',   factor: 2.1,  label: '2-day air' },
-            { id: 'overnight', factor: 3.75, label: 'Overnight air' }
+        // Every way to send it. `rank` is speed, 1 fastest, for the "fastest" tag.
+        services: [
+            { id: 'uspsGround', rank: 5,   days: '2-5 business days', label: 'USPS Ground Advantage' },
+            { id: 'ground',     rank: 4,   days: '1-5 business days', label: 'UPS or FedEx Ground' },
+            { id: 'priority',   rank: 3,   days: '1-3 business days', label: 'USPS Priority Mail' },
+            { id: 'saver',      rank: 3,   days: '3 business days',   label: '3-day air (FedEx Express Saver or UPS 3 Day Select)' },
+            { id: 'twoDay',     rank: 2,   days: '2 business days',   label: '2-day air (FedEx 2Day or UPS 2nd Day Air)' },
+            { id: 'express',    rank: 1.5, days: '1-2 business days', label: 'USPS Priority Mail Express' },
+            { id: 'overnight',  rank: 1,   days: 'Next business day', label: 'Overnight air (FedEx Standard Overnight or UPS Next Day Air Saver)' }
         ],
-        // Billable lb -> base rate, before residential and fuel.
-        ground: {
+        // Billable lb -> base price per region, before any surcharge.
+        rates: {
             weights: [1, 2, 3, 5, 7, 10, 15, 20],
-            z1_4: [11.99, 12.78, 13.58, 15.33, 17.50, 20.75, 26.15, 31.15],
-            z5_6: [13.35, 14.75, 16.13, 18.95, 22.15, 27.05, 34.85, 42.35],
-            z7_8: [15.58, 17.25, 19.43, 24.10, 28.80, 36.10, 46.95, 56.25]
+            // Under a pound (and a cubic foot) Ground Advantage is one price per
+            // zone whatever the ounces.
+            groundAdvantage: {
+                underLb: { near: 7.46, mid: 7.86, far: 8.40 },
+                near: [8.15, 8.51, 9.67, 11.02, 11.90, 14.44, 17.67, 19.66],
+                mid:  [9.63, 11.58, 13.59, 15.89, 17.65, 19.94, 25.13, 30.32],
+                far:  [10.67, 12.87, 15.75, 19.19, 21.83, 25.34, 32.91, 40.39]
+            },
+            ground: {
+                near: [11.99, 12.78, 13.58, 15.33, 17.50, 20.75, 26.15, 31.15],
+                mid:  [13.35, 14.75, 16.13, 18.95, 22.15, 27.05, 34.85, 42.35],
+                far:  [15.58, 17.25, 19.43, 24.10, 28.80, 36.10, 46.95, 56.25]
+            },
+            priority: {
+                near: [10.40, 10.79, 12.68, 15.72, 17.46, 19.62, 23.91, 28.29],
+                mid:  [14.47, 15.34, 18.86, 26.35, 30.28, 33.74, 41.99, 53.02],
+                far:  [15.22, 16.37, 20.57, 29.18, 34.97, 41.28, 53.60, 68.06]
+            },
+            saver: {
+                near: [24.83, 25.29, 28.07, 32.19, 39.75, 45.01, 62.69, 74.00],
+                mid:  [35.69, 38.06, 44.25, 52.83, 65.49, 78.83, 105.14, 126.57],
+                far:  [41.41, 48.10, 54.32, 69.71, 82.57, 110.41, 147.36, 177.95]
+            },
+            twoDay: {
+                near: [29.44, 30.58, 32.39, 38.11, 45.06, 56.11, 70.83, 85.47],
+                mid:  [42.80, 48.67, 55.20, 71.24, 89.08, 114.50, 158.49, 193.28],
+                far:  [46.97, 56.12, 64.38, 83.38, 96.33, 131.44, 175.97, 217.78]
+            },
+            // Half a pound and under has its own price.
+            express: {
+                halfLb: { near: 34.19, mid: 40.99, far: 47.63 },
+                near: [39.05, 43.91, 48.77, 58.54, 71.50, 90.89, 118.37, 145.80],
+                mid:  [48.77, 56.54, 64.32, 79.82, 94.83, 117.29, 144.29, 171.29],
+                far:  [55.79, 63.94, 72.04, 88.35, 105.30, 130.68, 160.98, 191.33]
+            },
+            overnight: {
+                near: [73.11, 84.09, 93.25, 107.46, 126.75, 145.23, 192.40, 226.22],
+                mid:  [87.80, 100.71, 108.02, 125.12, 151.53, 167.74, 223.98, 253.54],
+                far:  [99.65, 115.53, 126.28, 141.30, 169.88, 193.81, 256.08, 284.74]
+            }
         },
         // USPS Priority Mail flat-rate boxes, 2026 commercial prices, inside
-        // dimensions in inches. Ground speed only - these are Priority Mail.
+        // dimensions in inches. Used for the Priority Mail option when the
+        // packed part fits one and it is cheaper than Priority Mail by weight.
         flatRate: [
             { label: 'USPS Priority Mail Small Flat Rate Box',  inside: [8.44, 5.19, 1.5],   price: 12.10 },
             { label: 'USPS Priority Mail Medium Flat Rate Box', inside: [11, 8.5, 5.75],     price: 21.17 },
@@ -483,18 +537,31 @@ function j7TravelSummary() {
     }).join(', ');
 }
 
+/** A rate table's price at `lb`: linear between published weights, and past
+ *  the last one at the last step's slope. */
+function j7RateAt(weights, row, lb) {
+    const n = weights.length - 1;
+    if (lb <= weights[0]) return row[0];
+    if (lb >= weights[n]) {
+        return row[n] + (row[n] - row[n - 1]) / (weights[n] - weights[n - 1]) * (lb - weights[n]);
+    }
+    const i = weights.findIndex(w => w >= lb);
+    const t = (lb - weights[i - 1]) / (weights[i] - weights[i - 1]);
+    return row[i - 1] + t * (row[i] - row[i - 1]);
+}
+
 /**
- * Estimated shipping for a print order.
+ * Every shipping option for a print order, cheapest first.
  *
  * job: { dimsCm: [l, w, h] of one part (optional), gramsPerPart, quantity,
- *        region, speed, delicate, signature }
- * Returns { quote, cost, method, carrier, billableLb, summary }. `cost`
- * includes the hidden buffer and is rounded up to the whole dollar.
+ *        region, delicate, signature }
+ * Returns { quote, region, billableLb, options: [{ id, label, days, rank, cost }],
+ * note }. Each `cost` includes the hidden buffer and is rounded up to the
+ * whole dollar.
  */
-function j7ShippingEstimate(job) {
+function j7ShippingOptions(job) {
     const S = J7_PRICING.shipping;
     const region = S.regions.find(r => r.id === job.region) || S.regions[0];
-    const speed = S.speeds.find(s => s.id === job.speed) || S.speeds[0];
     const qty = Math.max(1, Math.round(job.quantity) || 1);
     const grams = Math.max(1, job.gramsPerPart || 1) * qty;
 
@@ -512,63 +579,85 @@ function j7ShippingEstimate(job) {
     const box = dims.map(d => d / 2.54 + pad * 2).sort((a, b) => b - a);
     const volume = box[0] * box[1] * box[2];
     const actualLb = grams / 453.592 + S.boxBaseLb + volume * S.boxLbPerCubicIn;
-    const dimLb = volume / S.dimDivisor;
-    const billableLb = Math.max(1, Math.ceil(Math.max(actualLb, dimLb)));
+    // UPS and FedEx always bill the greater of real and volume weight; USPS
+    // only once the box is over a cubic foot.
+    const billableLb = Math.max(1, Math.ceil(Math.max(actualLb, volume / S.dimDivisor)));
+    const overCubicFoot = volume > S.uspsDimOverCubicIn;
+    const uspsLb = Math.max(1, Math.ceil(overCubicFoot ? Math.max(actualLb, volume / S.uspsDimDivisor) : actualLb));
 
-    const summary = [region.label.split(' (')[0], speed.label, job.delicate ? 'delicate' : null,
-                     job.signature ? 'signature' : null].filter(Boolean).join(', ');
-
-    if (!region.zone) {
-        return { quote: true, summary, note: 'Shipping to Alaska, Hawaii or outside the US is quoted separately.' };
+    if (region.quote) {
+        return { quote: true, region, options: [],
+                 note: 'Shipping to Alaska, Hawaii or outside the US is quoted separately.' };
     }
     if (billableLb > S.maxBillableLb || box[0] > S.maxSideIn) {
-        return { quote: true, billableLb, summary, note: 'A package this big or heavy is quoted separately.' };
+        return { quote: true, region, billableLb, options: [],
+                 note: 'A package this big or heavy is quoted separately.' };
     }
 
-    // Ground, interpolated between published weights.
-    const W = S.ground.weights;
-    const R = S.ground[region.zone];
-    let base;
-    if (billableLb <= W[0]) {
-        base = R[0];
-    } else if (billableLb >= W[W.length - 1]) {
-        const slope = (R[R.length - 1] - R[R.length - 2]) / (W[W.length - 1] - W[W.length - 2]);
-        base = R[R.length - 1] + slope * (billableLb - W[W.length - 1]);
-    } else {
-        const i = W.findIndex(w => w >= billableLb);
-        const t = (billableLb - W[i - 1]) / (W[i] - W[i - 1]);
-        base = R[i - 1] + t * (R[i] - R[i - 1]);
+    const R = S.rates;
+    const W = R.weights;
+    const id = region.id;
+    const air = base => (base + S.airResidential) * (1 + S.airFuel);
+    const prices = {
+        uspsGround: actualLb < 1 && !overCubicFoot ? R.groundAdvantage.underLb[id]
+                                                   : j7RateAt(W, R.groundAdvantage[id], uspsLb),
+        ground: (j7RateAt(W, R.ground[id], billableLb) + S.residential) * (1 + S.fuel),
+        priority: j7RateAt(W, R.priority[id], uspsLb),
+        saver: air(j7RateAt(W, R.saver[id], billableLb)),
+        twoDay: air(j7RateAt(W, R.twoDay[id], billableLb)),
+        express: actualLb <= 0.5 && !overCubicFoot ? R.express.halfLb[id]
+                                                   : j7RateAt(W, R.express[id], uspsLb),
+        overnight: air(j7RateAt(W, R.overnight[id], billableLb))
+    };
+
+    // Priority Mail goes in a flat-rate box when the packed part fits one and
+    // that is cheaper than Priority Mail by weight.
+    const flat = S.flatRate
+        .filter(f => { const inside = f.inside.slice().sort((a, b) => b - a);
+                       return box.every((d, i) => d <= inside[i]); })
+        .sort((a, b) => a.price - b.price)[0];
+    const flatLabel = flat && flat.price < prices.priority ? flat.label : null;
+    if (flatLabel) prices.priority = flat.price;
+
+    const extras = (job.delicate ? S.delicateMaterials : 0) + (job.signature ? S.signature : 0);
+    const options = S.services.map(s => ({
+        id: s.id,
+        label: s.id === 'priority' && flatLabel ? flatLabel : s.label,
+        days: s.days,
+        rank: s.rank,
+        cost: Math.ceil((prices[s.id] + extras) * (1 + S.buffer))
+    })).sort((a, b) => a.cost - b.cost || a.rank - b.rank);
+
+    return { quote: false, region, billableLb, options };
+}
+
+/**
+ * Estimated shipping for a print order: the option the customer chose
+ * (`job.service`), or the cheapest when they have not chosen.
+ *
+ * Returns { quote, cost, service, carrier, days, billableLb, options, summary,
+ * note }.
+ */
+function j7ShippingEstimate(job) {
+    const all = j7ShippingOptions(job);
+    const extras = [job.delicate ? 'delicate' : null, job.signature ? 'signature' : null].filter(Boolean);
+    const where = all.region.label.split(' (')[0];
+    if (all.quote) {
+        return { quote: true, billableLb: all.billableLb, options: [], note: all.note,
+                 summary: [where].concat(extras).join(', ') };
     }
-    let cost = (base + S.residential) * (1 + S.fuel) * speed.factor;
-    let method = 'ground';
-    let carrier = speed.id === 'ground' ? 'UPS or FedEx Ground' : 'UPS or FedEx ' + speed.label;
-
-    // A flat-rate box, when the packed part fits one and it is cheaper.
-    if (speed.id === 'ground') {
-        const fits = S.flatRate
-            .filter(f => { const inside = f.inside.slice().sort((a, b) => b - a);
-                           return box.every((d, i) => d <= inside[i]); })
-            .sort((a, b) => a.price - b.price)[0];
-        if (fits && fits.price < cost) {
-            cost = fits.price;
-            method = 'flat';
-            carrier = fits.label;
-        }
-        const GA = S.groundAdvantage;
-        const gaPrice = GA[region.id];
-        if (gaPrice && actualLb < GA.underLb && volume <= GA.maxCubicIn && gaPrice < cost) {
-            cost = gaPrice;
-            method = 'usps';
-            carrier = 'USPS Ground Advantage';
-        }
-    }
-
-    if (job.delicate) cost += S.delicateMaterials;
-    if (job.signature) cost += S.signature;
-    cost = Math.ceil(cost * (1 + S.buffer));
-
-    return { quote: false, cost, method, carrier, billableLb, summary,
-             note: 'Shipping estimate $' + cost + ' (' + carrier + ')' };
+    const pick = all.options.find(o => o.id === job.service) || all.options[0];
+    return {
+        quote: false,
+        cost: pick.cost,
+        service: pick.id,
+        carrier: pick.label,
+        days: pick.days,
+        billableLb: all.billableLb,
+        options: all.options,
+        summary: [where, pick.label + ' (' + pick.days + ')'].concat(extras).join(', '),
+        note: 'Shipping estimate $' + pick.cost + ' (' + pick.label + ', ' + pick.days + ')'
+    };
 }
 
 /** Hand-delivery fee for a distance from Milan, or a quote past the last band. */
@@ -1056,7 +1145,7 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { J7_PRICING, j7TieredCost, j7UnitCost, j7UnitRate,
                        j7PrintEstimate, j7PurgeWaste, j7SwapTimeFactor, j7FilamentCount,
                        J7_SERVICE_AREA, j7LookupTown, j7TravelFee, j7TravelSummary,
-                       j7ShippingEstimate, j7DeliveryEstimate,
+                       j7ShippingEstimate, j7ShippingOptions, j7DeliveryEstimate,
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,

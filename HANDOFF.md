@@ -404,17 +404,24 @@ Do not silently reverse these.
 - **No checks, no invoicing.** Cash, Venmo or Cash App. Jobs over $300 take a
   50% deposit up front, which covers materials (`J7_PRICING.deposit`,
   12 Sep 2026). The homepage used to offer Net-7 invoicing; that is gone.
-- **Shipping and hand delivery (12 Sep 2026).** There is no pickup and no free
-  shipping. The 3D print estimator adds an estimated shipping cost from the
-  finished part's size and weight (`j7ShippingEstimate`): averaged UPS/FedEx
-  Ground list rates by billable pound and distance band, plus residential and
-  fuel, dimensional weight at /139, USPS Ground Advantage for parts under a pound
-  packed, or a USPS flat-rate box when it fits and is cheaper; 2-day, overnight, delicate padding and signature are options. It
-  carries a 10% buffer (`shipping.buffer`) that is never shown to customers.
-  Hand delivery is $15 / $30 / $45 / $60 up to 15 / 30 / 45 / 60 miles; further
-  is arranged with Thomas. Carrier rates drift - recheck `shipping.ground`,
-  `residential`, `fuel`, `flatRate` and `groundAdvantage` each January and
-  July.
+- **Shipping and hand delivery (12-13 Sep 2026).** There is no pickup and no
+  free shipping. The 3D print estimator works out every shipping option from
+  the finished part's size and weight (`j7ShippingOptions`) and the customer
+  picks one, cheapest first: USPS Ground Advantage, UPS or FedEx Ground, USPS
+  Priority Mail (a flat-rate box when that is cheaper), 3-day air, 2-day air,
+  USPS Priority Mail Express and overnight air. Each is priced from the
+  carrier's own 2026 table for the dearest zone in the region
+  (`shipping.rates`): USPS commercial prices from Notice 123, averaged UPS/FedEx
+  Ground, and FedEx Standard List Rates for the air services. UPS/FedEx add
+  residential and fuel and bill dimensional weight at /139; USPS only bills
+  volume over a cubic foot (/166). Delicate padding and a signature add to
+  every option. Everything carries a 10% buffer (`shipping.buffer`) that is
+  never shown to customers. This replaced a model that multiplied the ground
+  price by 2.1 for 2-day and 3.75 for overnight, which overpriced 2-day and
+  hid the cheap USPS options above a pound. Hand delivery is $15 / $30 / $45 /
+  $60 up to 15 / 30 / 45 / 60 miles; further is arranged with Thomas. Carrier
+  rates drift - recheck `shipping.rates`, `residential`, `airResidential`,
+  `fuel`, `airFuel` and `flatRate` each January and July (fuel moves weekly).
 - **Travel is $25 / $45 / $65** for 25-50 / 50-75 / 75-100 miles, free within
   25 (12 Sep 2026). The old $15 / $30 / $50 did not cover the vehicle. Town
   fees in `J7_SERVICE_AREA` are derived from miles, so only the bands change.
