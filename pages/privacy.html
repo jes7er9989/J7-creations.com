@@ -88,8 +88,8 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="../css/styles.css?v=2f94cb4d">
-    <script src="../js/chat.js?v=dd52e480"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=c91ac0b8">
+    <script src="../js/chat.js?v=d96e40d8"></script>
     <link rel="stylesheet" href="../css/mobile-fix.css?v=de960d1b">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
@@ -164,9 +164,36 @@
                 generate with one of the calculators is included if you choose to
                 send it. Files you attach come through with it.</p>
                 <p>The form is delivered by <strong>Formspree</strong>, which passes
-                the message to my email. It reaches my inbox and stays there. I keep
-                messages so I can pick a job back up later. Ask me to delete yours
-                and I will.</p>
+                the message to my email, and that is where any files you attached
+                stay. A copy of the text also goes into my own job records, so an
+                enquiry becomes a job I can pick back up later instead of an email I
+                have to find again. Ask me to delete yours and I will.</p>
+
+                <h2>Where the job records are</h2>
+                <p>They run on <strong>Cloudflare D1</strong>, a database on the same
+                hosting as this site, behind a login that only I can pass. Nobody else
+                has an account, and the pages that read them are not reachable from
+                the public internet without that login.</p>
+                <p>What ends up in there is the text of your enquiry, the answers you
+                gave the form, any estimate the site worked out for you, your budget
+                and timescale if you told me them, the page you sent it from, and the
+                country your browser reported. If you used the assistant first, the
+                conversation goes in too &mdash; see
+                <a href="#assistant" style="color: var(--color-accent);">The assistant</a>
+                below. Your IP address is <strong>hashed before it is written</strong>,
+                so the record can tell repeat submissions apart without the address
+                itself being stored. It is not kept in a form anyone can read,
+                including me.</p>
+
+                <h2>How long I keep it</h2>
+                <p>The text of an enquiry, and any conversation sent with it, is kept
+                for <strong>no more than a month</strong>. I clear them out on a
+                monthly sweep, and you can ask me to delete yours sooner. After that
+                only my own notes about the job remain: a short summary, which service
+                it was, and what I decided to do about it. If the enquiry became
+                actual work, the customer and job records that came out of it are kept
+                as business records for as long as I am in business, the same as any
+                invoice or quote.</p>
 
                 <h2>The calculators</h2>
                 <p>The estimators run entirely in your browser. Measurements, part
@@ -182,11 +209,17 @@
                 whose Claude model writes the replies. Anthropic handles it under
                 its commercial terms, which don't allow it to train its models on
                 what you send.</p>
-                <p>I don't keep the conversation and I don't see it. It stays in
-                your browser tab and is gone when you close the tab. The only part
-                that reaches me is the summary it puts into the contact form, if
-                you press the button to send it &mdash; and you can read and change
-                that before you send.</p>
+                <p><strong>Whether I ever see the conversation is up to you, and it
+                comes down to one button.</strong> While you are chatting, it stays in
+                your browser tab. Nothing is sent to me, and if you close the tab
+                without sending the form, it is gone and I never had it.</p>
+                <p>If you do press the button that carries the chat into the contact
+                form and then send that form, the conversation comes with it. I read
+                it, and it is kept with your enquiry in my job records for no more
+                than a month, the same as any other enquiry text. The summary the
+                assistant writes goes into the message box where you can read and
+                change it before you send &mdash; the rest of the conversation goes as
+                it was typed.</p>
                 <p>To stop one connection running up the bill, your IP address is
                 counted for up to two hours. Please don't type passwords or card
                 numbers into it.</p>
@@ -220,8 +253,12 @@
                     <li>There is no newsletter and no marketing email list.</li>
                     <li>I don't take card details on this site. Payment is arranged
                         directly, and the site never handles it.</li>
-                    <li>There are no accounts, so there is nothing to log in to and
-                        no password to lose.</li>
+                    <li>There are no accounts for customers, so there is nothing
+                        for you to log in to and no password of yours to lose. The
+                        job records are gated by my own login, not by one you
+                        create.</li>
+                    <li>I don't read a conversation you never sent me.</li>
+                    <li>I don't use your enquiry to train anybody's AI model.</li>
                 </ul>
 
                 <h2>Children</h2>
@@ -229,8 +266,10 @@
                 not knowingly collect information from anyone under 13.</p>
 
                 <h2>Asking me to delete something</h2>
-                <p>Email or call and say so. I'll delete your messages and confirm
-                that I have. You don't need to give a reason.</p>
+                <p>Email or call and say so. I'll delete it from both places, the
+                email and the job records, and confirm that I have. You don't need to
+                give a reason. If you want to know what I hold about you first, ask
+                and I'll tell you.</p>
 
                 <h2>Changes</h2>
                 <p>If this policy changes, the updated version appears on this page.
@@ -258,6 +297,6 @@
         </div>
     </footer>
 
-    <script src="../js/app.js?v=c86b4d03"></script>
+    <script src="../js/app.js?v=40d58795"></script>
 </body>
 </html>

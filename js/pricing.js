@@ -215,9 +215,9 @@ function j7SyncPricingLabels() {
  * throw it away — the visitor retyped it into a textarea from memory, or
  * gave up. This stashes it for the contact page to pick up.
  */
-function j7SendEstimate(serviceValue, headline, lines, source, notes) {
+function j7SendEstimate(serviceValue, headline, lines, source, notes, details) {
     try {
-        sessionStorage.setItem('j7Estimate', JSON.stringify({
+        sessionStorage.setItem('j7Estimate', JSON.stringify(Object.assign({
             service: serviceValue,
             headline: headline,
             lines: lines,
@@ -230,7 +230,9 @@ function j7SendEstimate(serviceValue, headline, lines, source, notes) {
             // FAQ page calculator" describes a page that has no calculator.
             source: source || 'calculator',
             at: Date.now()
-        }));
+        // Budget, timeline and town when the chat collected them, so the
+        // contact form's own fields are filled in, not just the message.
+        }, details || {})));
     } catch (e) {
         /* private mode: fall through, the form still works by hand */
     }
