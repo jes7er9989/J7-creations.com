@@ -666,12 +666,25 @@ const J7_SIZE_REFS = [
 // default settings, and 3 perimeters is typical — so the nozzle sets how thick
 // the wall is, which on anything chunky is most of the material.
 // Labelled by what the customer gets, not by the number.
+// What Thomas actually has (13 Sep 2026): 0.4 and 0.6 are high-flow hotends,
+// 0.2 and 0.8 are standard flow, and every nozzle but the 0.2 is hardened
+// steel - so carbon and glass fibre, which wear a soft nozzle through, cannot
+// go through the 0.2.
 const J7_NOZZLES = [
-    { mm: 0.2, label: '0.2 mm — fine detail: small parts, lettering' },
-    { mm: 0.4, label: '0.4 mm — standard: most parts', preset: true },
-    { mm: 0.6, label: '0.6 mm — chunky: larger parts, thicker walls' },
-    { mm: 0.8, label: '0.8 mm — coarse: big simple parts, fastest' }
+    { mm: 0.2, hardened: false, highFlow: false,
+      label: '0.2 mm — fine detail: small parts, lettering (not for carbon or glass fibre)' },
+    { mm: 0.4, hardened: true, highFlow: true, label: '0.4 mm — standard: most parts', preset: true },
+    { mm: 0.6, hardened: true, highFlow: true, label: '0.6 mm — chunky: larger parts, thicker walls' },
+    { mm: 0.8, hardened: true, highFlow: false, label: '0.8 mm — coarse: big simple parts, fastest' }
 ];
+
+/** Whether a nozzle can run a material, given the material dropdown's price-per-kg value. */
+function j7NozzleCanPrint(nozzleMm, pricePerKg) {
+    const nozzle = J7_NOZZLES.find(n => n.mm === Number(nozzleMm));
+    const abrasive = J7_PRINTERS.abrasive
+        .some(k => J7_PRICING.print.filamentPerKg[k] === Number(pricePerKg));
+    return !abrasive || !nozzle || nozzle.hardened;
+}
 
 const J7_PERIMETERS = 3;
 
@@ -683,9 +696,33 @@ function j7WallCm(nozzleMm) {
 // Kept as the 0.4 mm default so existing callers behave unchanged.
 const J7_WALL_CM = j7WallCm(0.4);
 
-// Usable build volume in mm. One place, so changing printers is a one-line
-// edit rather than a hunt through the UI code.
-const J7_BUILD_PLATE_MM = [350, 350, 350];
+// The printers (Thomas, 13 Sep 2026): two Bambu Lab H2D, one of them the Laser
+// Edition, fed by two AMS 2 Pro units. Every figure is from Bambu's own spec
+// sheet, bambulab.com/en-us/h2d/tech-specs, read 13 Sep 2026.
+const J7_PRINTERS = {
+    model: 'Bambu Lab H2D',
+    count: 2,
+    // One part on one nozzle; the smaller volume applies when both nozzles print.
+    buildMm: { singleNozzle: [325, 320, 325], dualNozzle: [300, 320, 320] },
+    maxNozzleC: 350,
+    maxBedC: 120,
+    chamberC: 65,
+    maxSpeedMmS: 1000,          // toolhead - a capability, never a turnaround promise
+    ams: { model: 'AMS 2 Pro', units: 2, slotsEach: 4 },
+    // One printer is the Laser Edition, with the 10 W module (Thomas confirmed
+    // 13 Sep 2026). Figures for that module from the same spec sheet.
+    laser: { printers: 1, watts: 10, engraveMm: [310, 270], cutBasswoodMm: 5,
+             materials: ['wood', 'rubber', 'sheet metal', 'leather', 'dark acrylic', 'stone'] },
+    materials: ['PLA', 'PETG', 'TPU', 'PVA', 'BVOH', 'ABS', 'ASA', 'PC', 'nylon (PA)', 'PET',
+                'carbon and glass fibre blends of PLA, PETG, PA, PET, PC, ABS and ASA',
+                'PPA-CF/GF', 'PPS', 'PPS-CF/GF'],
+    // Fibre-filled filaments, keyed as in J7_PRICING.print.filamentPerKg.
+    abrasive: ['cf', 'gf']
+};
+
+// Usable build volume in mm: one part on one nozzle. One place, so changing
+// printers is a one-line edit rather than a hunt through the UI code.
+const J7_BUILD_PLATE_MM = J7_PRINTERS.buildMm.singleNozzle;
 
 // A part fits if it can be TURNED to fit, so compare sorted axes rather than
 // checking each dimension against a single number. On a cubic plate the sort
@@ -1060,8 +1097,8 @@ if (typeof module !== 'undefined' && module.exports) {
                        J7_FILAMENT_DENSITY, J7_INFILL, J7_PART_SHAPES, J7_SIZE_REFS,
                        j7PrintedVolume, j7GramsFromMesh, j7GramsFromDescription,
                        j7ParseSTL, j7ParseOBJ, j7MeshStats,
-                       J7_BUILD_PLATE_MM, j7FitsBuildPlate,
-                       J7_NOZZLES, j7WallCm,
+                       J7_BUILD_PLATE_MM, j7FitsBuildPlate, J7_PRINTERS,
+                       J7_NOZZLES, j7WallCm, j7NozzleCanPrint,
                        J7_REMOTE_SCOPES, J7_ONSITE_TASKS, j7OnsiteHours,
                        J7_SURFACE_FACTOR, J7_HEIGHT_FACTOR,
                        J7_INTAKE, j7EstimateAPs, j7BallparkNetwork,

@@ -20,7 +20,7 @@ const path = require('path');
 const {
     J7_PRICING, J7_SERVICE_AREA, J7_REMOTE_SCOPES, J7_ONSITE_TASKS,
     J7_SURFACE_FACTOR, J7_HEIGHT_FACTOR, J7_PART_SHAPES, J7_NOZZLES,
-    J7_INFILL, J7_BUILD_PLATE_MM
+    J7_INFILL, J7_PRINTERS
 } = require('../js/pricing.js');
 
 const ROOT = path.join(__dirname, '..');
@@ -125,6 +125,12 @@ function ratesSection() {
         .map(([n, f]) => `${n} mm ${f}x`)
         .join(', ');
 
+    const PR = J7_PRINTERS;
+    const inches = mm => mm.map(v => Math.round(v / 25.4 * 10) / 10).join(' x ');
+    const nozzles = J7_NOZZLES.map(n => `${n.mm} mm` +
+        (n.highFlow ? ' high-flow' : '') +
+        (n.hardened ? ' hardened steel' : ' (not hardened, so no carbon or glass fibre)')).join(', ');
+
     return `## Rates
 
 LABOR, per hour
@@ -164,7 +170,17 @@ REMOTE SCOPES
   extra filament (${purgeText}) on top of supports, and machine time rises
   ${Math.round(P.print.swapTimePerExtra * 100)}% for each filament after the first, capped at +${Math.round(P.print.swapTimeCap * 100)}%.
   A second material is priced at its own $/kg for its share of the part, and counts as a filament.
-  Build plate ${J7_BUILD_PLATE_MM.join(' x ')} mm. Nozzles ${J7_NOZZLES.map(n => n.mm).join(', ')} mm.
+  Printers: ${PR.count} ${PR.model} printers, each with two nozzles, fed by ${PR.ams.units} ${PR.ams.model} units.
+  One part on one nozzle fits ${PR.buildMm.singleNozzle.join(' x ')} mm (${inches(PR.buildMm.singleNozzle)} in); printing with
+  both nozzles, ${PR.buildMm.dualNozzle.join(' x ')} mm. Anything bigger is printed in sections and joined,
+  which Thomas confirms first.
+  Nozzles: ${nozzles}.
+  Hotend up to ${PR.maxNozzleC} C, bed ${PR.maxBedC} C, actively heated chamber ${PR.chamberC} C. The printers
+  can run ${PR.materials.join(', ')}. The filaments priced below are
+  what Thomas stocks; anything else he quotes.
+  Toolhead speed up to ${PR.maxSpeedMmS} mm/s - a capability, never a promise about turnaround.
+  ${PR.laser.printers === 1 ? 'One printer is' : PR.laser.printers + ' printers are'} the Laser Edition, with a ${PR.laser.watts} W laser: engraves up to ${PR.laser.engraveMm.join(' x ')} mm
+  (${inches(PR.laser.engraveMm)} in) and cuts up to ${PR.laser.cutBasswoodMm} mm basswood, on ${PR.laser.materials.join(', ')}.
   Infill steps ${J7_INFILL.map(i => Math.round(i.value * 100) + '%').join(', ')}.
   Part shapes used for weight: ${J7_PART_SHAPES.map(s => s.label).join('; ')}.
   Rush: standard as quoted, +${Math.round((P.rush.rush48 - 1) * 100)}% for 48 hours,

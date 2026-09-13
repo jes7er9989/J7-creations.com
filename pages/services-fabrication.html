@@ -712,7 +712,7 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=1636fc1c"></script>
+    <script src="../js/pricing.js?v=4224cc4c"></script>
     <script src="../js/app.js?v=4cf7f72d"></script>
     <script src="../js/chat.js?v=d96e40d8"></script>
     <script>
@@ -735,7 +735,7 @@
             document.getElementById('weight-in-grams').textContent = `= ${grams.toFixed(1)} grams`;
         }
         
-        // All rates come from js/pricing.js?v=1636fc1c so they cannot drift from the
+        // All rates come from js/pricing.js?v=4224cc4c so they cannot drift from the
         // pricing tables below or from the other two service pages.
         const PRINT = J7_PRICING.print;
         const SETUP_FEE = PRINT.setupFee;
@@ -859,7 +859,7 @@
             // material faster, and every filament swap stops the printer.
             const nozzleMm = (document.getElementById('nozzle-size') || {}).value || '0.4';
 
-            // One function prices every print, in js/pricing.js?v=1636fc1c, so this page,
+            // One function prices every print, in js/pricing.js?v=4224cc4c, so this page,
             // the pricing checks and the assistant all work the same sums.
             const est = j7PrintEstimate({
                 grams: weight,
@@ -903,6 +903,12 @@
             }
             notes.push(`+${Math.round(est.waste * 100)}% waste = ${est.bought.toFixed(1)}g of filament purchased`);
             notes.push(`Service fee = $${SETUP_FEE.toFixed(2)} setup + $${machineCost.toFixed(2)} machine time`);
+            // The 0.2 mm is the one nozzle that is not hardened steel, and fibre
+            // filament wears a soft nozzle through.
+            if (!j7NozzleCanPrint(nozzleMm, filamentPricePerKg) ||
+                (secondPerKg && !j7NozzleCanPrint(nozzleMm, secondPerKg))) {
+                notes.push('<strong>Carbon and glass fibre need a hardened nozzle, and the 0.2 mm is not one</strong> - pick 0.4 mm or larger for this material');
+            }
             if (belowMinimum) {
                 notes.push(`<strong>$${ORDER_MINIMUM.toFixed(2)} order minimum applied</strong>`);
             }

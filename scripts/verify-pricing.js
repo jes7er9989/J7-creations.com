@@ -298,5 +298,33 @@ for (const n of [1, 2, 4, 6, 10]) {
         J7_REMOTE_SCOPES[0].hours >= J7_PRICING.minimums.remoteHours);
 }
 
+// --- printers ----------------------------------------------------------------
+// Two Bambu Lab H2D (Thomas, 13 Sep 2026); figures from Bambu's spec sheet.
+// The build plate used to be a 350 mm cube, which told customers a 340 mm part
+// would fit in one piece when it would not.
+console.log('\nPRINTERS (Bambu Lab H2D)');
+{
+  const { J7_PRINTERS, J7_BUILD_PLATE_MM, j7FitsBuildPlate, J7_NOZZLES, j7NozzleCanPrint } = require('../js/pricing.js');
+  const F = J7_PRICING.print.filamentPerKg;
+  check('build plate is the H2D single-nozzle volume, 325 x 320 x 325 mm', J7_BUILD_PLATE_MM.join('x') === '325x320x325');
+  check('the dual-nozzle volume is never larger than the single-nozzle one',
+        J7_PRINTERS.buildMm.dualNozzle.every((d, i) => d <= J7_PRINTERS.buildMm.singleNozzle[i]));
+  check('a 320 mm part fits the plate', j7FitsBuildPlate([320, 100, 50]));
+  check('a 330 mm part does not fit in one piece', !j7FitsBuildPlate([330, 100, 50]));
+  check('the AMS units hold exactly the filaments the calculator allows',
+        J7_PRINTERS.ams.units * J7_PRINTERS.ams.slotsEach === J7_PRICING.print.maxFilaments);
+  check('every nozzle offered has a time factor and a hardened flag',
+        J7_NOZZLES.every(n => J7_PRICING.print.nozzleTime[String(n.mm)] !== undefined && typeof n.hardened === 'boolean'));
+  check('only the 0.2 mm nozzle is not hardened', J7_NOZZLES.filter(n => !n.hardened).map(n => n.mm).join() === '0.2');
+  check('carbon and glass fibre cannot go through the 0.2 mm', !j7NozzleCanPrint(0.2, F.cf) && !j7NozzleCanPrint('0.2', F.gf));
+  check('carbon fibre can go through the hardened 0.4 mm', j7NozzleCanPrint('0.4', F.cf));
+  check('PLA can go through every nozzle', J7_NOZZLES.every(n => j7NozzleCanPrint(n.mm, F.pla)));
+  check('each abrasive filament has a unique price, so the dropdown value identifies it',
+        J7_PRINTERS.abrasive.every(k => Object.values(F).filter(v => v === F[k]).length === 1));
+  check('one printer has the 10 W laser', J7_PRINTERS.laser.printers === 1 && J7_PRINTERS.laser.watts === 10);
+  const fab = fs.readFileSync(path.join(__dirname, '..', 'pages/services-fabrication.html'), 'utf8');
+  check('the fabrication estimator warns about fibre filament in the 0.2 mm nozzle', fab.includes('j7NozzleCanPrint('));
+}
+
 console.log(`\n${failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED'}\n`);
 process.exit(failures === 0 ? 0 : 1);
