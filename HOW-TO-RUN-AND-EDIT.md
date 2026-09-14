@@ -22,7 +22,7 @@ do; you do not need it for everyday edits.
   | File | What it does | Needs, set in the Cloudflare dashboard |
   | --- | --- | --- |
   | `chat.js` | the chat assistant | `ANTHROPIC_API_KEY` secret, `CHAT_RATE_LIMIT` KV binding |
-  | `intake.js` | copies each contact-form enquiry into the CRM database | `DB` D1 binding, `INTAKE_SALT` secret |
+  | `intake.js` | copies each enquiry, from the contact form or the chat, into the CRM database | `DB` D1 binding, `INTAKE_SALT` secret |
   | `_push.js` | buzzes Thomas's phone for a new enquiry | `VAPID_PUBLIC_KEY` text, `VAPID_PRIVATE_KEY` secret |
 
   Those settings live in the Cloudflare dashboard: **Workers & Pages →
@@ -123,6 +123,7 @@ In VS Code, press Ctrl+Shift+F and search for `EDIT HERE`.
 | what the chat assistant is told | `scripts/build-chat-prompt.js`, `BEHAVIOUR` |
 | the chat greeting | `js/chat.js`, `GREETING` |
 | the chat model and cost limits | `functions/api/chat.js`, top of the file |
+| where the chat's "Send this to Thomas" sends | `js/chat.js`, `FORMSPREE` (must match the contact form in `index.html`) |
 | offline caching (rarely) | `sw.js`, `CACHE_NAME` |
 
 ---

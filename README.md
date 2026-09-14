@@ -41,5 +41,9 @@ emails the enquiry. Once Formspree accepts it, `js/app.js` also sends a copy to
 `functions/api/intake.js`, which writes it into the J7 CRM database and buzzes
 the phone.
 
+The chat assistant's **Send this to Thomas** does the same from a short card
+inside the chat (`js/chat.js`): Formspree first, then the CRM copy. Its
+`FORMSPREE` address must match the form's; `verify-pricing.js` checks that.
+
 **Location:** Atwood, TN. Travel fees are measured from Milan.
 **Service area:** 100-mile radius.

@@ -27,6 +27,36 @@ function j7Track(name, params) {
     }
 }
 
+// ========== The message an estimate becomes ==========
+// Shared by the contact form (applyIncomingEstimate below) and by the chat's
+// send card in js/chat.js, so an enquiry reads the same whichever way it was
+// sent. `data` is the estimate handoff shape from j7SendEstimate in pricing.js.
+function j7EstimateMessage(data) {
+    const lines = (data.lines || []).filter(Boolean).join('\n');
+    // What the chat collected, so the customer does not retype the problem
+    // they just finished explaining. It goes in the visible message, never
+    // anywhere hidden - they can read and correct it before sending.
+    const notes = (data.notes || []).filter(Boolean);
+    const notesBlock = notes.length
+        ? 'What I told the assistant:\n' + notes.map(n => '- ' + n).join('\n') + '\n\n'
+        : '';
+    // The chat widget hands over the same payload, but "from the FAQ page
+    // calculator" describes a page that has no calculator - so the source
+    // says which of the two worked the figure out.
+    const fromChat = data.source === 'assistant';
+    const heading = fromChat
+        ? (data.headline ? 'Estimate from the site assistant:'
+                         : 'From the site assistant:')
+        : 'Estimate from the ' + (data.page || 'website') + ' calculator:';
+    const figures = (data.headline ? data.headline + '\n' : '') + lines;
+    const footnote = fromChat
+        ? (data.headline
+            ? '\n\n(Worked out in chat from the online rates - happy to adjust.)\n\n'
+            : '')   // no figures: notesBlock already ends blank
+        : '\n\n(Figures from your online estimator - happy to adjust.)\n\n';
+    return heading + '\n\n' + notesBlock + figures + footnote;
+}
+
 // Phone taps, caught by delegation so links added later are covered too.
 document.addEventListener('click', function (e) {
     const link = e.target && e.target.closest ? e.target.closest('a[href^="tel:"]') : null;
@@ -326,6 +356,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // attachment_*, budget_band and timeline are not columns; they ride
             // along inside the raw record, which is where "what was actually
             // submitted" belongs.
+            j7PostIntake(payload);
+        } catch (e) {
+            // Never let this be visible. The enquiry is already delivered.
+        }
+    }
+
+    // The POST itself, shared with the chat's send card (js/chat.js), which
+    // builds the same payload from its own fields. Best effort, never awaited,
+    // never visible: the enquiry has already reached Thomas through Formspree.
+    function j7PostIntake(payload) {
+        try {
             const ctrl = typeof AbortController === 'function' ? new AbortController() : null;
             if (ctrl) setTimeout(() => ctrl.abort(), 8000);
 
@@ -340,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Never let this be visible. The enquiry is already delivered.
         }
     }
+    window.j7Intake = { post: j7PostIntake, dedupeKey: j7DedupeKey };
 
     // ========== Contact Form AJAX Submission ==========
     const contactForm = document.getElementById('contact-form');
@@ -748,15 +790,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // The three estimators used to produce a full breakdown and then discard
     // it, leaving the visitor to retype it. If one handed us an estimate,
     // pre-select the service and write the figures into the message.
-    (function applyIncomingEstimate() {
-        let data;
-        try {
-            const raw = sessionStorage.getItem('j7Estimate');
-            if (!raw) return;
-            sessionStorage.removeItem('j7Estimate');
-            data = JSON.parse(raw);
-        } catch (e) {
-            return;
+    //
+    // Also called directly by the chat (js/chat.js) when the visitor is already
+    // on the page with the form. Going to /#contact from the homepage only
+    // changes the hash, so nothing reloads, and a handoff that was only read
+    // on page load left the form empty (live until 14 Sep 2026).
+    function applyIncomingEstimate(given) {
+        let data = given;
+        if (!data) {
+            try {
+                const raw = sessionStorage.getItem('j7Estimate');
+                if (!raw) return;
+                sessionStorage.removeItem('j7Estimate');
+                data = JSON.parse(raw);
+            } catch (e) {
+                return;
+            }
         }
         // Ignore anything stale enough to be from a previous visit
         if (!data || !data.at || Date.now() - data.at > 30 * 60 * 1000) return;
@@ -807,30 +856,9 @@ document.addEventListener('DOMContentLoaded', () => {
             locationInput.value = String(data.town).slice(0, 120);
         }
 
-        const lines = (data.lines || []).filter(Boolean).join('\n');
-        // What the chat collected, so the customer does not retype the problem
-        // they just finished explaining. It goes in the visible message, never
-        // anywhere hidden - they can read and correct it before sending.
-        const notes = (data.notes || []).filter(Boolean);
-        const notesBlock = notes.length
-            ? 'What I told the assistant:\n' + notes.map(n => '- ' + n).join('\n') + '\n\n'
-            : '';
-        // The chat widget hands over the same payload, but "from the FAQ page
-        // calculator" describes a page that has no calculator — so the source
-        // says which of the two worked the figure out.
-        const fromChat = data.source === 'assistant';
-        const heading = fromChat
-            ? (data.headline ? 'Estimate from the site assistant:'
-                             : 'From the site assistant:')
-            : 'Estimate from the ' + (data.page || 'website') + ' calculator:';
-        const figures = (data.headline ? data.headline + '\n' : '') + lines;
-        const footnote = fromChat
-            ? (data.headline
-                ? '\n\n(Worked out in chat from the online rates - happy to adjust.)\n\n'
-                : '')   // no figures: notesBlock already ends blank
-            : '\n\n(Figures from your online estimator - happy to adjust.)\n\n';
-        const preamble = heading + '\n\n' + notesBlock + figures + footnote;
-        message.value = preamble + message.value;
+        const preamble = j7EstimateMessage(data);
+        // Opening the form twice from the chat must not paste the summary twice.
+        if (message.value.indexOf(preamble) === -1) message.value = preamble + message.value;
 
         j7Track('estimate_sent', {
             service: data.service || 'unspecified',
@@ -840,7 +868,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const note = document.getElementById('estimate-loaded');
         if (note) note.style.display = 'block';
         document.getElementById('contact').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    })();
+    }
+    applyIncomingEstimate();
+    window.j7ApplyEstimate = applyIncomingEstimate;
 
     // ========== Back to Top Button ==========
     const backToTopBtn = document.getElementById('back-to-top');

@@ -332,5 +332,31 @@ console.log('\nPRINTERS (Bambu Lab H2D)');
   check('the fabrication estimator warns about fibre filament in the 0.2 mm nozzle', fab.includes('j7NozzleCanPrint('));
 }
 
+// --- the chat's send card ----------------------------------------------------
+// "Send this to Thomas" delivers straight from the chat, so js/chat.js repeats
+// three things from the contact form in index.html. If they drift, an enquiry
+// goes to a dead Formspree form, or arrives with a timeline or service the
+// CRM does not know.
+console.log('\nCHAT SEND CARD');
+{
+  const chat = fs.readFileSync(path.join(__dirname, '..', 'js/chat.js'), 'utf8');
+  const home = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+  const selectValues = id => {
+    const m = home.match(new RegExp('<select id="' + id + '"[\\s\\S]*?</select>'));
+    return m ? [...m[0].matchAll(/<option value="([^"]+)"/g)].map(x => x[1]) : [];
+  };
+  const block = name => (chat.match(new RegExp('const ' + name + ' = \\[([\\s\\S]*?)\\];')) || ['', ''])[1];
+  const formAction = (home.match(/<form id="contact-form"[^>]*action="([^"]+)"/) || [])[1];
+  const chatAction = (chat.match(/const FORMSPREE = '([^']+)'/) || [])[1];
+  check('the chat sends to the same Formspree form as the contact form',
+        !!formAction && formAction === chatAction);
+  const chatTimelines = [...block('TIMELINES').matchAll(/\['([^']+)'/g)].map(x => x[1]);
+  check('the send card offers exactly the contact form timelines',
+        chatTimelines.length > 0 && chatTimelines.join() === selectValues('timeline').join());
+  const chatServices = [...block('SERVICES').matchAll(/'([^']+)'/g)].map(x => x[1]);
+  check('the send card knows exactly the contact form services',
+        chatServices.length > 0 && chatServices.join() === selectValues('service').join());
+}
+
 console.log(`\n${failures === 0 ? 'ALL CHECKS PASSED' : failures + ' CHECK(S) FAILED'}\n`);
 process.exit(failures === 0 ? 0 : 1);
