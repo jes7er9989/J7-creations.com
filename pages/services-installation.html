@@ -580,11 +580,22 @@
                     bands.map(b => b.upTo === Infinity
                         ? `$${b.each} each beyond that`
                         : `$${b.each} each up to ${b.upTo}`).join(', ');
+            } else if (config.mode === 'drop') {
+                // Banded per run by how hard the pull is, with no site minimum,
+                // the same way calculateInstallPrice() prices it.
+                const d = J7_PRICING.cableDrop;
+                input.step = '1';
+                input.placeholder = 'e.g., 2';
+                document.getElementById('install-qty-note').textContent =
+                    `$${d.easy.price} easy, $${d.standard.price} standard, $${d.difficult.price} difficult, per run`;
             } else {
+                // Task types carry no rate of their own: it belongs to the task
+                // in J7_ONSITE_TASKS. Reading config.rate here printed "$undefined/hr".
+                const task = J7_ONSITE_TASKS.find(t => t.id === config.task);
                 input.step = '0.5';
                 input.placeholder = 'e.g., 3';
                 document.getElementById('install-qty-note').textContent =
-                    `$${J7_PRICING.labor[config.rate]}/hr, ${J7_PRICING.minimums.onsiteHours}-hour site visit minimum`;
+                    `$${J7_PRICING.labor[task.rate]}/hr, ${J7_PRICING.minimums.onsiteHours}-hour site visit minimum`;
             }
         }
 
