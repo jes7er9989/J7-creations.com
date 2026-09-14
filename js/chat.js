@@ -62,13 +62,52 @@
     // calculators already use.
     // ---------------------------------------------------------------------
 
+    // The prompt asks for fenced blocks, but a reply can drop the fences. A
+    // fence-only match then shows the visitor raw JSON, and for an estimate
+    // the send button silently never appears. So find the label, take the one
+    // JSON object after it by counting braces, and swallow any fence around
+    // it. Fixed here rather than only in the prompt: the prompt can drift,
+    // the parser cannot.
+    function findBlock(text, label) {
+        const head = new RegExp('(?:`{3}\\s*)?' + label + '\\b[ \\t]*\\r?\\n?\\s*(?=\\{)');
+        const m = head.exec(text);
+        if (!m) return null;
+
+        const start = m.index + m[0].length;
+        let depth = 0, inString = false, escaped = false, end = -1;
+        for (let i = start; i < text.length; i++) {
+            const c = text[i];
+            if (inString) {
+                if (escaped) escaped = false;
+                else if (c === '\\') escaped = true;
+                else if (c === '"') inString = false;
+            } else if (c === '"') {
+                inString = true;
+            } else if (c === '{') {
+                depth++;
+            } else if (c === '}' && --depth === 0) {
+                end = i + 1;
+                break;
+            }
+        }
+        // Never closed (a reply cut off mid-block): drop everything from the
+        // label on, so the half-written JSON is not shown either.
+        if (end === -1) return { raw: text.slice(m.index), json: '' };
+
+        const close = /^\s*`{3}/.exec(text.slice(end));
+        return {
+            raw: text.slice(m.index, close ? end + close[0].length : end),
+            json: text.slice(start, end)
+        };
+    }
+
     function extractEstimate(text) {
-        const match = text.match(/```j7-estimate\s*([\s\S]*?)```/);
-        if (!match) return { text: text, estimate: null };
+        const block = findBlock(text, 'j7-estimate');
+        if (!block) return { text: text, estimate: null };
 
         let estimate = null;
         try {
-            const parsed = JSON.parse(match[1].trim());
+            const parsed = JSON.parse(block.json);
             // headline is optional: a conversation can hand over as a plain
             // enquiry when the first checks did not fix it and there is no
             // figure yet.
@@ -78,19 +117,19 @@
         } catch (e) {
             /* malformed block: drop it rather than showing raw JSON */
         }
-        return { text: text.replace(match[0], '').trim(), estimate: estimate };
+        return { text: text.replace(block.raw, '').trim(), estimate: estimate };
     }
 
     // A question with a few likely answers ends with a j7-choices block. It
     // becomes a row of buttons, so a visitor on a phone can tap an answer
     // instead of typing one. They can still type anything they like.
     function extractChoices(text) {
-        const match = text.match(/```j7-choices\s*([\s\S]*?)```/);
-        if (!match) return { text: text, choices: null };
+        const block = findBlock(text, 'j7-choices');
+        if (!block) return { text: text, choices: null };
 
         let choices = null;
         try {
-            const parsed = JSON.parse(match[1].trim());
+            const parsed = JSON.parse(block.json);
             const options = Array.isArray(parsed && parsed.options)
                 ? parsed.options.filter(o => typeof o === 'string' && o.trim()).slice(0, 6)
                 : [];
@@ -103,7 +142,7 @@
         } catch (e) {
             /* malformed block: drop it, the question still reads on its own */
         }
-        return { text: text.replace(match[0], '').trim(), choices: choices };
+        return { text: text.replace(block.raw, '').trim(), choices: choices };
     }
 
     function sendToForm(estimate) {

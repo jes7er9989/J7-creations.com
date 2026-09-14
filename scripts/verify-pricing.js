@@ -286,6 +286,12 @@ for (const n of [1, 2, 4, 6, 10]) {
   check('more pieces means more hours',
         j7OnsiteHours('mount', 8, 'Drywall', 'Ground level').hours >
         j7OnsiteHours('mount', 4, 'Drywall', 'Ground level').hours);
+  // 2 mounts on brick above ground is 1.5 x 1.4 x 1.25 = 2.625 hours, exactly
+  // half a quarter. Floating point stores it as 2.62499..., which used to round
+  // DOWN and bill 2.5 h / $112.50. Found in the 13 Sep 2026 live sweep.
+  const mid = j7OnsiteHours('mount', 2, 'Brick or block', 'Above ground level');
+  check('an exact half-quarter rounds up: 2 mounts on brick above ground is 2.75 h, $123.75',
+        mid.hours === 2.75 && mid.hours * J7_PRICING.labor[mid.rate] === 123.75);
   // A rack is one job with a tail, not N separate racks.
   const r1 = j7OnsiteHours('rack', 1, 'Drywall', 'Ground level').hours;
   const r3 = j7OnsiteHours('rack', 3, 'Drywall', 'Ground level').hours;

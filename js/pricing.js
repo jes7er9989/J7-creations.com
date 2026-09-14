@@ -1071,7 +1071,10 @@ function j7OnsiteHours(taskId, qty, surface, height) {
     const raw = base * sf * hf;
 
     return {
-        hours: Math.round(raw * 4) / 4,          // quarter-hour granularity
+        // Quarter-hour granularity. The epsilon is for float error only: an
+        // exact half-quarter like 2.625 is stored as 2.62499... and would round
+        // down. Nearest quarter is the intent; a ceil would reprice every job.
+        hours: Math.round(raw * 4 + 1e-9) / 4,
         rate: task.rate,
         openEnded: !!task.openEnded,
         why: [
