@@ -2,7 +2,7 @@
 // Version: 2026-08-17
 
 // ========== Business Phone ==========
-// TO ADD THE GOOGLE VOICE NUMBER: fill in both values below. Every phone
+// EDIT HERE: the business phone number. Set both values below. Every phone
 // link, footer, and contact line on the site fills itself in from here, so
 // this is the only place it needs to change.
 //

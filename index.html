@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js). EDIT HERE (rarely): the Analytics ID is copied at the top of every page. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-0SBHJFMN94"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -17,8 +17,8 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#1a1a1a">
     
-    <!-- Local Business Schema -->
-    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=4cf7f72d.
+    <!-- EDIT HERE: Local Business Schema, the business details Google reads (hours, phone, address, service area). If the hours change, also change the contact section below, pages/faq.html (twice) and the CRM. -->
+    <!-- The telephone below must stay in sync with J7_PHONE in js/app.js?v=05e6feca.
          Crawlers do not run the JavaScript that fills the visible number, so
          this one is a literal on purpose. -->
     <script type="application/ld+json">
@@ -110,13 +110,13 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="css/styles.css?v=c91ac0b8">
+    <link rel="stylesheet" href="css/styles.css?v=81acf46a">
     <link rel="stylesheet" href="css/mobile-fix.css?v=de960d1b">
     <link rel="icon" type="image/png" href="assets/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png"></head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <!-- Navigation -->
+    <!-- Navigation menu. This same menu is copied on every page (404.html has a shorter one), so a change here must be made in all of them. -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
@@ -152,6 +152,7 @@
     </nav>
 
     <main id="main-content">
+    <!-- PAGE CONTENT: the homepage. Edit the wording right here. Most prices on this page are filled in from js/pricing.js?v=c2f54455 when it loads: change a price there first, then search this page for the old number in case it is also typed into the wording. -->
 
     <!-- Hero Section -->
     <header class="hero">
@@ -305,7 +306,7 @@
                 <!-- Left Arrow -->
                 <button onclick="scrollPortfolio('left')" style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); background: var(--color-accent); border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);" aria-label="Scroll left">&#8249;</button>
                 
-                <!-- Scrollable Container -->
+                <!-- Scrollable Container. EDIT HERE: the homepage project cards. Copy one card block below to add a project. -->
                 <div id="portfolio-carousel" role="group" aria-label="Featured work, scrollable" tabindex="0" style="display: flex; gap: 2rem; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: auto; -ms-overflow-style: auto; padding: 1rem 2rem;">
                     <!-- DeWalt Battery Holder -->
                     <div class="portfolio-item" data-category="fabrication" style="min-width: 350px; max-width: 350px; padding: 0; background: var(--color-bg-dark); border-radius: 8px; border: 1px solid var(--color-border); overflow: hidden; flex-shrink: 0;">
@@ -478,12 +479,14 @@
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title">Get in touch</h2>
+            <!-- EDIT HERE: the reply time and business hours shown above the contact form. -->
             <p class="contact-intro">Tell me about your project. I usually reply within 2-4 hours during business hours (Mon–Fri 9–6, Sat 10–4 CST), and always within one business day.</p>
             
             
             <div id="estimate-loaded" class="callout callout--success" style="display: none; margin-bottom: var(--spacing-m);" role="status">
                 <p><strong>Your estimate has been added below.</strong> Edit anything that isn't quite right, then send it over &mdash; I'll confirm the final figure before any work starts.</p>
             </div>
+            <!-- EDIT HERE (rarely): the form is sent to Formspree, and the code after /f/ is the Formspree form ID. Once Formspree accepts it, js/app.js?v=05e6feca also sends a copy to the CRM. -->
             <form id="contact-form" class="contact-form" action="https://formspree.io/f/xzdypkbz" method="POST" enctype="multipart/form-data">
                 <div id="form-success" style="display: none; padding: 1.5rem; background: var(--wash-success); border: 2px solid var(--color-success); border-radius: 8px; text-align: center; margin-bottom: 1.5rem;">
                     <h3 style="color: var(--color-success); margin-bottom: 0.5rem;">Message sent</h3>
@@ -570,7 +573,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Footer. Copied on every page (404.html has a shorter one), so change it in all of them. The "Site last updated" date is filled in by scripts/stamp-assets.py. -->
     </main>
 
     <footer class="footer">
@@ -586,9 +589,9 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="js/pricing.js?v=bfdfd7e6"></script>
-    <script src="js/app.js?v=4cf7f72d"></script>
-    <script src="js/chat.js?v=14fa46aa"></script>
+    <script src="js/pricing.js?v=c2f54455"></script>
+    <script src="js/app.js?v=05e6feca"></script>
+    <script src="js/chat.js?v=dcf2cf9d"></script>
     
     <!-- Portfolio Carousel Script -->
     <script>
@@ -672,7 +675,7 @@
             // Hide service info if no selection or other
             if (!service || service === 'other') {
                 serviceInfo.style.display = 'none';
-                // The checklist is real fields now - see j7Intake in js/app.js?v=4cf7f72d.
+                // The checklist is real fields now - see j7Intake in js/app.js?v=05e6feca.
                 messageLabel.textContent = 'Project Details';
                 messageField.placeholder = 'Tell me about your project...';
                 return;
@@ -687,7 +690,7 @@
                 messageField.placeholder = data.placeholder;
                 
                 // Update checklist
-                // The checklist is real fields now - see j7Intake in js/app.js?v=4cf7f72d.
+                // The checklist is real fields now - see j7Intake in js/app.js?v=05e6feca.
             }
         }
     </script>

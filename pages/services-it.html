@@ -97,12 +97,13 @@
         document.documentElement.setAttribute('data-theme', 'dark');
       }
     </script>
-    <link rel="stylesheet" href="../css/styles.css?v=c91ac0b8">
+    <link rel="stylesheet" href="../css/styles.css?v=81acf46a">
     <link rel="stylesheet" href="../css/mobile-fix.css?v=de960d1b">
     <link rel="icon" type="image/png" href="../assets/icons/favicon-32x32.png">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
+    <!-- Navigation menu. This same menu is copied on every page (404.html has a shorter one), so a change here must be made in all of them. -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="nav-logo">
@@ -147,6 +148,7 @@
     </nav>
 
     <main id="main-content">
+    <!-- PAGE CONTENT: the IT and Networks page. Edit the wording right here. Most prices on this page are filled in from js/pricing.js?v=c2f54455 when it loads: change a price there first, then search this page for the old number in case it is also typed into the wording. The estimator's code is in the script near the bottom of this file. -->
 
     <!-- Hero Section -->
     <header class="hero">
@@ -467,7 +469,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
+    <!-- Related services links -->
 
     <section class="related-services">
         <div class="container">
@@ -488,6 +490,7 @@
 
     </main>
 
+    <!-- Footer. Copied on every page (404.html has a shorter one), so change it in all of them. The "Site last updated" date is filled in by scripts/stamp-assets.py. -->
     <footer class="footer">
         <div class="container">
             <p>&copy; 2026 J7 Creations &middot; Technical Solutions &amp; Prototyping | Milan/Atwood, TN</p>
@@ -501,11 +504,11 @@
     <!-- Back to Top Button -->
     <button id="back-to-top" class="back-to-top" aria-label="Back to top">↑</button>
 
-    <script src="../js/pricing.js?v=bfdfd7e6"></script>
-    <script src="../js/app.js?v=4cf7f72d"></script>
-    <script src="../js/chat.js?v=14fa46aa"></script>
+    <script src="../js/pricing.js?v=c2f54455"></script>
+    <script src="../js/app.js?v=05e6feca"></script>
+    <script src="../js/chat.js?v=dcf2cf9d"></script>
     <script>
-        // Rates come from js/pricing.js?v=bfdfd7e6 — see that file to change any price.
+        // Rates come from js/pricing.js?v=c2f54455 — see that file to change any price.
         const LABOR = J7_PRICING.labor;
         const MINS = J7_PRICING.minimums;
 

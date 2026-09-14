@@ -1,5 +1,9 @@
 // J7 Creations - Service Worker for PWA Offline Support
 
+// EDIT HERE (rarely): raise the number (v12 to v13) to make every visitor's
+// browser throw away its saved offline copy of the site. Normal edits do not
+// need it: stamp-assets.py keeps the ?v= stamps in the list below current.
+// A new page is only available offline if its address is added to the list.
 const CACHE_NAME = 'j7-creations-v12';
 const urlsToCache = [
     '/',
@@ -10,11 +14,11 @@ const urlsToCache = [
     '/pages/services-it',
     '/pages/services-fabrication',
     '/pages/services-installation',
-    '/css/styles.css?v=c91ac0b8',
+    '/css/styles.css?v=81acf46a',
     '/css/mobile-fix.css?v=de960d1b',
-    '/js/app.js?v=4cf7f72d',
-    '/js/chat.js?v=14fa46aa',
-    '/js/pricing.js?v=bfdfd7e6',
+    '/js/app.js?v=05e6feca',
+    '/js/chat.js?v=dcf2cf9d',
+    '/js/pricing.js?v=c2f54455',
     '/manifest.json',
     '/assets/images/j7-mark-nav.379b77f9.png',
     '/assets/images/j7-wall.fd59da6c.jpg',

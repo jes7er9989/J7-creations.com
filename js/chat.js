@@ -20,7 +20,9 @@
     // closed: reopening it on every page load after someone shut it is the
     // widget following them around.
     const OPEN_KEY = 'j7ChatOpen';
+    // EDIT HERE: the longest conversation allowed. Keep it equal to MAX_TURNS in functions/api/chat.js.
     const MAX_TURNS = 24;              // matches the cap the function enforces
+    // EDIT HERE: the first message a visitor sees when the chat opens.
     const GREETING =
         'Ask about any of the services, how Thomas works, what something ' +
         'costs, or where to find anything on the site. If it turns into a ' +

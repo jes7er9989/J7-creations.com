@@ -11,10 +11,34 @@
 // below the national low end for West Tennessee; on-site hourly and CAD sit at
 // market; laser is cheap and finishing is priced high, both on purpose.
 // Remote support is held at $25/hr deliberately as the accessible entry point.
+//
+// ---------------------------------------------------------------------------
+// HOW TO EDIT THIS FILE
+//
+// Search for "EDIT HERE" to jump between the parts you are likely to change:
+//   J7_PRICING           every rate, fee, minimum and surcharge on the site
+//   J7_SERVICE_AREA      the towns and their road miles from Milan
+//   J7_FILAMENT_DENSITY  material weights used by the print estimator
+//   J7_NOZZLES           the nozzles offered in the print estimator
+//   J7_PRINTERS          what the printers can do (build size, AMS, laser)
+//   J7_INTAKE            the extra questions on the contact form, per service
+//   J7_REMOTE_SCOPES     remote support job sizes and their hours
+//   J7_ONSITE_TASKS      on-site job types, their hours and their labour rate
+//   J7_SURFACE_FACTOR, J7_HEIGHT_FACTOR   what brick, metal and height add
+//
+// Change the number and keep the commas, quotes and brackets exactly as they
+// are. Then, from the site folder, run these three in this order:
+//   node scripts/verify-pricing.js       must end with ALL CHECKS PASSED
+//   node scripts/build-chat-prompt.js    so the chat assistant quotes the new rates
+//   python scripts/stamp-assets.py       so visitors' browsers fetch the new file
+//
+// Below the settings, the functions (names starting with j7) do the arithmetic.
+// You should not need to touch them to change a price.
+// ---------------------------------------------------------------------------
 
 const J7_PRICING = {
 
-    // ---------- 3D printing / fabrication ----------
+    // ---------- EDIT HERE: 3D printing / fabrication ----------
     print: {
         setupFee: 5.00,       // once per order, not per part
         orderMinimum: 10.00,
@@ -57,13 +81,17 @@ const J7_PRICING = {
         swapTimePerExtra: 0.15,         // machine time +15% per filament after the first
         swapTimeCap: 0.60,              // ...up to +60%
         secondMaterialShares: [0.10, 0.25, 0.50],
+        // Filament price per kg. CAREFUL: each price is also that material's ID.
+        // The same number is the option value in the material dropdown on
+        // pages/services-fabrication.html and the key in J7_FILAMENT_DENSITY below,
+        // so a price change means changing all three, and no two prices may match.
         filamentPerKg: {
             pla: 26, petg: 32, abs: 35, tpu: 43,
             pc: 58, pa6: 69, pa12: 89, cf: 95, gf: 84
         }
     },
 
-    // ---------- Hourly labour ----------
+    // ---------- EDIT HERE: Hourly labour ----------
     labor: {
         remote: 25,      // held low on purpose - the way people first reach him
         simple: 45,      // mounting, basic on-site
@@ -77,7 +105,7 @@ const J7_PRICING = {
         onsiteHours: 2      // 2-hour minimum for any site visit
     },
 
-    // ---------- Per-unit install pricing, with volume breaks ----------
+    // ---------- EDIT HERE: Per-unit install pricing, with volume breaks ----------
     // Banded: the whole order is priced at the rate for the band it lands in,
     // which is how customers compare quotes. Bands are checked for
     // monotonicity by scripts/verify-pricing.js - a discount must never make a
@@ -100,7 +128,7 @@ const J7_PRICING = {
         ]
     },
 
-    // ---------- Project pricing ----------
+    // ---------- EDIT HERE: Project pricing ----------
     homeAssistantBase: 150,              // hub, config, dashboards, handover
     // Rebased from hours rather than reverse-engineered to hit an advertised
     // $200-800 range. The old base charged $200 for a single-AP plan — 2.7
@@ -126,11 +154,11 @@ const J7_PRICING = {
         difficult: { price: 205, hours: 3.0,  label: 'Difficult — two story, no attic, or conduit' }
     },
 
-    // ---------- Other fabrication services ----------
+    // ---------- EDIT HERE: Other fabrication services ----------
     // These were quoted only in page copy with no entry here, which is how
     // they drift. The fabrication page also claimed they were "quoted
     // separately" a hundred lines above listing firm rates for them.
-    // ---------- Custom builds ----------
+    // ---------- EDIT HERE: Custom builds ----------
     // Desktops, servers and NAS boxes. Parts are always at cost with receipts
     // shown, same as installation equipment - these are the labour only.
     //
@@ -152,7 +180,7 @@ const J7_PRICING = {
     laserSetup: 25,
     postProcessRange: [25, 75],
 
-    // ---------- Modifiers ----------
+    // ---------- EDIT HERE: Modifiers (travel, rush, deposit) ----------
     // Travel by road miles from Milan. Raised 12 Sep 2026 (Thomas's call): the
     // old $15 / $30 / $50 did not cover the vehicle - a 100-mile round trip is
     // about $70 at the IRS rate of 70 cents a mile, before the drive time.
@@ -170,7 +198,7 @@ const J7_PRICING = {
     // $300 take a 50% deposit up front, which covers materials. (12 Sep 2026)
     deposit: { over: 300, share: 0.5 },
 
-    // ---------- Shipping finished parts ----------
+    // ---------- EDIT HERE: Shipping finished parts ----------
     // An ESTIMATE from the finished part's size and weight (Thomas, 12 Sep
     // 2026). There is no free shipping and no pickup.
     //
@@ -234,7 +262,7 @@ const J7_PRICING = {
         ]
     },
 
-    // ---------- Hand delivery ----------
+    // ---------- EDIT HERE: Hand delivery ----------
     // Instead of pickup, which Thomas does not offer. Priced like travel: about
     // two-thirds of the IRS mileage (70 cents) on the round trip at the far edge
     // of each band. Past the last band it needs arranging with Thomas, because
@@ -419,6 +447,11 @@ function j7SendEstimate(serviceValue, headline, lines, source, notes, details) {
 // Each town's fee is worked out from its miles and the travel bands in
 // J7_PRICING, so changing a band changes every town. -1 means beyond the
 // radius: quote individually.
+// EDIT HERE: the towns in the service area and their road miles from Milan.
+// Add a town as { town: "Name", miles: 12 }, then run
+//   node scripts/build-service-area.js
+// to rebuild the town list on the installation page. The homepage town
+// checker reads this list directly and needs nothing else.
 const J7_SERVICE_AREA = [
         { town: "Milan",         miles:   0 },
         { town: "Atwood",        miles:   8 },
@@ -611,6 +644,7 @@ function j7LookupTown(query) {
 
 // Filament densities, g/cm3, keyed by the price-per-kg values the material
 // dropdown already uses so the two never drift apart.
+// EDIT HERE: material densities, keyed by the same price-per-kg IDs as filamentPerKg.
 const J7_FILAMENT_DENSITY = {
     26: 1.24,  // PLA
     32: 1.27,  // PETG
@@ -670,6 +704,7 @@ const J7_SIZE_REFS = [
 // 0.2 and 0.8 are standard flow, and every nozzle but the 0.2 is hardened
 // steel - so carbon and glass fibre, which wear a soft nozzle through, cannot
 // go through the 0.2.
+// EDIT HERE: the nozzles offered in the 3D printing estimator.
 const J7_NOZZLES = [
     { mm: 0.2, hardened: false, highFlow: false,
       label: '0.2 mm — fine detail: small parts, lettering (not for carbon or glass fibre)' },
@@ -699,6 +734,8 @@ const J7_WALL_CM = j7WallCm(0.4);
 // The printers (Thomas, 13 Sep 2026): two Bambu Lab H2D, one of them the Laser
 // Edition, fed by two AMS 2 Pro units. Every figure is from Bambu's own spec
 // sheet, bambulab.com/en-us/h2d/tech-specs, read 13 Sep 2026.
+// EDIT HERE: what the printers can do. The estimator and the chat assistant both
+// read this, so run node scripts/build-chat-prompt.js after a change.
 const J7_PRINTERS = {
     model: 'Bambu Lab H2D',
     count: 2,
@@ -870,6 +907,7 @@ function j7MeshStats(tris) {
 // finish costs the whole enquiry.
 // ===========================================================================
 
+// EDIT HERE: the extra questions the contact form asks for each service.
 const J7_INTAKE = {
     'remote-support': {
         note: 'Answer these and I can usually tell you what it will cost before we speak.',
@@ -1024,6 +1062,7 @@ function j7BallparkRemote() {
 
 // Remote support. The scope a customer CAN judge is how big the problem feels,
 // and that maps to time closely enough at this rate.
+// EDIT HERE: remote support job sizes, and the hours each one is priced at.
 const J7_REMOTE_SCOPES = [
     { id: 'quick',  hours: 0.5, label: 'A quick question, or one setting to change' },
     { id: 'single', hours: 1.0, label: 'One device not behaving', preset: true },
@@ -1033,6 +1072,8 @@ const J7_REMOTE_SCOPES = [
 
 // On-site work priced by the hour. Base hours are per item; the multipliers
 // are what actually makes a job take longer than it looks.
+// EDIT HERE: on-site job types. hours is per item, or for the first item when
+// perExtra is set; rate names one of the hourly rates in J7_PRICING.labor.
 const J7_ONSITE_TASKS = [
     { id: 'mount',       hours: 0.75, rate: 'simple',
       label: 'Mounting equipment — brackets, displays, enclosures' },
@@ -1044,6 +1085,9 @@ const J7_ONSITE_TASKS = [
       label: 'Tracking down a fault' }
 ];
 
+// EDIT HERE: how much each wall type and each height adds to on-site hours
+// (1.4 means 40% longer). The names must match the dropdowns on the
+// installation page exactly.
 const J7_SURFACE_FACTOR = {
     'Drywall': 1.0, 'Wood': 1.0, 'Vinyl siding': 1.15,
     'Metal': 1.3, 'Brick or block': 1.4, 'Not sure': 1.0

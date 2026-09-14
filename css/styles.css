@@ -13,6 +13,10 @@
    their dark-theme value on a light background and dropped to ~2:1 contrast.
    --------------------------------------------------------------------------- */
 
+/* EDIT HERE: the site's colours, spacing and type sizes. :root below is the
+   dark theme; [data-theme="light"] further down is the light theme. Both use
+   the same names, so a new name must be added to both. Run
+   python scripts/stamp-assets.py after editing this file. */
 :root {
     /* Surfaces */
     --color-bg-dark: #1a1a1a;

@@ -11,7 +11,7 @@
 
 import { SYSTEM_PROMPT } from './_prompt.js';
 
-// One line to change. Started on Haiku 4.5, which broke explicit pricing rules
+// EDIT HERE: which Claude model answers. Started on Haiku 4.5, which broke explicit pricing rules
 // and got basic arithmetic wrong in its first live conversations (11 Sep 2026).
 // Cost per six-exchange conversation with the prompt cached: Haiku 4.5 about
 // $0.009, Sonnet 5 about $0.018 ($2/$10 per million), Opus 5 about $0.044.
@@ -33,7 +33,7 @@ const MAX_TOKENS = 4000;
 const EFFORT = 'low';
 const FALLBACK_MAX_TOKENS = 800;
 
-// Cost control, all of it deliberate:
+// EDIT HERE: cost control, all of it deliberate. Keep MAX_TURNS equal to the one in js/chat.js.
 //   - a conversation is capped, so one visitor cannot run up an unbounded bill
 //   - a message is capped, so nobody pastes a novel into the context
 //   - requests per IP per hour are capped in KV

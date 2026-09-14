@@ -1,13 +1,17 @@
 # J7 Creations — Handoff
 
-> **State as of 11 Sep 2026.** The **chatbot is back on `main`** (restored by
-> reverting `01400f2`, then brought up to date with Custom Builds, the privacy
-> page and American spelling). It must not be pushed until `ANTHROPIC_API_KEY`
-> and the `CHAT_RATE_LIMIT` KV binding exist in Cloudflare — see *The chatbot*
-> near the end. The CRM ingest work sits unpushed on the local `crm-ingest`
-> branch; its privacy page needs reconciling with this one before it merges.
+> **Just want to change something?** Read `HOW-TO-RUN-AND-EDIT.md` instead.
+> It is the short, practical guide. This file is the long history of why the
+> site works the way it does.
+>
+> **State as of 14 Sep 2026.** Everything described here is live. The chat
+> assistant is running (its `ANTHROPIC_API_KEY` secret and `CHAT_RATE_LIMIT`
+> binding exist in Cloudflare), and the contact form also feeds the J7 CRM
+> through `functions/api/intake.js`. Some sections below still describe the
+> state on the day they were written; where they disagree with the code, the
+> code is right.
 
-**Last updated:** 11 September 2026
+**Last updated:** 14 September 2026 (the state note above); sections below are dated where they matter
 **Live:** https://j7creations.com · **Repo:** https://github.com/jes7er9989/J7-creations.com
 
 Static site — plain HTML/CSS/JS, no build step, no framework. Pushing to `main`

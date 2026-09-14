@@ -1,0 +1,12 @@
+# Everything committed to this repository is also published on the website,
+# so anything private must never be committed. These are kept out on purpose.
+
+# Local secrets for `npx wrangler pages dev` (the Anthropic key for the chat
+# assistant when testing on your own PC). Never commit this file.
+.dev.vars
+
+# Wrangler's local cache and test databases.
+.wrangler/
+
+# Node packages, if any tool ever installs them here.
+node_modules/
